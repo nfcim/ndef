@@ -61,7 +61,7 @@ class SignatureRecord extends Record{
 
     //Version Field
     if(version!=2){
-
+      //TODO:find the document of smartposter 2.0
     }
 
     //Signature Field
