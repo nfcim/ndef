@@ -1,5 +1,3 @@
-
-
 import 'byteStream.dart';
 import 'record.dart';
 
@@ -8,15 +6,14 @@ class Message {
 
   Message(List<int> data) {
     ByteStream stream = new ByteStream(data);
-    while(!stream.isEnd()){
-      dynamic a=Record.decode(stream);
+    while (!stream.isEnd()) {
+      dynamic a = Record.decode(stream);
       record_list.add(a);
     }
   }
-
 }
 
-void main(){
-  Message m=new Message(ByteStream.decodeHexString('900000 500000'));
+void main() {
+  Message m = new Message(ByteStream.decodeHexString('900000 500000'));
   print(m.record_list);
 }
