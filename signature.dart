@@ -53,9 +53,9 @@ class SignatureRecord extends Record {
   static dynamic decode_payload(List<int> PAYLOAD) {
     ByteStream stream = new ByteStream(PAYLOAD);
 
-    int version = stream.read_byte(); //PAYLOAD[0];
-    int signatureFlag = stream.read_byte(); //PAYLOAD[1];
-    int hashTypeIndex = stream.read_byte(); //PAYLOAD[2];
+    int version = stream.readByte(); //PAYLOAD[0];
+    int signatureFlag = stream.readByte(); //PAYLOAD[1];
+    int hashTypeIndex = stream.readByte(); //PAYLOAD[2];
 
     //Version Field
     if (version != 2) {
@@ -67,33 +67,33 @@ class SignatureRecord extends Record {
     int signatureTypeIndex = signatureFlag & 0x7F;
     String signatureType = signatureTypeMap[signatureTypeIndex];
     String hashType = hashTypeMap[hashTypeIndex];
-    int signatureURILength = stream.read_int(2);
+    int signatureURILength = stream.readInt(2);
 
     List<int> signature;
     String signatureURI;
 
     if (signatureURIPresent == 1)
-      signatureURI = utf8.decode(stream.read_bytes(signatureURILength));
+      signatureURI = utf8.decode(stream.readBytes(signatureURILength));
     else
-      signature = stream.read_bytes(signatureURILength);
+      signature = stream.readBytes(signatureURILength);
 
     //Certificate Field
-    int certificateFlag = stream.read_byte();
+    int certificateFlag = stream.readByte();
     int certificateURIPresent = certificateFlag & 0x80;
     String certificateFormat = certificateFormatMap[certificateFlag & 0x70];
     int certificateNumberOfCertificates = certificateFlag & 0x0F;
 
     List<List<int>> certificateStore;
     for (int i = 0; i < certificateNumberOfCertificates; i++) {
-      int length = stream.read_int(2);
-      List<int> cert = stream.read_bytes(length);
+      int length = stream.readInt(2);
+      List<int> cert = stream.readBytes(length);
       certificateStore.add(cert);
     }
 
     String certificateURI;
     if (certificateURIPresent == 1) {
-      int length = stream.read_int(2);
-      certificateURI = utf8.decode(stream.read_bytes(length));
+      int length = stream.readInt(2);
+      certificateURI = utf8.decode(stream.readBytes(length));
     }
 
     return SignatureRecord(signatureType, hashType, signature, signatureURI,

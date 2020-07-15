@@ -39,7 +39,7 @@ class SizeRecord extends Record {
 
   static dynamic decode_payload(List<int> PAYLOAD) {
     ByteStream stream = new ByteStream(PAYLOAD);
-    return SizeRecord(stream.read_int(4));
+    return SizeRecord(stream.readInt(4));
   }
 }
 

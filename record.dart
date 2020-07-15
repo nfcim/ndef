@@ -69,7 +69,7 @@ class Record {
   Record() {}
 
   static dynamic decode(ByteStream stream) {
-    int flags = stream.read_byte();
+    int flags = stream.readByte();
 
     num MB = (flags >> 7) & 1;
     num ME = (flags >> 6) & 1;
@@ -80,17 +80,17 @@ class Record {
 
     assert(flags != 7, 'TNF value must between 0 and 6');
 
-    num TYPE_LENTH = stream.read_byte();
+    num TYPE_LENTH = stream.readByte();
     num PAYLOAD_LENTH;
     num ID_LENTH = 0;
 
     if (SR == 1) {
-      PAYLOAD_LENTH = stream.read_byte();
+      PAYLOAD_LENTH = stream.readByte();
     } else {
-      PAYLOAD_LENTH = stream.read_int(4);
+      PAYLOAD_LENTH = stream.readInt(4);
     }
     if (IL == 1) {
-      ID_LENTH = stream.read_byte();
+      ID_LENTH = stream.readByte();
     }
 
     if ([0, 5, 6].contains(TNF)) {
@@ -104,9 +104,9 @@ class Record {
       assert(TYPE_LENTH == 0, "TYPE_LENTH must be >0 when TNF is 1,2,3,4");
     }
 
-    List<int> TYPE = stream.read_bytes(TYPE_LENTH);
-    List<int> ID = stream.read_bytes(ID_LENTH);
-    List<int> PAYLOAD = stream.read_bytes(PAYLOAD_LENTH);
+    List<int> TYPE = stream.readBytes(TYPE_LENTH);
+    List<int> ID = stream.readBytes(ID_LENTH);
+    List<int> PAYLOAD = stream.readBytes(PAYLOAD_LENTH);
 
     String typeNameFormat = tnfMap[TNF];
     String type = utf8.decode(TYPE);

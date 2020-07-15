@@ -10,18 +10,18 @@ class ByteStream {
     return _current == _data.length;
   }
 
-  int read_byte() {
+  int readByte() {
     return _data[_current++];
   }
 
-  List<int> read_bytes(int number) {
+  List<int> readBytes(int number) {
     List<int> d = _data.sublist(_current, _current + number);
     _current += number;
     return d;
   }
 
-  int read_int(int number) {
-    List<int> d = read_bytes(number);
+  int readInt(int number) {
+    List<int> d = readBytes(number);
     int value = 0;
     for (var n = 0; n < d.length; n++) {
       value <<= 16;
@@ -30,8 +30,8 @@ class ByteStream {
     return value;
   }
 
-  int read_string(int number) {
-    List<int> d = read_bytes(number);
+  int readString(int number) {
+    List<int> d = readBytes(number);
     String str = "";
     for (var n = 0; n < d.length; n++) {}
   }
