@@ -46,30 +46,30 @@ class URIRecord extends Record {
 
   String uriPrefix, uriData;
 
-  URIRecord(String uriPrefix, String uriData) {
-    this.uriPrefix = uriPrefix;
-    this.uriData = uriData;
-  }
+  URIRecord({this.uriPrefix, this.uriData});
 
   get uri {
     return this.uriPrefix + this.uriData;
   }
 
+  
   static const String decodedType = "U";
 
-  get payload {
-    Uint8List PAYLOAD;
+  @override
+  String get _decodedType {
+    return URIRecord.decodedType;
+  }
+
+  Uint8List get payload {
     for (int i = 0; i < uriPrefixMap.length; i++) {
       if (uriPrefixMap[i] == uriPrefix) {
-        PAYLOAD = [i] + utf8.encode(uriData);
-        return PAYLOAD;
+        return [i] + utf8.encode(uriData);
       }
     }
   }
 
-  static URIRecord decodePayload(Uint8List PAYLOAD) {
-    int uriIdentifier = PAYLOAD[0];
-    String uriPrefix = "";
+  set payload(Uint8List payload) {
+    int uriIdentifier = payload[0];
     if (uriIdentifier < uriPrefixMap.length) {
       uriPrefix = uriPrefixMap[uriIdentifier];
     } else {
@@ -77,9 +77,7 @@ class URIRecord extends Record {
       uriPrefix = "";
       //uriPrefix="unknown:";
     }
-    String uriData = utf8.decode(PAYLOAD.sublist(1));
-
-    return URIRecord(uriPrefix, uriData);
+    uriData = utf8.decode(payload.sublist(1));
   }
 
 }

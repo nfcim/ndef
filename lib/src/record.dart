@@ -76,10 +76,26 @@ class Record {
     "unchanged"
   ];
 
-  static const String recordType = "none";
+  Uint8List encodedType;
+  
+  String get _decodedType {
+    throw "not implemented in base class";
+  }
+
+  set type(Uint8List type) {
+    encodedType = type;
+  }
+
+  Uint8List get type {
+    if (encodedType != null) {
+      return encodedType;
+    } else {
+      // no encodedType set, might be a directly initialized subclass
+      return utf8.encode(_decodedType);
+    }
+  }
 
   Uint8List id;
-  Uint8List type;
   Uint8List payload;
   RecordFlags flags;
   Record();
@@ -94,11 +110,10 @@ class Record {
       // urn:nfc:wkt
       if (decodedType == URIRecord.decodedType) {
         // URI
-        record = URIRecord.decodePayload(payload);
-      } else if (decodedType == "T") {
-        // TODO: remove hardcode types
+        record = URIRecord();
+      } else if (decodedType == TextRecord.decodedType) {
         // Text
-        record = TextRecord.decodePayload(payload);
+        record = TextRecord();
       } else if (decodedType == "Sp") {
         // Smart Poster
         record = SmartposterRecord.decodePayload(payload);
@@ -117,6 +132,7 @@ class Record {
 
     record.id = id;
     record.type = type;
+    // use setter for implicit decoding
     record.payload = payload;
     return record;
   }
@@ -163,8 +179,8 @@ class Record {
     return decoded;
   }
 
-  static String decodeType(num TNF, Uint8List TYPE) {
-    return typePrefixes[TNF];
+  static String decodeType(num tnf, Uint8List type) {
+    return typePrefixes[tnf];
   }
 
   static void error(String fmt) {}
@@ -190,15 +206,18 @@ class Record {
     assert(type.length > 0 && type.length < 256);
     encoded += [type.length];
 
+    // use gettter for implicit encoding
+    var encodedPayload = payload;
+
     // payload length
-    if (payload.length < 256) {
-      encoded += [payload.length];
+    if (encodedPayload.length < 256) {
+      encoded += [encodedPayload.length];
     } else {
       encoded += [
-        payload.length & 0xff,
-        (payload.length >> 8) & 0xff,
-        (payload.length >> 16) & 0xff,
-        (payload.length >> 24) & 0xff,
+        encodedPayload.length & 0xff,
+        (encodedPayload.length >> 8) & 0xff,
+        (encodedPayload.length >> 16) & 0xff,
+        (encodedPayload.length >> 24) & 0xff,
       ];
     }
 
@@ -217,7 +236,7 @@ class Record {
     }
 
     // payload
-    encoded += payload;
+    encoded += encodedPayload;
 
     return encoded;
   }

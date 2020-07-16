@@ -8,13 +8,16 @@ import '../record.dart';
 class TextRecord extends Record {
   static const String recordType = "urn:nfc:wkt:T";
 
+  static const String decodedType = "T";
+
+  @override
+  String get _decodedType {
+    return TextRecord.decodedType;
+  }
+
   String encoding, language, text;
 
-  TextRecord(String encoding, String language, String text) {
-    this.encoding = encoding;
-    this.language = language;
-    this.text = text;
-  }
+  TextRecord({this.encoding, this.language, this.text});
 
   get payload {
     Uint8List PAYLOAD;
@@ -34,7 +37,7 @@ class TextRecord extends Record {
     return PAYLOAD;
   }
 
-  static TextRecord decodePayload(Uint8List payload) {
+  set payload(Uint8List payload) {
     int FLAG = payload[0];
 
     assert(FLAG & 0x3F != 0, "language code length can not be zero");
@@ -50,14 +53,12 @@ class TextRecord extends Record {
 
     Uint8List languagePayload = payload.sublist(1, FLAG & 0x3F);
     Uint8List textPayload = payload.sublist(1 + FLAG & 0x3F);
-    String language, text;
     language = utf8.decode(languagePayload);
     if (encoding == "UTF-8") {
       text = utf8.decode(textPayload);
     } else if (encoding == "UTF-16") {
       text = utf.decodeUtf16(textPayload);
     }
-
-    return TextRecord(encoding, language, text);
   }
+
 }
