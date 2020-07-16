@@ -5,6 +5,12 @@ import 'package:utf/utf.dart' as utf;
 
 import '../record.dart';
 
+
+enum TextEncoding {
+  UTF8,
+  UTF16
+}
+
 class TextRecord extends Record {
   static const String recordType = "urn:nfc:wkt:T";
 
@@ -15,48 +21,49 @@ class TextRecord extends Record {
     return TextRecord.decodedType;
   }
 
-  String encoding, language, text;
+  TextEncoding encoding;
+  String language, text;
 
   TextRecord({this.encoding, this.language, this.text});
 
   get payload {
-    Uint8List PAYLOAD;
+    Uint8List payload;
     Uint8List languagePayload = utf8.encode(language);
     Uint8List textPayload;
     int encodingFlag;
-    if (encoding == "UTF-8") {
+    if (encoding == TextEncoding.UTF8) {
       textPayload = utf8.encode(text);
       encodingFlag = 0;
-    } else if (encoding == "UTF-16") {
+    } else if (encoding == TextEncoding.UTF16) {
       textPayload = utf.encodeUtf16(text);
       encodingFlag = 1;
     }
-    int FLAG = (encodingFlag << 7) | languagePayload.length;
-    PAYLOAD = [FLAG] + languagePayload + textPayload;
+    int flag = (encodingFlag << 7) | languagePayload.length;
+    payload = [flag] + languagePayload + textPayload;
 
-    return PAYLOAD;
+    return payload;
   }
 
   set payload(Uint8List payload) {
-    int FLAG = payload[0];
+    int flag = payload[0];
 
-    assert(FLAG & 0x3F != 0, "language code length can not be zero");
-    assert(FLAG & 0x3F < payload.length,
+    assert(flag & 0x3F != 0, "language code length can not be zero");
+    assert(flag & 0x3F < payload.length,
         "language code length exceeds payload length");
 
-    String encoding;
-    if (FLAG >> 7 == 1) {
-      encoding = "UTF-16";
+    if (flag >> 7 == 1) {
+      encoding = TextEncoding.UTF16;
     } else {
-      encoding = "UTF-8";
+      encoding = TextEncoding.UTF8;
     }
 
-    Uint8List languagePayload = payload.sublist(1, FLAG & 0x3F);
-    Uint8List textPayload = payload.sublist(1 + FLAG & 0x3F);
+    var languagePayload = payload.sublist(1, flag & 0x3F);
+    var textPayload = payload.sublist(1 + flag & 0x3F);
     language = utf8.decode(languagePayload);
-    if (encoding == "UTF-8") {
+
+    if (encoding == TextEncoding.UTF8) {
       text = utf8.decode(textPayload);
-    } else if (encoding == "UTF-16") {
+    } else if (encoding == TextEncoding.UTF16) {
       text = utf.decodeUtf16(textPayload);
     }
   }
