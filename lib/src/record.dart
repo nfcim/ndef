@@ -1,5 +1,8 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:typed_data';
+
+import 'package:ndef/ndef.dart';
 
 import 'byteStream.dart';
 import 'record/uri.dart';
@@ -11,31 +14,33 @@ import 'record/raw.dart';
 
 class RecordFlags {
   /// Message Begin */
-  bool MB;
+  bool MB = false;
 
   /// Message End */
-  bool ME;
+  bool ME = false;
 
   /// Chunk Flag */
-  bool CF;
+  bool CF = false;
 
   /// Short Record */
-  bool SR;
+  bool SR = false;
 
   /// ID Length */
-  bool IL;
+  bool IL = false;
 
   /// Type Name Format */
-  int TNF;
+  int TNF = 0;
 
-  RecordFlags(int data) {
-    assert(0 <= data && data <= 255);
-    MB = ((data >> 7) & 1) == 1;
-    ME = ((data >> 6) & 1) == 1;
-    CF = ((data >> 5) & 1) == 1;
-    SR = ((data >> 4) & 1) == 1;
-    IL = ((data >> 3) & 1) == 1;
-    TNF = data & 7;
+  RecordFlags({int data}) {
+    if (data != null) {
+      assert(0 <= data && data <= 255);
+      MB = ((data >> 7) & 1) == 1;
+      ME = ((data >> 6) & 1) == 1;
+      CF = ((data >> 5) & 1) == 1;
+      SR = ((data >> 4) & 1) == 1;
+      IL = ((data >> 3) & 1) == 1;
+      TNF = data & 7;
+    }
   }
 
   int encode() {
@@ -49,10 +54,19 @@ class RecordFlags {
   }
 }
 
+enum TypeNameFormat {
+  empty,
+  nfcWellKnown,
+  media,
+  absoluteURI,
+  nfcExternel,
+  unknown,
+  unchanged
+}
+
 /// base class of all types of records
-/// should not be used directly
 class Record {
-  static List<String> prefixMap = [
+  static List<String> typePrefixes = [
     "",
     "urn:nfc:wkt:",
     "",
@@ -62,114 +76,150 @@ class Record {
     "unchanged"
   ];
 
-  // TODO: try to use enum
-  static List<String> tnfMap = [
-    "empty",
-    "nfcWellKnown",
-    "media",
-    "absoluteURI",
-    "nfcExternel",
-    "unknown",
-    "unchanged"
-  ];
-
   static const String recordType = "none";
 
   Uint8List id;
+  Uint8List type;
+  Uint8List payload;
   RecordFlags flags;
   Record();
 
-  static Record decode(ByteStream stream) {
-    var flags = new RecordFlags(stream.readByte());
-
-    num TYPE_LENTH = stream.readByte();
-    num PAYLOAD_LENTH;
-    num ID_LENTH = 0;
-
-    if (flags.SR) {
-      PAYLOAD_LENTH = stream.readByte();
-    } else {
-      PAYLOAD_LENTH = stream.readInt(4);
-    }
-    if (flags.IL) {
-      ID_LENTH = stream.readByte();
-    }
-
-    if ([0, 5, 6].contains(flags.TNF)) {
-      assert(TYPE_LENTH == 0, "TYPE_LENTH must be 0 when TNF is 0,5,6");
-    }
-    if (flags.TNF == 0) {
-      assert(ID_LENTH == 0, "ID_LENTH must be 0 when TNF is 0");
-      assert(PAYLOAD_LENTH == 0, "PAYLOAD_LENTH must be 0 when TNF is 0");
-    }
-    if ([1, 2, 3, 4].contains(flags.TNF)) {
-      assert(TYPE_LENTH == 0, "TYPE_LENTH must be >0 when TNF is 1,2,3,4");
-    }
-
-    var TYPE = stream.readBytes(TYPE_LENTH);
-    var ID = stream.readBytes(ID_LENTH);
-    var PAYLOAD = stream.readBytes(PAYLOAD_LENTH);
-
-    var typeNameFormat = tnfMap[flags.TNF];
-    var type = utf8.decode(TYPE);
+  static Record doDecode(TypeNameFormat tnf, Uint8List type, Uint8List payload,
+      {Uint8List id}) {
 
     Record record;
+    var decodedType = utf8.decode(type);
 
-    if (typeNameFormat == "nfcWellKnown") {
-      //urn:nfc:wkt
-      if (type == URIRecord.type) {
-        //URI
-        record = URIRecord.decodePayload(PAYLOAD);
-      } else if (type == "T") {
+    if (tnf == TypeNameFormat.nfcWellKnown) {
+      // urn:nfc:wkt
+      if (decodedType == URIRecord.decodedType) {
+        // URI
+        record = URIRecord.decodePayload(payload);
+      } else if (decodedType == "T") {
         // TODO: remove hardcode types
-        //Text
-        record = TextRecord.decodePayload(PAYLOAD);
-      } else if (type == "Sp") {
-        //Smart Poster
-
-      } else if (type == "Sig") {
-        //Signature
-        record = SignatureRecord.decodePayload(PAYLOAD);
+        // Text
+        record = TextRecord.decodePayload(payload);
+      } else if (decodedType == "Sp") {
+        // Smart Poster
+        record = SmartposterRecord.decodePayload(payload);
+      } else if (decodedType == "Sig") {
+        // Signature
+        record = SignatureRecord.decodePayload(payload);
       }
-    } else if (typeNameFormat == "media") {
-      record = MIMERecord.decodePayload(PAYLOAD);
-    } else if (typeNameFormat == "absoluteURI") {
-      record = new absoluteUriRecord(type);
+    } else if (tnf == TypeNameFormat.media) {
+      record = MIMERecord.decodePayload(payload);
+    } else if (tnf == TypeNameFormat.absoluteURI) {
+      record = new absoluteUriRecord(decodedType); // FIXME: seems wrong
     } else {
-      record = new RawRecord(TYPE, PAYLOAD);
+      // unknown
+      record = new Record();
     }
 
-    record.id = ID;
-    record.flags = flags;
+    record.id = id;
+    record.type = type;
+    record.payload = payload;
     return record;
   }
 
+  static Record decodeStream(ByteStream stream) {
+    var flags = new RecordFlags(data: stream.readByte());
+
+    num typeLength = stream.readByte();
+    num payloadLength;
+    num idLength = 0;
+
+    if (flags.SR) {
+      payloadLength = stream.readByte();
+    } else {
+      payloadLength = stream.readInt(4);
+    }
+    if (flags.IL) {
+      idLength = stream.readByte();
+    }
+
+    if ([0, 5, 6].contains(flags.TNF)) {
+      assert(typeLength == 0, "TYPE_LENTH must be 0 when TNF is 0,5,6");
+    }
+    if (flags.TNF == 0) {
+      assert(idLength == 0, "ID_LENTH must be 0 when TNF is 0");
+      assert(payloadLength == 0, "PAYLOAD_LENTH must be 0 when TNF is 0");
+    }
+    if ([1, 2, 3, 4].contains(flags.TNF)) {
+      assert(typeLength == 0, "TYPE_LENTH must be > 0 when TNF is 1,2,3,4");
+    }
+
+    var type = stream.readBytes(typeLength);
+
+    Uint8List id;
+    if (idLength != 0) {
+      id = stream.readBytes(idLength);
+    }
+
+    var payload = stream.readBytes(payloadLength);
+    var typeNameFormat = TypeNameFormat.values[flags.TNF];
+
+    var decoded = doDecode(typeNameFormat, type, payload, id: id);
+    decoded.flags = flags;
+    return decoded;
+  }
+
   static String decodeType(num TNF, Uint8List TYPE) {
-    return prefixMap[TNF];
+    return typePrefixes[TNF];
   }
 
   static void error(String fmt) {}
 
   /// encode this record to raw byte data
   Uint8List encode() {
-    throw "encoding not implemented on general type";
-  }
-
-  /// used internally to encode raw messages
-  Uint8List encodeRaw(dynamic type, Uint8List payload) {
-    // TODO: encode using type, id, payload and flags
-    if (type is String) {
-      // TODO: encode type to byte
-    } else if (type is Uint8List) {
-      // do nothing
-    } else {
-      throw "type must be String or Uint8List";
-    }
     var encoded = new Uint8List(0);
+
+    // check and canonicalize
+    if (this.id == null) {
+      flags.IL = false;
+    }
+
+    if (payload.length < 256) {
+      flags.SR = true;
+    }
+
     // flags
     var encodedFlags = flags.encode();
     encoded.add(encodedFlags);
-    // TODO: more fields
+
+    // type length
+    assert(type.length > 0 && type.length < 256);
+    encoded += [type.length];
+
+    // payload length
+    if (payload.length < 256) {
+      encoded += [payload.length];
+    } else {
+      encoded += [
+        payload.length & 0xff,
+        (payload.length >> 8) & 0xff,
+        (payload.length >> 16) & 0xff,
+        (payload.length >> 24) & 0xff,
+      ];
+    }
+
+    // ID length
+    if (id != null) {
+      assert(id.length > 0 && id.length < 256);
+      encoded += [id.length];
+    }
+
+    // type
+    encoded += type;
+
+    // ID
+    if (id != null) {
+      encoded += id;
+    }
+
+    // payload
+    encoded += payload;
+
     return encoded;
   }
+
 }

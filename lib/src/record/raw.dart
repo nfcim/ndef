@@ -8,7 +8,12 @@ class RawRecord extends Record {
   RawRecord(this.type, this.payload);
 
   @override
-  Uint8List encode() {
-    return super.encodeRaw(this.type, this.payload);
+  Uint8List encodeType() {
+    return type;
+  }
+
+  @override
+  Uint8List encodePayload() {
+    return payload;
   }
 }

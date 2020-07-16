@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'record.dart';
+import '../record.dart';
 
 class MIMERecord extends Record {
   static const String recordType = "media";

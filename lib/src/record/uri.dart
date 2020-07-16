@@ -55,7 +55,7 @@ class URIRecord extends Record {
     return this.uriPrefix + this.uriData;
   }
 
-  static const String type = "U";
+  static const String decodedType = "U";
 
   get payload {
     Uint8List PAYLOAD;
@@ -82,8 +82,4 @@ class URIRecord extends Record {
     return URIRecord(uriPrefix, uriData);
   }
 
-  @override
-  Uint8List encode() {
-    return super.encodeRaw(URIRecord.type, this.payload);
-  }
 }

@@ -48,12 +48,12 @@ class SizeRecord extends Record {
 class TypeRecord extends Record {
   static const String recordType = "urn:nfc:wkt:t";
 
-  String type;
+  String decodedType;
 
-  TypeRecord(this.type);
+  TypeRecord(this.decodedType);
 
-  get PAYLOAD {
-    return utf8.encode(type);
+  get payload {
+    return utf8.encode(decodedType);
   }
 
   static TypeRecord decodePayload(Uint8List payload) {
@@ -75,7 +75,7 @@ class SmartposterRecord extends Record {
 
   static SmartposterRecord decodePayload(Uint8List payload) {
     SmartposterRecord spRecord;
-    decodeNdefMessage(payload).forEach((e) {
+    decodeRawNdefMessage(payload).forEach((e) {
       if (e is TextRecord) {
         spRecord.titleRecords.add(e);
       } else if (e is URIRecord) {
