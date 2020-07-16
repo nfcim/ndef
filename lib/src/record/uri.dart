@@ -1,8 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'record.dart';
-
+import '../record.dart';
 
 class URIRecord extends Record {
   static const String recordType = "urn:nfc:wkt:U";
@@ -83,8 +82,8 @@ class URIRecord extends Record {
     return URIRecord(uriPrefix, uriData);
   }
 
-  @override Uint8List encode() {
+  @override
+  Uint8List encode() {
     return super.encodeRaw(URIRecord.type, this.payload);
   }
 }
-

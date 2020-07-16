@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'record.dart';
-import 'byteStream.dart';
+import '../record.dart';
+import '../byteStream.dart';
 
 class SignatureRecord extends Record {
   static const String recordType = "urn:nfc:wkt:Sig";

@@ -1,6 +1,6 @@
-import 'dart:ffi';
 import 'dart:typed_data';
 
+/// byte stream utility class for decoding
 class ByteStream {
   Uint8List _data;
   int _current = 0;

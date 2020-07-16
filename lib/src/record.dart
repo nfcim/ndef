@@ -1,26 +1,30 @@
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:typed_data';
 
 import 'byteStream.dart';
-import 'uri.dart';
-import 'text.dart';
-import 'signature.dart';
-import 'mime.dart';
-import 'absoluteUri.dart';
+import 'record/uri.dart';
+import 'record/text.dart';
+import 'record/signature.dart';
+import 'record/mime.dart';
+import 'record/absoluteUri.dart';
+import 'record/raw.dart';
 
 class RecordFlags {
-
   /// Message Begin */
   bool MB;
+
   /// Message End */
   bool ME;
+
   /// Chunk Flag */
   bool CF;
+
   /// Short Record */
   bool SR;
+
   /// ID Length */
   bool IL;
+
   /// Type Name Format */
   int TNF;
 
@@ -36,17 +40,18 @@ class RecordFlags {
 
   int encode() {
     assert(0 <= TNF && TNF <= 7);
-    return ((MB as int) << 7)
-     | ((ME as int) << 6) 
-     | ((CF as int) << 5)
-     | ((SR as int) << 4)
-     | ((IL as int) << 3)
-     | (TNF & 7);
+    return ((MB as int) << 7) |
+        ((ME as int) << 6) |
+        ((CF as int) << 5) |
+        ((SR as int) << 4) |
+        ((IL as int) << 3) |
+        (TNF & 7);
   }
 }
 
+/// base class of all types of records
+/// should not be used directly
 class Record {
-
   static List<String> prefixMap = [
     "",
     "urn:nfc:wkt:",
@@ -75,7 +80,6 @@ class Record {
   Record();
 
   static Record decode(ByteStream stream) {
-
     var flags = new RecordFlags(stream.readByte());
 
     num TYPE_LENTH = stream.readByte();
@@ -116,7 +120,8 @@ class Record {
       if (type == URIRecord.type) {
         //URI
         record = URIRecord.decodePayload(PAYLOAD);
-      } else if (type == "T") { // TODO: remove hardcode types
+      } else if (type == "T") {
+        // TODO: remove hardcode types
         //Text
         record = TextRecord.decodePayload(PAYLOAD);
       } else if (type == "Sp") {
@@ -166,17 +171,5 @@ class Record {
     encoded.add(encodedFlags);
     // TODO: more fields
     return encoded;
-  }
-
-
-}
-
-class RawRecord extends Record {
-  Uint8List type, payload;
-
-  RawRecord(this.type, this.payload);
-
-  @override Uint8List encode() {
-    return super.encodeRaw(this.type, this.payload);
   }
 }

@@ -1,14 +1,13 @@
 import 'dart:convert';
-import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:ndef/ndef.dart';
 
-import 'record.dart';
+import '../record.dart';
+import '../byteStream.dart';
 import 'text.dart';
 import 'uri.dart';
 import 'mime.dart';
-import 'byteStream.dart';
 
 class ActionRecord extends Record {
   static const String recordType = "urn:nfc:wkt:act";

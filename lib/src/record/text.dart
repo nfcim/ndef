@@ -3,7 +3,7 @@ import 'dart:typed_data';
 
 import 'package:utf/utf.dart' as utf;
 
-import 'record.dart';
+import '../record.dart';
 
 class TextRecord extends Record {
   static const String recordType = "urn:nfc:wkt:T";

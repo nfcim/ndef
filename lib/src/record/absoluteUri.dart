@@ -1,4 +1,4 @@
-import 'record.dart';
+import '../record.dart';
 
 class absoluteUriRecord extends Record {
   static const String recordType = "absoluteURI";
