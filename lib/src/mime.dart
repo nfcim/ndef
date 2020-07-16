@@ -1,15 +1,17 @@
+import 'dart:typed_data';
+
 import 'record.dart';
 
 class MIMERecord extends Record {
   static const String recordType = "media";
 
   String contentType;
-  List<int> payload;
+  Uint8List payload;
 
-  MIMERecord(String contentType, List<int> payload) {
+  MIMERecord(String contentType, Uint8List payload) {
     this.contentType = contentType;
     this.payload = payload;
   }
 
-  static dynamic decode_payload(List<int> PAYLOAD) {}
+  static MIMERecord decodePayload(Uint8List PAYLOAD) {}
 }

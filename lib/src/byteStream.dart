@@ -1,8 +1,11 @@
+import 'dart:ffi';
+import 'dart:typed_data';
+
 class ByteStream {
-  List<int> _data;
+  Uint8List _data;
   int _current = 0;
 
-  ByteStream(List<int> data) {
+  ByteStream(Uint8List data) {
     _data = data;
   }
 
@@ -14,14 +17,14 @@ class ByteStream {
     return _data[_current++];
   }
 
-  List<int> readBytes(int number) {
-    List<int> d = _data.sublist(_current, _current + number);
+  Uint8List readBytes(int number) {
+    Uint8List d = _data.sublist(_current, _current + number);
     _current += number;
     return d;
   }
 
   int readInt(int number) {
-    List<int> d = readBytes(number);
+    Uint8List d = readBytes(number);
     int value = 0;
     for (var n = 0; n < d.length; n++) {
       value <<= 16;
@@ -31,9 +34,11 @@ class ByteStream {
   }
 
   int readString(int number) {
-    List<int> d = readBytes(number);
+    Uint8List d = readBytes(number);
     String str = "";
-    for (var n = 0; n < d.length; n++) {}
+    for (var n = 0; n < d.length; n++) {
+      // TODO: seems not finished?
+    }
   }
 
   static String int2hex(int value) {
@@ -47,8 +52,8 @@ class ByteStream {
     return str1 + str0;
   }
 
-  static List<int> int2List(int value, int length) {
-    List<int> list = new List<int>();
+  static Uint8List int2List(int value, int length) {
+    Uint8List list = new Uint8List(0);
     for (int i = 0; i < length; i++) {
       list.add(value % 256);
       value ~/= 256;
@@ -57,7 +62,7 @@ class ByteStream {
     return list;
   }
 
-  static List<int> decodeHexString(String hex) {
+  static Uint8List decodeHexString(String hex) {
     hex = hex.splitMapJoin(" ", onMatch: (Match match) {
       return "";
     });

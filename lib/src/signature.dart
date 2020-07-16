@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'record.dart';
 import 'byteStream.dart';
@@ -30,16 +31,16 @@ class SignatureRecord extends Record {
       signatureURI,
       certificateFormat,
       certificateURI;
-  List<List<int>> certificateStore;
-  List<int> signature;
+  List<Uint8List> certificateStore;
+  Uint8List signature;
 
   SignatureRecord(
       String signatureType,
       String hashType,
-      List<int> signature,
+      Uint8List signature,
       String signatureURI,
       String certificateFormat,
-      List<List<int>> certificateStore,
+      List<Uint8List> certificateStore,
       String certificateURI) {
     this.signatureType = signatureType;
     this.hashType = hashType;
@@ -50,8 +51,8 @@ class SignatureRecord extends Record {
     this.certificateURI = certificateURI;
   }
 
-  static dynamic decode_payload(List<int> PAYLOAD) {
-    ByteStream stream = new ByteStream(PAYLOAD);
+  static SignatureRecord decodePayload(Uint8List payload) {
+    ByteStream stream = new ByteStream(payload);
 
     int version = stream.readByte(); //PAYLOAD[0];
     int signatureFlag = stream.readByte(); //PAYLOAD[1];
@@ -69,7 +70,7 @@ class SignatureRecord extends Record {
     String hashType = hashTypeMap[hashTypeIndex];
     int signatureURILength = stream.readInt(2);
 
-    List<int> signature;
+    Uint8List signature;
     String signatureURI;
 
     if (signatureURIPresent == 1)
@@ -83,10 +84,10 @@ class SignatureRecord extends Record {
     String certificateFormat = certificateFormatMap[certificateFlag & 0x70];
     int certificateNumberOfCertificates = certificateFlag & 0x0F;
 
-    List<List<int>> certificateStore;
+    List<Uint8List> certificateStore;
     for (int i = 0; i < certificateNumberOfCertificates; i++) {
       int length = stream.readInt(2);
-      List<int> cert = stream.readBytes(length);
+      Uint8List cert = stream.readBytes(length);
       certificateStore.add(cert);
     }
 

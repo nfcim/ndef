@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:utf/utf.dart' as utf;
 
 import 'record.dart';
@@ -15,9 +17,9 @@ class TextRecord extends Record {
   }
 
   get payload {
-    List<int> PAYLOAD;
-    List<int> languagePayload = utf8.encode(language);
-    List<int> textPayload;
+    Uint8List PAYLOAD;
+    Uint8List languagePayload = utf8.encode(language);
+    Uint8List textPayload;
     int encodingFlag;
     if (encoding == "UTF-8") {
       textPayload = utf8.encode(text);
@@ -32,11 +34,11 @@ class TextRecord extends Record {
     return PAYLOAD;
   }
 
-  static dynamic decode_payload(List<int> PAYLOAD) {
-    int FLAG = PAYLOAD[0];
+  static TextRecord decodePayload(Uint8List payload) {
+    int FLAG = payload[0];
 
     assert(FLAG & 0x3F != 0, "language code length can not be zero");
-    assert(FLAG & 0x3F < PAYLOAD.length,
+    assert(FLAG & 0x3F < payload.length,
         "language code length exceeds payload length");
 
     String encoding;
@@ -46,8 +48,8 @@ class TextRecord extends Record {
       encoding = "UTF-8";
     }
 
-    List<int> languagePayload = PAYLOAD.sublist(1, FLAG & 0x3F);
-    List<int> textPayload = PAYLOAD.sublist(1 + FLAG & 0x3F);
+    Uint8List languagePayload = payload.sublist(1, FLAG & 0x3F);
+    Uint8List textPayload = payload.sublist(1 + FLAG & 0x3F);
     String language, text;
     language = utf8.decode(languagePayload);
     if (encoding == "UTF-8") {

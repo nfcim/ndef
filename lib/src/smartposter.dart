@@ -1,6 +1,9 @@
 import 'dart:convert';
+import 'dart:math';
+import 'dart:typed_data';
 
-import 'message.dart';
+import 'package:ndef/ndef.dart';
+
 import 'record.dart';
 import 'text.dart';
 import 'uri.dart';
@@ -16,8 +19,8 @@ class ActionRecord extends Record {
 
   ActionRecord(this.action);
 
-  static dynamic decode_payload(List<int> PAYLOAD) {
-    int actionIndex = PAYLOAD[0];
+  static ActionRecord decodePayload(Uint8List payload) {
+    int actionIndex = payload[0];
     assert(actionIndex < actionMap.length && actionIndex >= 0,
         'Action code must be in [0,3)');
 
@@ -37,8 +40,8 @@ class SizeRecord extends Record {
     return ByteStream.int2List(size, 4);
   }
 
-  static dynamic decode_payload(List<int> PAYLOAD) {
-    ByteStream stream = new ByteStream(PAYLOAD);
+  static SizeRecord decodePayload(Uint8List payload) {
+    ByteStream stream = new ByteStream(payload);
     return SizeRecord(stream.readInt(4));
   }
 }
@@ -54,8 +57,8 @@ class TypeRecord extends Record {
     return utf8.encode(type);
   }
 
-  static dynamic decode_payload(List<int> PAYLOAD) {
-    return TypeRecord(utf8.decode(PAYLOAD));
+  static TypeRecord decodePayload(Uint8List payload) {
+    return TypeRecord(utf8.decode(payload));
   }
 }
 
@@ -71,17 +74,17 @@ class SmartposterRecord extends Record {
 
   //TODO:encode
 
-  static dynamic decode_payload(List<int> PAYLOAD) {
-    Message message = new Message(PAYLOAD);
+  static SmartposterRecord decodePayload(Uint8List payload) {
     SmartposterRecord spRecord;
-    for (int i = 0; i < message.record_list.length; i++) {
-      if (message.record_list[i] is TextRecord) {
-        spRecord.titleRecords.add(message.record_list[i]);
-      } else if (message.record_list[i] is URIRecord) {
-        spRecord.uriRecords.add(message.record_list[i]);
-      } else if (message.record_list[i] is MIMERecord) {
-        spRecord.iconRecords.add(message.record_list[i]);
+    decodeNdefMessage(payload).forEach((e) {
+      if (e is TextRecord) {
+        spRecord.titleRecords.add(e);
+      } else if (e is URIRecord) {
+        spRecord.uriRecords.add(e);
+      } else if (e is MIMERecord) {
+        spRecord.iconRecords.add(e);
       }
-    }
+    });
+    return spRecord;
   }
 }

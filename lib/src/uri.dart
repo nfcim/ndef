@@ -1,7 +1,8 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'record.dart';
-import 'byteStream.dart';
+
 
 class URIRecord extends Record {
   static const String recordType = "urn:nfc:wkt:U";
@@ -55,8 +56,10 @@ class URIRecord extends Record {
     return this.uriPrefix + this.uriData;
   }
 
+  static const String type = "U";
+
   get payload {
-    List<int> PAYLOAD;
+    Uint8List PAYLOAD;
     for (int i = 0; i < uriPrefixMap.length; i++) {
       if (uriPrefixMap[i] == uriPrefix) {
         PAYLOAD = [i] + utf8.encode(uriData);
@@ -65,7 +68,7 @@ class URIRecord extends Record {
     }
   }
 
-  static dynamic decode_payload(List<int> PAYLOAD) {
+  static URIRecord decodePayload(Uint8List PAYLOAD) {
     int uriIdentifier = PAYLOAD[0];
     String uriPrefix = "";
     if (uriIdentifier < uriPrefixMap.length) {
@@ -79,10 +82,9 @@ class URIRecord extends Record {
 
     return URIRecord(uriPrefix, uriData);
   }
+
+  @override Uint8List encode() {
+    return super.encodeRaw(URIRecord.type, this.payload);
+  }
 }
 
-void main() {
-  var res =
-      URIRecord.decode_payload(ByteStream.decodeHexString('066e66637079'));
-  print(res.uri);
-}
