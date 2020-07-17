@@ -33,15 +33,16 @@ class ByteStream {
     return value;
   }
 
-  int readString(int number) {
+  String readHexString(int number) {
     Uint8List d = readBytes(number);
-    String str = "";
+    String hex = "";
     for (var n = 0; n < d.length; n++) {
-      // TODO: seems not finished?
+      hex+=int2HexString(d[n]);
     }
+    return hex;
   }
 
-  static String int2hex(int value) {
+  static String int2HexString(int value) {
     assert(value >= 0 && value < 256,
         "the number to decode into Hex String must be in the range of [0,256)");
     int num1 = value ~/ 16;
@@ -62,7 +63,7 @@ class ByteStream {
     return list;
   }
 
-  static Uint8List decodeHexString(String hex) {
+  static Uint8List hexString2List(String hex) {
     hex = hex.splitMapJoin(" ", onMatch: (Match match) {
       return "";
     });

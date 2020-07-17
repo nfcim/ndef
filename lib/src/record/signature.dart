@@ -7,6 +7,15 @@ import '../byteStream.dart';
 class SignatureRecord extends Record {
   static const String recordType = "urn:nfc:wkt:Sig";
 
+  static const String decodedType = "Sig";
+
+  @override
+  String get _decodedType {
+    return SignatureRecord.decodedType;
+  }
+
+  static int version = 2;
+
   static List<String> signatureTypeMap = [
     "",
     "RSASSA-PSS-1024",
@@ -26,13 +35,11 @@ class SignatureRecord extends Record {
 
   static List<String> certificateFormatMap = ["X.509", "M2M"];
 
-  String signatureType,
-      hashType,
-      signatureURI,
-      certificateFormat,
+  String signatureURI,
       certificateURI;
   List<Uint8List> certificateStore;
   Uint8List signature;
+  int signatureTypeIndex,hashTypeIndex,certificateFormatIndex;
 
   SignatureRecord(
       String signatureType,
@@ -51,27 +58,96 @@ class SignatureRecord extends Record {
     this.certificateURI = certificateURI;
   }
 
-  static SignatureRecord decodePayload(Uint8List payload) {
+  get signatureType{
+    return signatureTypeMap[signatureTypeIndex];
+  }
+
+  set signatureType(String string){
+    for(int i=0;i<signatureTypeMap.length;i++){
+      if(string==signatureTypeMap[i]){
+        signatureTypeIndex=i;
+        return;
+      }
+    }
+    throw "No signature type called $string";
+  }
+
+  get hashType {
+    return hashTypeMap[hashTypeIndex];
+  }
+
+  set hashType(String string){
+    for(int i=0;i<hashTypeMap.length;i++){
+      if(string!="" && string==hashTypeMap[i]){
+        hashTypeIndex=i;
+        return;
+      }
+    }
+    throw "No hash type called $string";
+  }
+
+  get certificateFormat {
+    return certificateFormatMap[certificateFormatIndex];
+  }
+
+  set certificateFormat(String string){
+    for(int i=0;i<certificateFormatMap.length;i++){
+      if(string==certificateFormatMap[i]){
+        certificateFormatIndex=i;
+        return;
+      }
+    }
+    throw "No certificate format called $string";
+  }
+
+  get payload {
+    Uint8List payload;
+
+    //Version Field pass
+    //Signature Field
+    int signatureURIPresent=(signatureURI==null)? 0:1;
+    int signatureFlag = (signatureURIPresent<<7) | signatureTypeIndex;
+
+    Uint8List signatureURIBytes=utf8.encode((signatureURI==null?signature:signatureURI));
+    Uint8List signatureLenthBytes=ByteStream.int2List(signatureURIBytes.length, 2);
+    Uint8List signatureBytes=[signatureFlag,hashTypeIndex]+signatureLenthBytes+signatureURIBytes;
+
+    //Certificate Field
+    int certificateURIPresent=(certificateURI==null)? 0:1;
+    int certificateFlag=(certificateURIPresent<<7) | (certificateFormatIndex<<4) | certificateStore.length;
+    Uint8List certificateStoreBytes=new Uint8List(0);
+    for(int i=0;i<certificateStore.length;i++){
+      certificateStoreBytes.addAll(ByteStream.int2List(certificateStore[i].length, 2));
+      certificateStoreBytes.addAll(certificateStore[i]);
+    }
+    Uint8List certificateURIBytes=new Uint8List(0);
+    if(certificateURI!=null){
+      certificateURIBytes.addAll(ByteStream.int2List(certificateURI.length, 2));
+      certificateURIBytes.addAll(utf8.encode(certificateURI));
+    }
+    Uint8List certificateBytes=[certificateFlag]+certificateStoreBytes+certificateURIBytes;
+
+    payload=[version]+signatureBytes+certificateBytes;
+    return payload;
+  }
+
+  set payload(Uint8List payload) {
     ByteStream stream = new ByteStream(payload);
 
     int version = stream.readByte(); //PAYLOAD[0];
     int signatureFlag = stream.readByte(); //PAYLOAD[1];
-    int hashTypeIndex = stream.readByte(); //PAYLOAD[2];
+    hashTypeIndex = stream.readByte(); //PAYLOAD[2];
 
     //Version Field
     if (version != 2) {
       //TODO:find the document of smartposter 2.0
+      throw "Signature Record is only implemented for smartposter 2.0";
     }
 
     //Signature Field
-    int signatureURIPresent = signatureFlag & 0x80;
-    int signatureTypeIndex = signatureFlag & 0x7F;
-    String signatureType = signatureTypeMap[signatureTypeIndex];
-    String hashType = hashTypeMap[hashTypeIndex];
+    int signatureURIPresent = (signatureFlag & 0x80)>>7;
+    signatureTypeIndex = signatureFlag & 0x7F;
     int signatureURILength = stream.readInt(2);
-
-    Uint8List signature;
-    String signatureURI;
 
     if (signatureURIPresent == 1)
       signatureURI = utf8.decode(stream.readBytes(signatureURILength));
@@ -80,24 +156,18 @@ class SignatureRecord extends Record {
 
     //Certificate Field
     int certificateFlag = stream.readByte();
-    int certificateURIPresent = certificateFlag & 0x80;
-    String certificateFormat = certificateFormatMap[certificateFlag & 0x70];
+    int certificateURIPresent = (certificateFlag & 0x80)>>7;
+    certificateFormatIndex=(certificateFlag & 0x70)>>4;
     int certificateNumberOfCertificates = certificateFlag & 0x0F;
 
-    List<Uint8List> certificateStore;
     for (int i = 0; i < certificateNumberOfCertificates; i++) {
-      int length = stream.readInt(2);
-      Uint8List cert = stream.readBytes(length);
-      certificateStore.add(cert);
+      int len = stream.readInt(2);
+      certificateStore.add(stream.readBytes(len));
     }
 
-    String certificateURI;
     if (certificateURIPresent == 1) {
       int length = stream.readInt(2);
       certificateURI = utf8.decode(stream.readBytes(length));
     }
-
-    return SignatureRecord(signatureType, hashType, signature, signatureURI,
-        certificateFormat, certificateStore, certificateURI);
   }
 }
