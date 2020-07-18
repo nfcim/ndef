@@ -5,7 +5,7 @@ import '../record.dart';
 class MIMERecord extends Record {
   static const String recordType = "media";
 
-  static const String docodedType = "media";
+  static const String decodedType = "media";
 
   @override
   String get _decodedType {
