@@ -116,15 +116,15 @@ class Record {
         record = TextRecord();
       } else if (decodedType == "Sp") {
         // Smart Poster
-        record = SmartposterRecord.decodePayload(payload);
+        record = SmartposterRecord();
       } else if (decodedType == "Sig") {
         // Signature
-        record = SignatureRecord.decodePayload(payload);
+        record = SignatureRecord();
       }
     } else if (tnf == TypeNameFormat.media) {
-      record = MIMERecord.decodePayload(payload);
+      record = MIMERecord();
     } else if (tnf == TypeNameFormat.absoluteURI) {
-      record = new absoluteUriRecord(decodedType); // FIXME: seems wrong
+      record = AbsoluteUriRecord(); // FIXME: seems wrong
     } else {
       // unknown
       record = new Record();
@@ -153,6 +153,7 @@ class Record {
       idLength = stream.readByte();
     }
 
+    // regulations
     if ([0, 5, 6].contains(flags.TNF)) {
       assert(typeLength == 0, "TYPE_LENTH must be 0 when TNF is 0,5,6");
     }

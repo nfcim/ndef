@@ -1,9 +1,26 @@
+import 'dart:typed_data';
+
 import '../record.dart';
 
-class absoluteUriRecord extends Record {
+class AbsoluteUriRecord extends Record {
   static const String recordType = "absoluteURI";
 
   String uri;
+  Uint8List _payload;
 
-  absoluteUriRecord(this.uri);
+  AbsoluteUriRecord({this.uri});
+
+  get _decodedType {
+    return uri;
+  }
+
+  //absoluteURI record has no payload
+  get payload {
+    return null;
+  }
+
+  set payload(Uint8List payload) {
+    _payload=payload;
+  }
+
 }

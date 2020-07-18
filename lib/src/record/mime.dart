@@ -5,13 +5,26 @@ import '../record.dart';
 class MIMERecord extends Record {
   static const String recordType = "media";
 
-  String contentType;
-  Uint8List payload;
+  static const String docodedType = "media";
 
-  MIMERecord(String contentType, Uint8List payload) {
+  @override
+  String get _decodedType {
+    return MIMERecord.decodedType;
+  }
+
+  String contentType;
+  Uint8List _payload;
+
+  MIMERecord({String contentType, Uint8List payload}) {
     this.contentType = contentType;
     this.payload = payload;
   }
 
-  static MIMERecord decodePayload(Uint8List PAYLOAD) {}
+  get payload{
+    return _payload;
+  }
+
+  set payload(Uint8List payload) {
+    _payload=payload;
+  }
 }

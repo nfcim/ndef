@@ -22,9 +22,22 @@ class TextRecord extends Record {
   }
 
   TextEncoding encoding;
-  String language, text;
+  String _language, text;
 
-  TextRecord({this.encoding, this.language, this.text});
+  TextRecord({TextEncoding encoding = TextEncoding.UTF8, String language, String text}){
+    this.encoding=encoding;
+    this.language=language;
+    this.text=text;
+  }
+
+  get language {
+    return _language;
+  }
+
+  set language(String language) {
+    assert(0<language.length && language.length<64, "the length of language code must be in [1,64), got ${language.length}");
+    this._language=language;
+  }
 
   get payload {
     Uint8List payload;

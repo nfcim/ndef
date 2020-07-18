@@ -41,14 +41,14 @@ class SignatureRecord extends Record {
   Uint8List signature;
   int signatureTypeIndex,hashTypeIndex,certificateFormatIndex;
 
-  SignatureRecord(
+  SignatureRecord({
       String signatureType,
       String hashType,
       Uint8List signature,
       String signatureURI,
       String certificateFormat,
       List<Uint8List> certificateStore,
-      String certificateURI) {
+      String certificateURI }) {
     this.signatureType = signatureType;
     this.hashType = hashType;
     this.signature = signature;
@@ -62,42 +62,42 @@ class SignatureRecord extends Record {
     return signatureTypeMap[signatureTypeIndex];
   }
 
-  set signatureType(String string){
+  set signatureType(String signatureType){
     for(int i=0;i<signatureTypeMap.length;i++){
-      if(string==signatureTypeMap[i]){
+      if(signatureType==signatureTypeMap[i]){
         signatureTypeIndex=i;
         return;
       }
     }
-    throw "No signature type called $string";
+    throw "No signature type called $signatureType";
   }
 
   get hashType {
     return hashTypeMap[hashTypeIndex];
   }
 
-  set hashType(String string){
+  set hashType(String hashType){
     for(int i=0;i<hashTypeMap.length;i++){
-      if(string!="" && string==hashTypeMap[i]){
+      if(hashType!="" && hashType==hashTypeMap[i]){
         hashTypeIndex=i;
         return;
       }
     }
-    throw "No hash type called $string";
+    throw "No hash type called $hashType";
   }
 
   get certificateFormat {
     return certificateFormatMap[certificateFormatIndex];
   }
 
-  set certificateFormat(String string){
+  set certificateFormat(String certificateFormat){
     for(int i=0;i<certificateFormatMap.length;i++){
-      if(string==certificateFormatMap[i]){
+      if(certificateFormat==certificateFormatMap[i]){
         certificateFormatIndex=i;
         return;
       }
     }
-    throw "No certificate format called $string";
+    throw "No certificate format called $certificateFormat";
   }
 
   get payload {
