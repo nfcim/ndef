@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:ndef/ndef.dart';
+import 'package:utf/utf.dart';
 
 import '../record.dart';
 import '../byteStream.dart';
@@ -9,60 +10,97 @@ import 'text.dart';
 import 'uri.dart';
 import 'mime.dart';
 
+enum Action{
+  exec,
+  save,
+  edit
+}
+
 class ActionRecord extends Record {
   static const String recordType = "urn:nfc:wkt:act";
 
-  static List<String> actionMap = ['exec', 'save', 'edit'];
+  static const String decodedType = "act";
 
-  String action;
+  @override
+  String get _decodedType {
+    return TextRecord.decodedType;
+  }
 
-  ActionRecord(this.action);
+  Action action;
 
-  static ActionRecord decodePayload(Uint8List payload) {
+  ActionRecord({this.action});
+
+  get payload {
+    Uint8List payload=new Uint8List(0);
+    payload.add(Action.values.indexOf(action));
+    return payload;
+  }
+
+  set payload(Uint8List payload) {
     int actionIndex = payload[0];
-    assert(actionIndex < actionMap.length && actionIndex >= 0,
-        'Action code must be in [0,3)');
+    assert(actionIndex < Action.values.length && actionIndex >= 0,
+        'Action code must be in [0,${Action.values.length})');
 
-    String action = actionMap[actionIndex];
-    return ActionRecord(action);
+    action = Action.values[actionIndex];
   }
 }
 
 class SizeRecord extends Record {
   static const String recordType = "urn:nfc:wkt:s";
 
+  static const String decodedType = "s";
+
+  @override
+  String get _decodedType {
+    return TextRecord.decodedType;
+  }
+
   int size;
 
-  SizeRecord(this.size);
+  SizeRecord({this.size});
 
-  get PAYLOAD {
+  get payload {
     return ByteStream.int2List(size, 4);
   }
 
-  static SizeRecord decodePayload(Uint8List payload) {
+  set payload(Uint8List payload) {
     ByteStream stream = new ByteStream(payload);
-    return SizeRecord(stream.readInt(4));
+    size=stream.readInt(4);
   }
 }
 
 class TypeRecord extends Record {
   static const String recordType = "urn:nfc:wkt:t";
 
-  String decodedType;
+  static const String decodedType = "t";
 
-  TypeRecord(this.decodedType);
-
-  get payload {
-    return utf8.encode(decodedType);
+  @override
+  String get _decodedType {
+    return TextRecord.decodedType;
   }
 
-  static TypeRecord decodePayload(Uint8List payload) {
-    return TypeRecord(utf8.decode(payload));
+  String typeInfo;
+
+  TypeRecord({this.typeInfo});
+
+  get payload {
+    return utf8.encode(typeInfo);
+  }
+
+  set payload(Uint8List payload) {
+    typeInfo=utf8.decode(payload);
   }
 }
 
 class SmartposterRecord extends Record {
   static const String recordType = "urn:nfc:wkt:Sp";
+
+  static const String decodedType = "Sp";
+
+  @override
+  String get _decodedType {
+    return TextRecord.decodedType;
+  }
 
   List<dynamic> titleRecords,
       uriRecords,
@@ -71,19 +109,67 @@ class SmartposterRecord extends Record {
       sizeRecords,
       typeRecords;
 
-  //TODO:encode
+  static Record doDecode(TypeNameFormat tnf, Uint8List type, Uint8List payload,
+      {Uint8List id}) {
 
-  static SmartposterRecord decodePayload(Uint8List payload) {
-    SmartposterRecord spRecord;
-    decodeRawNdefMessage(payload).forEach((e) {
+    Record record;
+    var decodedType = utf8.decode(type);
+
+    if (tnf == TypeNameFormat.nfcWellKnown) {
+      // urn:nfc:wkt
+      if (decodedType == URIRecord.decodedType) {
+        // URI
+        record = URIRecord();
+      } else if (decodedType == TextRecord.decodedType) {
+        // Text
+        record = TextRecord();
+      } else if (decodeType == SizeRecord.decodedType) {
+        // Size (local)
+        record = SizeRecord();
+      } else if (decodedType == TypeRecord.decodedType) {
+        // Type (local)
+        record = TypeRecord();
+      } else if (decodedType == ActionRecord.decodedType) {
+        // Action (local)
+        record = ActionRecord();
+      }
+    } else if (tnf == TypeNameFormat.media) {
+      record = MIMERecord();
+    } else if (tnf == TypeNameFormat.absoluteURI) {
+      record = AbsoluteUriRecord(); // FIXME: seems wrong
+    } else {
+      // unknown
+      record = new Record();
+    }
+
+    record.id = id;
+    record.type = type;
+    // use setter for implicit decoding
+    record.payload = payload;
+    return record;
+  }    
+
+  get payload {
+    var allRecords=titleRecords+uriRecords+actionRecords+iconRecords+sizeRecords+typeRecords;
+    return encodeNdefMessage(allRecords);
+  }
+
+  set payload(Uint8List payload) {
+    decodeRawNdefMessage(payload,doDecodeStrategy:SmartposterRecord.doDecode).forEach((e) {
       if (e is TextRecord) {
-        spRecord.titleRecords.add(e);
+        titleRecords.add(e);
       } else if (e is URIRecord) {
-        spRecord.uriRecords.add(e);
+        uriRecords.add(e);
       } else if (e is MIMERecord) {
-        spRecord.iconRecords.add(e);
+        iconRecords.add(e);
+      } else if (e is ActionRecord) {
+        actionRecords.add(e);
+      } else if (e is SizeRecord) {
+        sizeRecords.add(e);
+      } else if (e is TypeRecord) {
+        typeRecords.add(e);
       }
     });
-    return spRecord;
+    assert(uriRecords.length==1);
   }
 }

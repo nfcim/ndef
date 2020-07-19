@@ -17,12 +17,12 @@ import 'src/record.dart';
 import 'src/byteStream.dart';
 
 /// decode raw NDEF messages from byte array
-List<Record> decodeRawNdefMessage(Uint8List data) {
+List<Record> decodeRawNdefMessage(Uint8List data,{var doDecodeStrategy=Record.doDecode}) {
   
   var records = new List<Record>();
   var stream = new ByteStream(data);
   while (!stream.isEnd()) {
-    records.add(Record.decodeStream(stream));
+    records.add(Record.decodeStream(stream,doDecodeStrategy));
   }
 
   return records;

@@ -114,10 +114,10 @@ class Record {
       } else if (decodedType == TextRecord.decodedType) {
         // Text
         record = TextRecord();
-      } else if (decodedType == "Sp") {
+      } else if (decodedType == SmartposterRecord.decodedType) {
         // Smart Poster
         record = SmartposterRecord();
-      } else if (decodedType == "Sig") {
+      } else if (decodedType == SignatureRecord.decodedType) {
         // Signature
         record = SignatureRecord();
       }
@@ -137,7 +137,7 @@ class Record {
     return record;
   }
 
-  static Record decodeStream(ByteStream stream) {
+  static Record decodeStream(ByteStream stream,var doDecodeStrategy) {
     var flags = new RecordFlags(data: stream.readByte());
 
     num typeLength = stream.readByte();
@@ -175,7 +175,7 @@ class Record {
     var payload = stream.readBytes(payloadLength);
     var typeNameFormat = TypeNameFormat.values[flags.TNF];
 
-    var decoded = doDecode(typeNameFormat, type, payload, id: id);
+    var decoded = doDecodeStrategy(typeNameFormat, type, payload, id: id);
     decoded.flags = flags;
     return decoded;
   }
