@@ -5,7 +5,7 @@ class ByteStream {
   Uint8List _data;
   int _current = 0;
 
-  get unreadBytesNum{
+  get unreadLength{
     return _data.length-_current;
   }
 
@@ -54,11 +54,11 @@ class ByteStream {
   }
 
   void checkBytesAvailable(int number){
-    assert(number<=unreadBytesNum, "there is no enough data in stream");
+    assert(number<=unreadLength, "there is no enough data in stream");
   }
 
   void checkEmpty(){
-    assert(unreadBytesNum==0,"stream has $unreadBytesNum bytes after decode");
+    assert(unreadLength==0,"stream has $unreadLength bytes after decode");
   }
 
   static String int2HexString(int value) {

@@ -70,7 +70,7 @@ class AlternativeCarrierRecord extends Record {
     }
 
     assert(stream.isEnd() == true,
-        "payload has ${stream.unreadBytesNum} bytes after decode");
+        "payload has ${stream.unreadLength} bytes after decode");
   }
 }
 
@@ -127,6 +127,7 @@ class ErrorRecord extends Record{
   ];
 
   int errorReason;
+  Uint8List errorData;
 
   @override
   String get _decodedType {
@@ -134,18 +135,33 @@ class ErrorRecord extends Record{
   }
 
   get payload {
-
+    Uint8List payload;
+    assert(errorReason!=0,"error reason must not be 0");
+    payload=[errorReason]+errorData;
+    return payload;
   }
 
   set payload(Uint8List payload){
     ByteStream stream = new ByteStream(payload);
     errorReason=stream.readByte();
     assert(errorReason!=0,"error reason must not be 0");
-    //not finished
+    
+    if(errorReason==1){
+      errorData=stream.readBytes(1);
+    }else if(errorReason==2){
+      errorData=stream.readBytes(4);
+    }else if(errorReason==3){
+      errorData=stream.readBytes(1);
+    }else{
+      errorData=stream.readBytes(stream.unreadLength);
+    }
+    stream.checkEmpty();
   }
 }
 
 class HandoverRecord extends Record {
+
+
   set payload(Uint8List payload) {}
 }
 
@@ -159,9 +175,13 @@ class HandoverRequestRecord extends HandoverRecord {
     return HandoverRequestRecord.decodedType;
   }
 
-  get payload {}
+  get payload {
+    
+  }
 
-  set payload(Uint8List payload) {}
+  set payload(Uint8List payload) {
+
+  }
 }
 
 class HandoverSelectRecord extends HandoverRecord {}
