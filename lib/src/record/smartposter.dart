@@ -23,7 +23,7 @@ class ActionRecord extends Record {
 
   @override
   String get _decodedType {
-    return TextRecord.decodedType;
+    return ActionRecord.decodedType;
   }
 
   Action action;
@@ -52,7 +52,7 @@ class SizeRecord extends Record {
 
   @override
   String get _decodedType {
-    return TextRecord.decodedType;
+    return SizeRecord.decodedType;
   }
 
   int size;
@@ -76,7 +76,7 @@ class TypeRecord extends Record {
 
   @override
   String get _decodedType {
-    return TextRecord.decodedType;
+    return TypeRecord.decodedType;
   }
 
   String typeInfo;
@@ -99,7 +99,7 @@ class SmartposterRecord extends Record {
 
   @override
   String get _decodedType {
-    return TextRecord.decodedType;
+    return SmartposterRecord.decodedType;
   }
 
   List<dynamic> titleRecords,
@@ -123,7 +123,7 @@ class SmartposterRecord extends Record {
       } else if (decodedType == TextRecord.decodedType) {
         // Text
         record = TextRecord();
-      } else if (decodeType == SizeRecord.decodedType) {
+      } else if (decodedType == SizeRecord.decodedType) {
         // Size (local)
         record = SizeRecord();
       } else if (decodedType == TypeRecord.decodedType) {
