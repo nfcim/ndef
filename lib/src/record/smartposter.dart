@@ -82,8 +82,7 @@ class SizeRecord extends Record {
   }
 
   set payload(Uint8List payload) {
-    ByteStream stream = new ByteStream(payload);
-    size = stream.readInt(4);
+    size = ByteStream.list2int(payload.sublist(0,4));
   }
 }
 

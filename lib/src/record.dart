@@ -113,6 +113,7 @@ class Record {
 
   Record();
 
+  /// construct an instance of Record
   static Record typeFactory(TypeNameFormat tnf, String decodedType) {
     Record record;
     if (tnf == TypeNameFormat.nfcWellKnown) {
@@ -145,14 +146,15 @@ class Record {
     return record;
   }
 
+  /// construct a record and decode record data
   static Record doDecode(TypeNameFormat tnf, Uint8List type, Uint8List payload,
       {Uint8List id, var typeFactory = Record.typeFactory}) {
     Record record = typeFactory(tnf, utf8.decode(type));
     if(payload.length<record._minPayloadLength){
-      throw "payload length must >= ${record._minPayloadLength}";
+      throw "payload length must be >= ${record._minPayloadLength}";
     }
     if(record._maxPayloadLength!=null && payload.length<record._maxPayloadLength){
-      throw "payload length must <= ${record._maxPayloadLength}";
+      throw "payload length must be <= ${record._maxPayloadLength}";
     }
     record.id = id;
     record.type = type;
@@ -161,6 +163,7 @@ class Record {
     return record;
   }
 
+  /// decode data from part of ByteStream
   static Record decodeStream(ByteStream stream, var typeFactory) {
     var flags = new RecordFlags(data: stream.readByte());
 
