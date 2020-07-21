@@ -20,7 +20,6 @@ class AbsoluteUriRecord extends Record {
   }
 
   set payload(Uint8List payload) {
-    _payload=payload;
+    _payload = payload;
   }
-
 }

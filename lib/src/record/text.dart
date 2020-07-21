@@ -5,11 +5,7 @@ import 'package:utf/utf.dart' as utf;
 
 import '../record.dart';
 
-
-enum TextEncoding {
-  UTF8,
-  UTF16
-}
+enum TextEncoding { UTF8, UTF16 }
 
 class TextRecord extends Record {
   static const String recordType = "urn:nfc:wkt:T";
@@ -24,10 +20,13 @@ class TextRecord extends Record {
   TextEncoding encoding;
   String _language, text;
 
-  TextRecord({TextEncoding encoding = TextEncoding.UTF8, String language, String text}){
-    this.encoding=encoding;
-    this.language=language;
-    this.text=text;
+  TextRecord(
+      {TextEncoding encoding = TextEncoding.UTF8,
+      String language,
+      String text}) {
+    this.encoding = encoding;
+    this.language = language;
+    this.text = text;
   }
 
   get language {
@@ -35,8 +34,9 @@ class TextRecord extends Record {
   }
 
   set language(String language) {
-    assert(0<language.length && language.length<64, "the length of language code must be in [1,64), got ${language.length}");
-    this._language=language;
+    assert(0 < language.length && language.length < 64,
+        "the length of language code must be in [1,64), got ${language.length}");
+    this._language = language;
   }
 
   Uint8List get payload {
@@ -80,5 +80,4 @@ class TextRecord extends Record {
       text = utf.decodeUtf16(textPayload);
     }
   }
-
 }

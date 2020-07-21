@@ -17,19 +17,21 @@ import 'src/record.dart';
 import 'src/byteStream.dart';
 
 /// decode raw NDEF messages from byte array
-List<Record> decodeRawNdefMessage(Uint8List data,{var typeFactory=Record.typeFactory}) {
-  
+List<Record> decodeRawNdefMessage(Uint8List data,
+    {var typeFactory = Record.typeFactory}) {
   var records = new List<Record>();
   var stream = new ByteStream(data);
   while (!stream.isEnd()) {
-    records.add(Record.decodeStream(stream,typeFactory));
+    records.add(Record.decodeStream(stream, typeFactory));
   }
 
   return records;
 }
 
 /// decode partially parsed NDEF record
-Record decodePartialNdefMessage(TypeNameFormat tnf, Uint8List type, Uint8List payload, {Uint8List id}) {
+Record decodePartialNdefMessage(
+    TypeNameFormat tnf, Uint8List type, Uint8List payload,
+    {Uint8List id}) {
   var decoded = Record.doDecode(tnf, type, payload, id: id);
   // add default flags
   var flags = new RecordFlags();

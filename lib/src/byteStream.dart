@@ -5,11 +5,11 @@ class ByteStream {
   Uint8List _data;
   int _current = 0;
 
-  get unreadLength{
-    return _data.length-_current;
+  get unreadLength {
+    return _data.length - _current;
   }
 
-  get length{
+  get length {
     return _data.length;
   }
 
@@ -34,7 +34,7 @@ class ByteStream {
   }
 
   int readInt(int number) {
-    assert(number<=8);
+    assert(number <= 8);
     Uint8List d = readBytes(number);
     int value = 0;
     for (var n = 0; n < d.length; n++) {
@@ -44,7 +44,7 @@ class ByteStream {
     return value;
   }
 
-  Uint8List readAll(){
+  Uint8List readAll() {
     return readBytes(unreadLength);
   }
 
@@ -53,12 +53,12 @@ class ByteStream {
     return list2hexString(list);
   }
 
-  void checkBytesAvailable(int number){
-    assert(number<=unreadLength, "there is no enough data in stream");
+  void checkBytesAvailable(int number) {
+    assert(number <= unreadLength, "there is no enough data in stream");
   }
 
-  void checkEmpty(){
-    assert(unreadLength==0,"stream has $unreadLength bytes after decode");
+  void checkEmpty() {
+    assert(unreadLength == 0, "stream has $unreadLength bytes after decode");
   }
 
   static String int2hexString(int value) {
@@ -72,7 +72,7 @@ class ByteStream {
     return str1 + str0;
   }
 
-  static int list2int(Uint8List list){
+  static int list2int(Uint8List list) {
     var stream = ByteStream(list);
     return stream.readInt(stream.length);
   }
@@ -101,7 +101,7 @@ class ByteStream {
   static String list2hexString(Uint8List list) {
     String hex = "";
     for (var n = 0; n < list.length; n++) {
-      hex+=int2hexString(list[n]);
+      hex += int2hexString(list[n]);
     }
     return hex;
   }

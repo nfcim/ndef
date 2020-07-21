@@ -10,11 +10,7 @@ import 'text.dart';
 import 'uri.dart';
 import 'mime.dart';
 
-enum Action{
-  exec,
-  save,
-  edit
-}
+enum Action { exec, save, edit }
 
 class ActionRecord extends Record {
   static const String recordType = "urn:nfc:wkt:act";
@@ -31,7 +27,7 @@ class ActionRecord extends Record {
   ActionRecord({this.action});
 
   Uint8List get payload {
-    Uint8List payload=new Uint8List(0);
+    Uint8List payload = new Uint8List(0);
     payload.add(Action.values.indexOf(action));
     return payload;
   }
@@ -65,7 +61,7 @@ class SizeRecord extends Record {
 
   set payload(Uint8List payload) {
     ByteStream stream = new ByteStream(payload);
-    size=stream.readInt(4);
+    size = stream.readInt(4);
   }
 }
 
@@ -88,7 +84,7 @@ class TypeRecord extends Record {
   }
 
   set payload(Uint8List payload) {
-    typeInfo=utf8.decode(payload);
+    typeInfo = utf8.decode(payload);
   }
 }
 
@@ -140,15 +136,21 @@ class SmartposterRecord extends Record {
       record = new Record();
     }
     return record;
-  }    
+  }
 
   Uint8List get payload {
-    var allRecords=titleRecords+uriRecords+actionRecords+iconRecords+sizeRecords+typeRecords;
+    var allRecords = titleRecords +
+        uriRecords +
+        actionRecords +
+        iconRecords +
+        sizeRecords +
+        typeRecords;
     return encodeNdefMessage(allRecords);
   }
 
   set payload(Uint8List payload) {
-    decodeRawNdefMessage(payload,typeFactory:SmartposterRecord.typeFactory).forEach((e) {
+    decodeRawNdefMessage(payload, typeFactory: SmartposterRecord.typeFactory)
+        .forEach((e) {
       if (e is TextRecord) {
         titleRecords.add(e);
       } else if (e is URIRecord) {
@@ -163,6 +165,6 @@ class SmartposterRecord extends Record {
         typeRecords.add(e);
       }
     });
-    assert(uriRecords.length==1);
+    assert(uriRecords.length == 1);
   }
 }

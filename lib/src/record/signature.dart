@@ -35,20 +35,19 @@ class SignatureRecord extends Record {
 
   static List<String> certificateFormatMap = ["X.509", "M2M"];
 
-  String signatureURI,
-      certificateURI;
+  String signatureURI, certificateURI;
   List<Uint8List> certificateStore;
   Uint8List signature;
-  int signatureTypeIndex,hashTypeIndex,certificateFormatIndex;
+  int signatureTypeIndex, hashTypeIndex, certificateFormatIndex;
 
-  SignatureRecord({
-      String signatureType,
+  SignatureRecord(
+      {String signatureType,
       String hashType,
       Uint8List signature,
       String signatureURI,
       String certificateFormat,
       List<Uint8List> certificateStore,
-      String certificateURI }) {
+      String certificateURI}) {
     this.signatureType = signatureType;
     this.hashType = hashType;
     this.signature = signature;
@@ -58,14 +57,14 @@ class SignatureRecord extends Record {
     this.certificateURI = certificateURI;
   }
 
-  get signatureType{
+  get signatureType {
     return signatureTypeMap[signatureTypeIndex];
   }
 
-  set signatureType(String signatureType){
-    for(int i=0;i<signatureTypeMap.length;i++){
-      if(signatureType==signatureTypeMap[i]){
-        signatureTypeIndex=i;
+  set signatureType(String signatureType) {
+    for (int i = 0; i < signatureTypeMap.length; i++) {
+      if (signatureType == signatureTypeMap[i]) {
+        signatureTypeIndex = i;
         return;
       }
     }
@@ -76,10 +75,10 @@ class SignatureRecord extends Record {
     return hashTypeMap[hashTypeIndex];
   }
 
-  set hashType(String hashType){
-    for(int i=0;i<hashTypeMap.length;i++){
-      if(hashType!="" && hashType==hashTypeMap[i]){
-        hashTypeIndex=i;
+  set hashType(String hashType) {
+    for (int i = 0; i < hashTypeMap.length; i++) {
+      if (hashType != "" && hashType == hashTypeMap[i]) {
+        hashTypeIndex = i;
         return;
       }
     }
@@ -90,10 +89,10 @@ class SignatureRecord extends Record {
     return certificateFormatMap[certificateFormatIndex];
   }
 
-  set certificateFormat(String certificateFormat){
-    for(int i=0;i<certificateFormatMap.length;i++){
-      if(certificateFormat==certificateFormatMap[i]){
-        certificateFormatIndex=i;
+  set certificateFormat(String certificateFormat) {
+    for (int i = 0; i < certificateFormatMap.length; i++) {
+      if (certificateFormat == certificateFormatMap[i]) {
+        certificateFormatIndex = i;
         return;
       }
     }
@@ -105,29 +104,37 @@ class SignatureRecord extends Record {
 
     //Version Field pass
     //Signature Field
-    int signatureURIPresent=(signatureURI==null)? 0:1;
-    int signatureFlag = (signatureURIPresent<<7) | signatureTypeIndex;
+    int signatureURIPresent = (signatureURI == null) ? 0 : 1;
+    int signatureFlag = (signatureURIPresent << 7) | signatureTypeIndex;
 
-    Uint8List signatureURIBytes=utf8.encode((signatureURI==null?signature:signatureURI));
-    Uint8List signatureLenthBytes=ByteStream.int2list(signatureURIBytes.length, 2);
-    Uint8List signatureBytes=[signatureFlag,hashTypeIndex]+signatureLenthBytes+signatureURIBytes;
+    Uint8List signatureURIBytes =
+        utf8.encode((signatureURI == null ? signature : signatureURI));
+    Uint8List signatureLenthBytes =
+        ByteStream.int2list(signatureURIBytes.length, 2);
+    Uint8List signatureBytes = [signatureFlag, hashTypeIndex] +
+        signatureLenthBytes +
+        signatureURIBytes;
 
     //Certificate Field
-    int certificateURIPresent=(certificateURI==null)? 0:1;
-    int certificateFlag=(certificateURIPresent<<7) | (certificateFormatIndex<<4) | certificateStore.length;
-    Uint8List certificateStoreBytes=new Uint8List(0);
-    for(int i=0;i<certificateStore.length;i++){
-      certificateStoreBytes.addAll(ByteStream.int2list(certificateStore[i].length, 2));
+    int certificateURIPresent = (certificateURI == null) ? 0 : 1;
+    int certificateFlag = (certificateURIPresent << 7) |
+        (certificateFormatIndex << 4) |
+        certificateStore.length;
+    Uint8List certificateStoreBytes = new Uint8List(0);
+    for (int i = 0; i < certificateStore.length; i++) {
+      certificateStoreBytes
+          .addAll(ByteStream.int2list(certificateStore[i].length, 2));
       certificateStoreBytes.addAll(certificateStore[i]);
     }
-    Uint8List certificateURIBytes=new Uint8List(0);
-    if(certificateURI!=null){
+    Uint8List certificateURIBytes = new Uint8List(0);
+    if (certificateURI != null) {
       certificateURIBytes.addAll(ByteStream.int2list(certificateURI.length, 2));
       certificateURIBytes.addAll(utf8.encode(certificateURI));
     }
-    Uint8List certificateBytes=[certificateFlag]+certificateStoreBytes+certificateURIBytes;
+    Uint8List certificateBytes =
+        [certificateFlag] + certificateStoreBytes + certificateURIBytes;
 
-    payload=[version]+signatureBytes+certificateBytes;
+    payload = [version] + signatureBytes + certificateBytes;
     return payload;
   }
 
@@ -145,7 +152,7 @@ class SignatureRecord extends Record {
     }
 
     //Signature Field
-    int signatureURIPresent = (signatureFlag & 0x80)>>7;
+    int signatureURIPresent = (signatureFlag & 0x80) >> 7;
     signatureTypeIndex = signatureFlag & 0x7F;
     int signatureURILength = stream.readInt(2);
 
@@ -156,8 +163,8 @@ class SignatureRecord extends Record {
 
     //Certificate Field
     int certificateFlag = stream.readByte();
-    int certificateURIPresent = (certificateFlag & 0x80)>>7;
-    certificateFormatIndex=(certificateFlag & 0x70)>>4;
+    int certificateURIPresent = (certificateFlag & 0x80) >> 7;
+    certificateFormatIndex = (certificateFlag & 0x70) >> 4;
     int certificateNumberOfCertificates = certificateFlag & 0x0F;
 
     for (int i = 0; i < certificateNumberOfCertificates; i++) {

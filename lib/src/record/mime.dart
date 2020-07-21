@@ -20,11 +20,11 @@ class MIMERecord extends Record {
     this.payload = payload;
   }
 
-  Uint8List get payload{
+  Uint8List get payload {
     return _payload;
   }
 
   set payload(Uint8List payload) {
-    _payload=payload;
+    _payload = payload;
   }
 }

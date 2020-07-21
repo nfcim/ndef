@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'dart:typed_data';
 
 import 'package:ndef/ndef.dart';
+import 'package:ndef/src/record/handover.dart';
 
 import 'byteStream.dart';
 import 'record/uri.dart';
@@ -77,7 +78,7 @@ class Record {
   ];
 
   Uint8List encodedType;
-  
+
   String get _decodedType {
     throw "not implemented in base class";
   }
@@ -100,23 +101,25 @@ class Record {
   RecordFlags flags;
   Record();
 
-
-  static Record typeFactory(TypeNameFormat tnf,String decodedType){
+  static Record typeFactory(TypeNameFormat tnf, String decodedType) {
     Record record;
     if (tnf == TypeNameFormat.nfcWellKnown) {
-      // urn:nfc:wkt
       if (decodedType == URIRecord.decodedType) {
-        // URI
         record = URIRecord();
       } else if (decodedType == TextRecord.decodedType) {
-        // Text
         record = TextRecord();
       } else if (decodedType == SmartposterRecord.decodedType) {
-        // Smart Poster
         record = SmartposterRecord();
       } else if (decodedType == SignatureRecord.decodedType) {
-        // Signature
         record = SignatureRecord();
+      } else if (decodedType == HandoverRequestRecord.decodedType) {
+        record = HandoverRequestRecord();
+      } else if (decodedType == HandoverSelectRecord.decodedType) {
+        record = HandoverSelectRecord();
+      } else if (decodedType == HandoverMediationRecord.decodedType) {
+        record = HandoverMediationRecord();
+      } else if (decodedType == HandoverInitiateRecord.decodedType) {
+        record = HandoverInitiateRecord();
       } else {
         record = new Record();
       }
@@ -125,15 +128,14 @@ class Record {
     } else if (tnf == TypeNameFormat.absoluteURI) {
       record = AbsoluteUriRecord(); // FIXME: seems wrong
     } else {
-      // unknown
       record = new Record();
     }
     return record;
   }
 
   static Record doDecode(TypeNameFormat tnf, Uint8List type, Uint8List payload,
-      {Uint8List id,var typeFactory=Record.typeFactory}) {
-    Record record=typeFactory(tnf,utf8.decode(type));
+      {Uint8List id, var typeFactory = Record.typeFactory}) {
+    Record record = typeFactory(tnf, utf8.decode(type));
     record.id = id;
     record.type = type;
     // use setter for implicit decoding
@@ -141,7 +143,7 @@ class Record {
     return record;
   }
 
-  static Record decodeStream(ByteStream stream,var typeFactory) {
+  static Record decodeStream(ByteStream stream, var typeFactory) {
     var flags = new RecordFlags(data: stream.readByte());
 
     num typeLength = stream.readByte();
@@ -245,5 +247,4 @@ class Record {
 
     return encoded;
   }
-
 }

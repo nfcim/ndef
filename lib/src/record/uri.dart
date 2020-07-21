@@ -52,7 +52,6 @@ class URIRecord extends Record {
     return this.uriPrefix + this.uriData;
   }
 
-  
   static const String decodedType = "U";
 
   @override
@@ -79,5 +78,4 @@ class URIRecord extends Record {
     }
     uriData = utf8.decode(payload.sublist(1));
   }
-
 }
