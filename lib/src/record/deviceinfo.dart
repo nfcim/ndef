@@ -21,6 +21,12 @@ class DeviceInformationRecord extends Record {
     return DeviceInformationRecord.decodedType;
   }
 
+  static const int minPayloadLength=2;
+
+  int get _minPayloadLength{
+    return minPayloadLength;
+  }
+
   List<String> dataList;
   List<DataElement> undefinedData;
 

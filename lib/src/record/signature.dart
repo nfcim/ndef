@@ -14,6 +14,12 @@ class SignatureRecord extends Record {
     return SignatureRecord.decodedType;
   }
 
+  static const int minPayloadLength=7;
+
+  int get _minPayloadLength{
+    return minPayloadLength;
+  }
+
   static int version = 2;
 
   static List<String> signatureTypeMap = [

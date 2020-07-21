@@ -20,6 +20,12 @@ class AlternativeCarrierRecord extends Record {
     return AlternativeCarrierRecord.decodedType;
   }
 
+  static const int minPayloadLength=2;
+
+  int get _minPayloadLength{
+    return minPayloadLength;
+  }
+
   CarrierPowerState carrierPowerState;
   String carrierDataReference;
   List<String> auxDataReferenceList;
@@ -89,6 +95,18 @@ class CollisionResolutionRecord extends Record {
     return CollisionResolutionRecord.decodedType;
   }
 
+  static const int minPayloadLength=2;
+  static const int maxPayloadLength=2;
+
+  int get _minPayloadLength{
+    return minPayloadLength;
+  }
+
+  int get _maxPayloadLength{
+    return maxPayloadLength;
+  }
+  
+
   int _randomNumber;
 
   CollisionResolutionRecord({int randomNumber}) {
@@ -138,6 +156,12 @@ class ErrorRecord extends Record {
     return HandoverRequestRecord.decodedType;
   }
 
+  static const int minPayloadLength=1;
+
+  int get _minPayloadLength{
+    return minPayloadLength;
+  }
+
   get errorDataInt {
     assert(errorReason >= 0 && errorReason < 3);
     return ByteStream.list2int(errorData);
@@ -181,6 +205,12 @@ class HandoverRecord extends Record {
   int _version;
   List<AlternativeCarrierRecord> alternativeCarrierRecordList;
   List<Record> unknownRecordList;
+
+  static const int minPayloadLength=1;
+
+  int get _minPayloadLength{
+    return minPayloadLength;
+  }
 
   HandoverCarrierRecord() {
     alternativeCarrierRecordList = new List<AlternativeCarrierRecord>();
@@ -411,6 +441,12 @@ class HandoverCarrierRecord extends HandoverRecord {
   @override
   String get _decodedType {
     return HandoverCarrierRecord.decodedType;
+  }
+
+  static const int minPayloadLength=1;
+
+  int get _minPayloadLength{
+    return minPayloadLength;
   }
 
   int ctf;

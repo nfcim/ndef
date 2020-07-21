@@ -59,6 +59,12 @@ class URIRecord extends Record {
     return URIRecord.decodedType;
   }
 
+  static const int minPayloadLength=1;
+
+  int get _minPayloadLength{
+    return minPayloadLength;
+  }
+
   Uint8List get payload {
     for (int i = 0; i < uriPrefixMap.length; i++) {
       if (uriPrefixMap[i] == uriPrefix) {

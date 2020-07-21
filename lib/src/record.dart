@@ -96,9 +96,21 @@ class Record {
     }
   }
 
+  static const int minPayloadLength=0;
+  static const int maxPayloadLength=null;
+
+  int get _minPayloadLength{
+    return minPayloadLength;
+  }
+
+  int get _maxPayloadLength{
+    return maxPayloadLength;
+  }
+
   Uint8List id;
   Uint8List payload;
   RecordFlags flags;
+
   Record();
 
   static Record typeFactory(TypeNameFormat tnf, String decodedType) {
@@ -136,6 +148,12 @@ class Record {
   static Record doDecode(TypeNameFormat tnf, Uint8List type, Uint8List payload,
       {Uint8List id, var typeFactory = Record.typeFactory}) {
     Record record = typeFactory(tnf, utf8.decode(type));
+    if(payload.length<record._minPayloadLength){
+      throw "payload length must >= ${record._minPayloadLength}";
+    }
+    if(record._maxPayloadLength!=null && payload.length<record._maxPayloadLength){
+      throw "payload length must <= ${record._maxPayloadLength}";
+    }
     record.id = id;
     record.type = type;
     // use setter for implicit decoding

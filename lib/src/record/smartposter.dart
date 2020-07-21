@@ -22,6 +22,17 @@ class ActionRecord extends Record {
     return ActionRecord.decodedType;
   }
 
+  static const int minPayloadLength=1;
+  static const int maxPayloadLength=1;
+
+  int get _minPayloadLength{
+    return minPayloadLength;
+  }
+
+  int get _maxPayloadLength{
+    return maxPayloadLength;
+  }
+
   Action action;
 
   ActionRecord({this.action});
@@ -51,6 +62,17 @@ class SizeRecord extends Record {
     return SizeRecord.decodedType;
   }
 
+  static const int minPayloadLength=4;
+  static const int maxPayloadLength=4;
+
+  int get _minPayloadLength{
+    return minPayloadLength;
+  }
+
+  int get _maxPayloadLength{
+    return maxPayloadLength;
+  }
+  
   int size;
 
   SizeRecord({this.size});

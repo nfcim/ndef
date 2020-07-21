@@ -17,6 +17,12 @@ class TextRecord extends Record {
     return TextRecord.decodedType;
   }
 
+  static const int minPayloadLength=1;
+
+  int get _minPayloadLength{
+    return minPayloadLength;
+  }
+
   TextEncoding encoding;
   String _language, text;
 
