@@ -15,7 +15,7 @@ class AbsoluteUriRecord extends Record {
   }
 
   //absoluteURI record has no payload
-  get payload {
+  Uint8List get payload {
     return null;
   }
 

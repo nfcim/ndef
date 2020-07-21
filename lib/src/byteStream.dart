@@ -44,13 +44,13 @@ class ByteStream {
     return value;
   }
 
+  Uint8List readAll(){
+    return readBytes(unreadLength);
+  }
+
   String readHexString(int number) {
-    Uint8List d = readBytes(number);
-    String hex = "";
-    for (var n = 0; n < d.length; n++) {
-      hex+=int2HexString(d[n]);
-    }
-    return hex;
+    Uint8List list = readBytes(number);
+    return list2hexString(list);
   }
 
   void checkBytesAvailable(int number){
@@ -61,7 +61,7 @@ class ByteStream {
     assert(unreadLength==0,"stream has $unreadLength bytes after decode");
   }
 
-  static String int2HexString(int value) {
+  static String int2hexString(int value) {
     assert(value >= 0 && value < 256,
         "the number to decode into Hex String must be in the range of [0,256)");
     int num1 = value ~/ 16;
@@ -72,12 +72,12 @@ class ByteStream {
     return str1 + str0;
   }
 
-  static int List2int(Uint8List list){
+  static int list2int(Uint8List list){
     var stream = ByteStream(list);
     return stream.readInt(stream.length);
   }
 
-  static Uint8List int2List(int value, int length) {
+  static Uint8List int2list(int value, int length) {
     Uint8List list = new Uint8List(0);
     for (int i = 0; i < length; i++) {
       list.add(value % 256);
@@ -87,7 +87,7 @@ class ByteStream {
     return list;
   }
 
-  static Uint8List hexString2List(String hex) {
+  static Uint8List hexString2list(String hex) {
     hex = hex.splitMapJoin(" ", onMatch: (Match match) {
       return "";
     });
@@ -96,5 +96,13 @@ class ByteStream {
       result.add(int.parse(hex.substring(i, i + 2), radix: 16));
     }
     return result;
+  }
+
+  static String list2hexString(Uint8List list) {
+    String hex = "";
+    for (var n = 0; n < list.length; n++) {
+      hex+=int2hexString(list[n]);
+    }
+    return hex;
   }
 }

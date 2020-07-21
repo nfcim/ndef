@@ -39,7 +39,7 @@ class TextRecord extends Record {
     this._language=language;
   }
 
-  get payload {
+  Uint8List get payload {
     Uint8List payload;
     Uint8List languagePayload = utf8.encode(language);
     Uint8List textPayload;

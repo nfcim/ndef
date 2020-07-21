@@ -30,7 +30,7 @@ class ActionRecord extends Record {
 
   ActionRecord({this.action});
 
-  get payload {
+  Uint8List get payload {
     Uint8List payload=new Uint8List(0);
     payload.add(Action.values.indexOf(action));
     return payload;
@@ -59,8 +59,8 @@ class SizeRecord extends Record {
 
   SizeRecord({this.size});
 
-  get payload {
-    return ByteStream.int2List(size, 4);
+  Uint8List get payload {
+    return ByteStream.int2list(size, 4);
   }
 
   set payload(Uint8List payload) {
@@ -83,7 +83,7 @@ class TypeRecord extends Record {
 
   TypeRecord({this.typeInfo});
 
-  get payload {
+  Uint8List get payload {
     return utf8.encode(typeInfo);
   }
 
@@ -109,12 +109,8 @@ class SmartposterRecord extends Record {
       sizeRecords,
       typeRecords;
 
-  static Record doDecode(TypeNameFormat tnf, Uint8List type, Uint8List payload,
-      {Uint8List id}) {
-
+  static Record typeFactory(TypeNameFormat tnf, String decodedType) {
     Record record;
-    var decodedType = utf8.decode(type);
-
     if (tnf == TypeNameFormat.nfcWellKnown) {
       // urn:nfc:wkt
       if (decodedType == URIRecord.decodedType) {
@@ -132,6 +128,8 @@ class SmartposterRecord extends Record {
       } else if (decodedType == ActionRecord.decodedType) {
         // Action (local)
         record = ActionRecord();
+      } else {
+        record = Record();
       }
     } else if (tnf == TypeNameFormat.media) {
       record = MIMERecord();
@@ -141,21 +139,16 @@ class SmartposterRecord extends Record {
       // unknown
       record = new Record();
     }
-
-    record.id = id;
-    record.type = type;
-    // use setter for implicit decoding
-    record.payload = payload;
     return record;
   }    
 
-  get payload {
+  Uint8List get payload {
     var allRecords=titleRecords+uriRecords+actionRecords+iconRecords+sizeRecords+typeRecords;
     return encodeNdefMessage(allRecords);
   }
 
   set payload(Uint8List payload) {
-    decodeRawNdefMessage(payload,doDecodeStrategy:SmartposterRecord.doDecode).forEach((e) {
+    decodeRawNdefMessage(payload,typeFactory:SmartposterRecord.typeFactory).forEach((e) {
       if (e is TextRecord) {
         titleRecords.add(e);
       } else if (e is URIRecord) {

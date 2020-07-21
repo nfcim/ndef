@@ -74,7 +74,7 @@ class DeviceInformationRecord extends Record{
     dataList[4]=versionString;
   }
 
-  get payload {
+  Uint8List get payload {
     if(!(vendorName!=null && modelName!=null)){
       throw "decoding requires the manufacturer and model name TLVs";
     }

@@ -100,12 +100,9 @@ class Record {
   RecordFlags flags;
   Record();
 
-  static Record doDecode(TypeNameFormat tnf, Uint8List type, Uint8List payload,
-      {Uint8List id}) {
 
+  static Record typeFactory(TypeNameFormat tnf,String decodedType){
     Record record;
-    var decodedType = utf8.decode(type);
-
     if (tnf == TypeNameFormat.nfcWellKnown) {
       // urn:nfc:wkt
       if (decodedType == URIRecord.decodedType) {
@@ -120,6 +117,8 @@ class Record {
       } else if (decodedType == SignatureRecord.decodedType) {
         // Signature
         record = SignatureRecord();
+      } else {
+        record = new Record();
       }
     } else if (tnf == TypeNameFormat.media) {
       record = MIMERecord();
@@ -129,7 +128,12 @@ class Record {
       // unknown
       record = new Record();
     }
+    return record;
+  }
 
+  static Record doDecode(TypeNameFormat tnf, Uint8List type, Uint8List payload,
+      {Uint8List id,var typeFactory=Record.typeFactory}) {
+    Record record=typeFactory(tnf,utf8.decode(type));
     record.id = id;
     record.type = type;
     // use setter for implicit decoding
@@ -137,7 +141,7 @@ class Record {
     return record;
   }
 
-  static Record decodeStream(ByteStream stream,var doDecodeStrategy) {
+  static Record decodeStream(ByteStream stream,var typeFactory) {
     var flags = new RecordFlags(data: stream.readByte());
 
     num typeLength = stream.readByte();
@@ -175,7 +179,7 @@ class Record {
     var payload = stream.readBytes(payloadLength);
     var typeNameFormat = TypeNameFormat.values[flags.TNF];
 
-    var decoded = doDecodeStrategy(typeNameFormat, type, payload, id: id);
+    var decoded = typeFactory(typeNameFormat, type, payload, id: id);
     decoded.flags = flags;
     return decoded;
   }

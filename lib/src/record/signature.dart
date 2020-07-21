@@ -100,7 +100,7 @@ class SignatureRecord extends Record {
     throw "No certificate format called $certificateFormat";
   }
 
-  get payload {
+  Uint8List get payload {
     Uint8List payload;
 
     //Version Field pass
@@ -109,7 +109,7 @@ class SignatureRecord extends Record {
     int signatureFlag = (signatureURIPresent<<7) | signatureTypeIndex;
 
     Uint8List signatureURIBytes=utf8.encode((signatureURI==null?signature:signatureURI));
-    Uint8List signatureLenthBytes=ByteStream.int2List(signatureURIBytes.length, 2);
+    Uint8List signatureLenthBytes=ByteStream.int2list(signatureURIBytes.length, 2);
     Uint8List signatureBytes=[signatureFlag,hashTypeIndex]+signatureLenthBytes+signatureURIBytes;
 
     //Certificate Field
@@ -117,12 +117,12 @@ class SignatureRecord extends Record {
     int certificateFlag=(certificateURIPresent<<7) | (certificateFormatIndex<<4) | certificateStore.length;
     Uint8List certificateStoreBytes=new Uint8List(0);
     for(int i=0;i<certificateStore.length;i++){
-      certificateStoreBytes.addAll(ByteStream.int2List(certificateStore[i].length, 2));
+      certificateStoreBytes.addAll(ByteStream.int2list(certificateStore[i].length, 2));
       certificateStoreBytes.addAll(certificateStore[i]);
     }
     Uint8List certificateURIBytes=new Uint8List(0);
     if(certificateURI!=null){
-      certificateURIBytes.addAll(ByteStream.int2List(certificateURI.length, 2));
+      certificateURIBytes.addAll(ByteStream.int2list(certificateURI.length, 2));
       certificateURIBytes.addAll(utf8.encode(certificateURI));
     }
     Uint8List certificateBytes=[certificateFlag]+certificateStoreBytes+certificateURIBytes;
