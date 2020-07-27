@@ -1,9 +1,17 @@
 import 'dart:typed_data';
 
+enum Endianness{
+  big,little
+}
+
 /// byte stream utility class for decoding
 class ByteStream {
   Uint8List _data;
   int _current = 0;
+
+  get readLength {
+    return _current;
+  }
 
   get unreadLength {
     return _data.length - _current;
@@ -33,13 +41,37 @@ class ByteStream {
     return d;
   }
 
-  int readInt(int number) {
+  int readInt(int number,{Endianness endianness=Endianness.big}) {
     assert(number <= 8);
     Uint8List d = readBytes(number);
     int value = 0;
-    for (var n = 0; n < d.length; n++) {
-      value <<= 16;
-      value += d[d.length - n - 1];
+    if(endianness==Endianness.big){
+      for (var n = 0; n < d.length; n++) {
+        value <<= 256;
+        value += d[d.length - n - 1];
+      }
+    }else if(endianness==Endianness.little){
+      for (var n = d.length-1; n >= 0; n--) {
+        value <<= 256;
+        value += d[d.length - n - 1];
+      }
+    }
+    return value;
+  }
+
+  BigInt readBigInt(int number,{Endianness endianness=Endianness.big}){
+    Uint8List d = readBytes(number);
+    BigInt value = new BigInt.from(0);
+    if(endianness==Endianness.big){
+      for (var n = 0; n < d.length; n++) {
+        value <<= 256;
+        value += new BigInt.from(d[d.length - n - 1]);
+      }
+    }else if(endianness==Endianness.little){
+      for (var n = d.length-1; n >= 0; n--) {
+        value <<= 256;
+        value += new BigInt.from(d[d.length - n - 1]);
+      }
     }
     return value;
   }
@@ -64,26 +96,41 @@ class ByteStream {
   static String int2hexString(int value) {
     assert(value >= 0 && value < 256,
         "the number to decode into Hex String must be in the range of [0,256)");
-    int num1 = value ~/ 16;
-    int num0 = value % 16;
-    String map = 'ABCDEF';
-    String str1 = num1 >= 10 ? map[num1 - 10] : num1.toString();
-    String str0 = num0 >= 10 ? map[num0 - 10] : num0.toString();
-    return str1 + str0;
+    return value.toRadixString(16);
   }
 
-  static int list2int(Uint8List list) {
+  static int list2int(Uint8List list,{endianness=Endianness.big}) {
     var stream = ByteStream(list);
-    return stream.readInt(stream.length);
+    return stream.readInt(stream.length,endianness: endianness);
   }
 
-  static Uint8List int2list(int value, int length) {
+  static Uint8List int2list(int value, int length,{endianness=Endianness.big}) {
+    assert(length<=8);
     Uint8List list = new Uint8List(0);
     for (int i = 0; i < length; i++) {
       list.add(value % 256);
       value ~/= 256;
     }
-    list = list.reversed;
+    if(endianness==Endianness.big){
+      list = list.reversed;
+    }
+    return list;
+  }
+
+  static BigInt list2bigInt(Uint8List list,{endianness=Endianness.big}) {
+    var stream = ByteStream(list);
+    return stream.readBigInt(stream.length,endianness: endianness);
+  }
+
+  static Uint8List bigInt2list(BigInt value, int length,{endianness=Endianness.big}) {
+    Uint8List list = new Uint8List(0);
+    for (int i = 0; i < length; i++) {
+      list.add((value % (new BigInt.from(256))).toInt());
+      value ~/= (new BigInt.from(256));
+    }
+    if(endianness==Endianness.big){
+      list = list.reversed;
+    }
     return list;
   }
 
@@ -105,4 +152,5 @@ class ByteStream {
     }
     return hex;
   }
+
 }
