@@ -3,13 +3,16 @@ import 'dart:ffi';
 import 'dart:typed_data';
 
 import 'package:ndef/ndef.dart';
+import 'package:ndef/src/record/bluetooth.dart';
 import 'package:ndef/src/record/handover.dart';
+import 'package:collection/collection.dart';
 
 import 'byteStream.dart';
 import 'record/uri.dart';
 import 'record/text.dart';
 import 'record/signature.dart';
 import 'record/mime.dart';
+import 'record/bluetooth.dart';
 import 'record/absoluteUri.dart';
 import 'record/raw.dart';
 
@@ -33,6 +36,20 @@ class RecordFlags {
   int TNF = 0;
 
   RecordFlags({int data}) {
+    decode(data);
+  }
+
+  int encode() {
+    assert(0 <= TNF && TNF <= 7);
+    return (bool2int(MB) << 7) |
+        (bool2int(ME) << 6) |
+        (bool2int(CF) << 5) |
+        (bool2int(SR) << 4) |
+        (bool2int(IL) << 3) |
+        (TNF & 7);
+  }
+
+  void decode(int data) {
     if (data != null) {
       assert(0 <= data && data <= 255);
       MB = ((data >> 7) & 1) == 1;
@@ -44,15 +61,6 @@ class RecordFlags {
     }
   }
 
-  int encode() {
-    assert(0 <= TNF && TNF <= 7);
-    return ((MB as int) << 7) |
-        ((ME as int) << 6) |
-        ((CF as int) << 5) |
-        ((SR as int) << 4) |
-        ((IL as int) << 3) |
-        (TNF & 7);
-  }
 }
 
 enum TypeNameFormat {
@@ -77,10 +85,21 @@ class Record {
     "unchanged"
   ];
 
+  static const TypeNameFormat classTnf = null;
+
+  TypeNameFormat get tnf {
+    return TypeNameFormat.values[flags.TNF];
+  }
+
+  set tnf(TypeNameFormat tnf){
+    flags.TNF=TypeNameFormat.values.indexOf(tnf);
+  }
+
   Uint8List encodedType;
 
-  String get _decodedType {
-    throw "not implemented in base class";
+  String get decodedType {
+    //throw "not implemented in base class";
+    return utf8.decode(encodedType);
   }
 
   set type(Uint8List type) {
@@ -92,54 +111,89 @@ class Record {
       return encodedType;
     } else {
       // no encodedType set, might be a directly initialized subclass
-      return utf8.encode(_decodedType);
+      return utf8.encode(decodedType);
     }
   }
 
-  static const int minPayloadLength=0;
-  static const int maxPayloadLength=null;
-
-  int get _minPayloadLength{
-    return minPayloadLength;
+  String get recordType {
+    return typePrefixes[flags.TNF]+decodedType;
   }
 
-  int get _maxPayloadLength{
-    return maxPayloadLength;
+  String get idString{
+    if(id==null){
+      return "";
+    }else{
+      return utf8.decode(id);
+    }
+  }
+
+  static const int classMinPayloadLength=0;
+  static const int classMaxPayloadLength=null;
+
+  int get minPayloadLength{
+    return classMinPayloadLength;
+  }
+
+  int get maxPayloadLength{
+    return classMaxPayloadLength;
+  }
+
+  String get basicInfoString{
+    var str = "id=$idString ";
+    return str;
+  }
+
+  @override
+  String toString(){
+    var str = "Record: ";
+    str+=basicInfoString;
+    str+="typeNameFormat=$tnf ";
+    str+="type=$decodedType ";
+    return str;
   }
 
   Uint8List id;
   Uint8List payload;
   RecordFlags flags;
 
-  Record();
+  Record(){
+    flags = new RecordFlags();
+    flags.TNF = TypeNameFormat.values.indexOf(tnf);
+  }
 
   /// construct an instance of Record
-  static Record typeFactory(TypeNameFormat tnf, String decodedType) {
+  static Record typeFactory(TypeNameFormat tnf, String classType) {
     Record record;
     if (tnf == TypeNameFormat.nfcWellKnown) {
-      if (decodedType == URIRecord.decodedType) {
-        record = URIRecord();
-      } else if (decodedType == TextRecord.decodedType) {
+      if (classType == UriRecord.classType) {
+        record = UriRecord();
+      } else if (classType == TextRecord.classType) {
         record = TextRecord();
-      } else if (decodedType == SmartposterRecord.decodedType) {
+      } else if (classType == SmartposterRecord.classType) {
         record = SmartposterRecord();
-      } else if (decodedType == SignatureRecord.decodedType) {
+      } else if (classType == SignatureRecord.classType) {
         record = SignatureRecord();
-      } else if (decodedType == HandoverRequestRecord.decodedType) {
+      } else if (classType == HandoverRequestRecord.classType) {
         record = HandoverRequestRecord();
-      } else if (decodedType == HandoverSelectRecord.decodedType) {
+      } else if (classType == HandoverSelectRecord.classType) {
         record = HandoverSelectRecord();
-      } else if (decodedType == HandoverMediationRecord.decodedType) {
+      } else if (classType == HandoverMediationRecord.classType) {
         record = HandoverMediationRecord();
-      } else if (decodedType == HandoverInitiateRecord.decodedType) {
+      } else if (classType == HandoverInitiateRecord.classType) {
         record = HandoverInitiateRecord();
       } else {
         record = new Record();
       }
     } else if (tnf == TypeNameFormat.media) {
-      record = MIMERecord();
+      if(classType==BluetoothEasyPairingRecord.classType){
+        record = BluetoothEasyPairingRecord();
+      }else if(classType==BluetoothLowEnergyRecord.classType){
+        record = BluetoothLowEnergyRecord();
+      }else{
+        record = MimeRecord();
+      }
     } else if (tnf == TypeNameFormat.absoluteURI) {
-      record = AbsoluteUriRecord(); // FIXME: seems wrong
+      record = AbsoluteUriRecord();
     } else {
       record = new Record();
     }
@@ -150,11 +204,11 @@ class Record {
   static Record doDecode(TypeNameFormat tnf, Uint8List type, Uint8List payload,
       {Uint8List id, var typeFactory = Record.typeFactory}) {
     Record record = typeFactory(tnf, utf8.decode(type));
-    if(payload.length<record._minPayloadLength){
-      throw "payload length must be >= ${record._minPayloadLength}";
+    if(payload.length<record.minPayloadLength){
+      throw "payload length must be >= ${record.minPayloadLength}";
     }
-    if(record._maxPayloadLength!=null && payload.length<record._maxPayloadLength){
-      throw "payload length must be <= ${record._maxPayloadLength}";
+    if(record.maxPayloadLength!=null && payload.length<record.maxPayloadLength){
+      throw "payload length must be <= ${record.maxPayloadLength}";
     }
     record.id = id;
     record.type = type;
@@ -180,7 +234,6 @@ class Record {
       idLength = stream.readByte();
     }
 
-    // regulations
     if ([0, 5, 6].contains(flags.TNF)) {
       assert(typeLength == 0, "TYPE_LENTH must be 0 when TNF is 0,5,6");
     }
@@ -189,7 +242,7 @@ class Record {
       assert(payloadLength == 0, "PAYLOAD_LENTH must be 0 when TNF is 0");
     }
     if ([1, 2, 3, 4].contains(flags.TNF)) {
-      assert(typeLength == 0, "TYPE_LENTH must be > 0 when TNF is 1,2,3,4");
+      assert(typeLength > 0, "TYPE_LENTH must be > 0 when TNF is 1,2,3,4");
     }
 
     var type = stream.readBytes(typeLength);
@@ -202,7 +255,7 @@ class Record {
     var payload = stream.readBytes(payloadLength);
     var typeNameFormat = TypeNameFormat.values[flags.TNF];
 
-    var decoded = typeFactory(typeNameFormat, type, payload, id: id);
+    var decoded = doDecode(typeNameFormat, type, payload, id: id);
     decoded.flags = flags;
     return decoded;
   }
@@ -215,7 +268,7 @@ class Record {
 
   /// encode this record to raw byte data
   Uint8List encode() {
-    var encoded = new Uint8List(0);
+    var encoded = new List<int>();
 
     // check and canonicalize
     if (this.id == null) {
@@ -225,7 +278,7 @@ class Record {
     if (payload.length < 256) {
       flags.SR = true;
     }
-
+    
     // flags
     var encodedFlags = flags.encode();
     encoded.add(encodedFlags);
@@ -266,6 +319,15 @@ class Record {
     // payload
     encoded += encodedPayload;
 
-    return encoded;
+    return new Uint8List.fromList(encoded);
+  }
+
+  bool isEqual(Record other){
+    Function eq=const ListEquality().equals;
+    return (other is Record) && 
+      (tnf==other.tnf) && 
+      eq(type,other.type) &&
+      (id==other.id) &&
+      eq(payload,other.payload);
   }
 }

@@ -1,10 +1,11 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:ndef/ndef.dart';
+
 import '../record.dart';
 
-class URIRecord extends Record {
-  static const String recordType = "urn:nfc:wkt:U";
+class UriRecord extends Record {
   static List<String> uriPrefixMap = [
     "",
     "http://www.",
@@ -44,31 +45,79 @@ class URIRecord extends Record {
     "urn:nfc:",
   ];
 
-  String uriPrefix, uriData;
+  static const TypeNameFormat classTnf = TypeNameFormat.nfcWellKnown;
 
-  URIRecord({this.uriPrefix, this.uriData});
+  TypeNameFormat get tnf {
+    return classTnf;
+  }
 
-  get uri {
+  static const String classType = "U";
+
+  @override
+  String get decodedType {
+    return UriRecord.classType;
+  }
+
+  static const int classMinPayloadLength = 1;
+
+  int get minPayloadLength {
+    return classMinPayloadLength;
+  }
+
+  @override
+  String toString() {
+    var str = "UriRecord: ";
+    str+=basicInfoString;
+    str+="uri=$uriString ";
+    return str;
+  }
+
+  String _uriPrefix, uriData;
+
+  UriRecord({String uriPrefix, String uriData}){
+    if(uriPrefix!=null){
+      this.uriPrefix=uriPrefix;
+    }
+    this.uriData=uriData;
+  }
+
+  UriRecord.fromUriString(String uriString){
+    this.uriString=uriString;
+  }
+
+  String get uriPrefix{
+    return _uriPrefix;
+  }
+
+  set uriPrefix(String uriPrefix){
+    assert(uriPrefixMap.contains(uriPrefix),"URI Prefix $uriPrefix is not correct");
+    _uriPrefix=uriPrefix;
+  }
+
+  get uriString {
     return this.uriPrefix + this.uriData;
   }
 
-  static const String decodedType = "U";
-
-  @override
-  String get _decodedType {
-    return URIRecord.decodedType;
+  set uriString(String uriString){
+    for(int i=1;i<uriPrefixMap.length;i++){
+      if(uriString.startsWith(uriPrefixMap[i])){
+        this._uriPrefix=uriPrefixMap[i];
+        this.uriData=uriString.substring(uriPrefix.length);
+        return;
+      }
+    }
+    this._uriPrefix="";
+    this.uriData=uriString;
   }
 
-  static const int minPayloadLength=1;
-
-  int get _minPayloadLength{
-    return minPayloadLength;
+  Uri get uri {
+    return Uri.parse(uriString);
   }
 
   Uint8List get payload {
     for (int i = 0; i < uriPrefixMap.length; i++) {
       if (uriPrefixMap[i] == uriPrefix) {
-        return [i] + utf8.encode(uriData);
+        return new Uint8List.fromList([i]+utf8.encode(uriData));
       }
     }
   }
@@ -80,7 +129,6 @@ class URIRecord extends Record {
     } else {
       //More identifier codes are reserved for future use
       uriPrefix = "";
-      //uriPrefix="unknown:";
     }
     uriData = utf8.decode(payload.sublist(1));
   }

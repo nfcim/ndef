@@ -13,24 +13,36 @@ import 'mime.dart';
 enum Action { exec, save, edit }
 
 class ActionRecord extends Record {
-  static const String recordType = "urn:nfc:wkt:act";
+  static const TypeNameFormat classTnf = TypeNameFormat.nfcWellKnown;
 
-  static const String decodedType = "act";
+  TypeNameFormat get tnf {
+    return classTnf;
+  }
+
+  static const String classType = "act";
 
   @override
-  String get _decodedType {
-    return ActionRecord.decodedType;
+  String get decodedType {
+    return ActionRecord.classType;
   }
 
-  static const int minPayloadLength=1;
-  static const int maxPayloadLength=1;
+  static const int classMinPayloadLength=1;
+  static const int classMaxPayloadLength=1;
 
-  int get _minPayloadLength{
-    return minPayloadLength;
+  int get minPayloadLength{
+    return classMinPayloadLength;
   }
 
-  int get _maxPayloadLength{
-    return maxPayloadLength;
+  int get maxPayloadLength{
+    return classMaxPayloadLength;
+  }
+
+  @override
+  String toString() {
+    var str = "ActionRecord: ";
+    str+=basicInfoString;
+    str+="action=$action ";
+    return str;
   }
 
   Action action;
@@ -53,26 +65,38 @@ class ActionRecord extends Record {
 }
 
 class SizeRecord extends Record {
-  static const String recordType = "urn:nfc:wkt:s";
+  static const TypeNameFormat classTnf = TypeNameFormat.nfcWellKnown;
 
-  static const String decodedType = "s";
+  TypeNameFormat get tnf {
+    return classTnf;
+  }
+
+  static const String classType = "s";
 
   @override
-  String get _decodedType {
-    return SizeRecord.decodedType;
+  String get decodedType {
+    return SizeRecord.classType;
   }
 
-  static const int minPayloadLength=4;
-  static const int maxPayloadLength=4;
+  static const int classMinPayloadLength=4;
+  static const int classMaxPayloadLength=4;
 
-  int get _minPayloadLength{
-    return minPayloadLength;
+  int get minPayloadLength{
+    return classMinPayloadLength;
   }
 
-  int get _maxPayloadLength{
-    return maxPayloadLength;
+  int get maxPayloadLength{
+    return classMaxPayloadLength;
   }
   
+  @override
+  String toString() {
+    var str = "SizeRecord: ";
+    str+=basicInfoString;
+    str+="size=$size ";
+    return str;
+  }
+
   int size;
 
   SizeRecord({this.size});
@@ -87,13 +111,25 @@ class SizeRecord extends Record {
 }
 
 class TypeRecord extends Record {
-  static const String recordType = "urn:nfc:wkt:t";
+  static const TypeNameFormat classTnf = TypeNameFormat.nfcWellKnown;
 
-  static const String decodedType = "t";
+  TypeNameFormat get tnf {
+    return classTnf;
+  }
+
+  static const String classType = "t";
 
   @override
-  String get _decodedType {
-    return TypeRecord.decodedType;
+  String get decodedType {
+    return TypeRecord.classType;
+  }
+
+  @override
+  String toString() {
+    var str = "TypeRecord: ";
+    str+=basicInfoString;
+    str+="type=$typeInfo ";
+    return str;
   }
 
   String typeInfo;
@@ -110,13 +146,30 @@ class TypeRecord extends Record {
 }
 
 class SmartposterRecord extends Record {
-  static const String recordType = "urn:nfc:wkt:Sp";
+  static const TypeNameFormat classTnf = TypeNameFormat.nfcWellKnown;
 
-  static const String decodedType = "Sp";
+  TypeNameFormat get tnf {
+    return classTnf;
+  }
+
+  static const String classType = "Sp";
 
   @override
-  String get _decodedType {
-    return SmartposterRecord.decodedType;
+  String get decodedType {
+    return SmartposterRecord.classType;
+  }
+
+  @override
+  String toString() {
+    var str = "SmartRecord: ";
+    str+=basicInfoString;
+    str+="titleRecords=$titleRecords ";
+    str+="uriRecords=$uriRecords ";
+    str+="actionRecords=$actionRecords ";
+    str+="iconRecords=$iconRecords ";
+    str+="sizeRecords=$sizeRecords ";
+    str+="typeRecords=$typeRecords ";
+    return str;
   }
 
   List<dynamic> titleRecords,
@@ -126,30 +179,30 @@ class SmartposterRecord extends Record {
       sizeRecords,
       typeRecords;
 
-  static Record typeFactory(TypeNameFormat tnf, String decodedType) {
+  static Record typeFactory(TypeNameFormat tnf, String classType) {
     Record record;
     if (tnf == TypeNameFormat.nfcWellKnown) {
       // urn:nfc:wkt
-      if (decodedType == URIRecord.decodedType) {
+      if (classType == UriRecord.classType) {
         // URI
-        record = URIRecord();
-      } else if (decodedType == TextRecord.decodedType) {
+        record = UriRecord();
+      } else if (classType == TextRecord.classType) {
         // Text
         record = TextRecord();
-      } else if (decodedType == SizeRecord.decodedType) {
+      } else if (classType == SizeRecord.classType) {
         // Size (local)
         record = SizeRecord();
-      } else if (decodedType == TypeRecord.decodedType) {
+      } else if (classType == TypeRecord.classType) {
         // Type (local)
         record = TypeRecord();
-      } else if (decodedType == ActionRecord.decodedType) {
+      } else if (classType == ActionRecord.classType) {
         // Action (local)
         record = ActionRecord();
       } else {
         record = Record();
       }
     } else if (tnf == TypeNameFormat.media) {
-      record = MIMERecord();
+      record = MimeRecord();
     } else if (tnf == TypeNameFormat.absoluteURI) {
       record = AbsoluteUriRecord(); // FIXME: seems wrong
     } else {
@@ -174,9 +227,9 @@ class SmartposterRecord extends Record {
         .forEach((e) {
       if (e is TextRecord) {
         titleRecords.add(e);
-      } else if (e is URIRecord) {
+      } else if (e is UriRecord) {
         uriRecords.add(e);
-      } else if (e is MIMERecord) {
+      } else if (e is MimeRecord) {
         iconRecords.add(e);
       } else if (e is ActionRecord) {
         actionRecords.add(e);

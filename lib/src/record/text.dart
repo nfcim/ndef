@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:ndef/ndef.dart';
 import 'package:utf/utf.dart' as utf;
 
 import '../record.dart';
@@ -8,19 +9,33 @@ import '../record.dart';
 enum TextEncoding { UTF8, UTF16 }
 
 class TextRecord extends Record {
-  static const String recordType = "urn:nfc:wkt:T";
+  static const TypeNameFormat classTnf = TypeNameFormat.nfcWellKnown;
 
-  static const String decodedType = "T";
-
-  @override
-  String get _decodedType {
-    return TextRecord.decodedType;
+  TypeNameFormat get tnf {
+    return classTnf;
   }
 
-  static const int minPayloadLength=1;
+  static const String classType = "T";
 
-  int get _minPayloadLength{
-    return minPayloadLength;
+  @override
+  String get decodedType {
+    return TextRecord.classType;
+  }
+
+  static const int classMinPayloadLength=1;
+
+  int get minPayloadLength{
+    return classMinPayloadLength;
+  }
+
+  @override
+  String toString() {
+    var str = "TextRecord: ";
+    str+=basicInfoString;
+    str+="encoding=$encodingString ";
+    str+="language=$language ";
+    str+="text=$text";
+    return str;
   }
 
   TextEncoding encoding;
@@ -31,7 +46,9 @@ class TextRecord extends Record {
       String language,
       String text}) {
     this.encoding = encoding;
-    this.language = language;
+    if(language!=null){
+      this.language = language;
+    }
     this.text = text;
   }
 
@@ -45,8 +62,15 @@ class TextRecord extends Record {
     this._language = language;
   }
 
+  get encodingString {
+    if(encoding==TextEncoding.UTF8){
+      return "UTF-8";
+    }else if(encoding==TextEncoding.UTF16){
+      return "UTF-16";
+    }
+  }
+
   Uint8List get payload {
-    Uint8List payload;
     Uint8List languagePayload = utf8.encode(language);
     Uint8List textPayload;
     int encodingFlag;
@@ -58,13 +82,13 @@ class TextRecord extends Record {
       encodingFlag = 1;
     }
     int flag = (encodingFlag << 7) | languagePayload.length;
-    payload = [flag] + languagePayload + textPayload;
-
-    return payload;
+    return new Uint8List.fromList([flag] + languagePayload + textPayload);
   }
 
   set payload(Uint8List payload) {
-    int flag = payload[0];
+    var stream = new ByteStream(payload);
+
+    int flag = stream.readByte();
 
     assert(flag & 0x3F != 0, "language code length can not be zero");
     assert(flag & 0x3F < payload.length,
@@ -76,8 +100,8 @@ class TextRecord extends Record {
       encoding = TextEncoding.UTF8;
     }
 
-    var languagePayload = payload.sublist(1, flag & 0x3F);
-    var textPayload = payload.sublist(1 + flag & 0x3F);
+    var languagePayload = stream.readBytes(flag & 0x3F);
+    var textPayload = stream.readAll();
     language = utf8.decode(languagePayload);
 
     if (encoding == TextEncoding.UTF8) {

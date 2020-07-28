@@ -5,19 +5,36 @@ import '../record.dart';
 import '../byteStream.dart';
 
 class SignatureRecord extends Record {
-  static const String recordType = "urn:nfc:wkt:Sig";
+  static const TypeNameFormat classTnf = TypeNameFormat.nfcWellKnown;
 
-  static const String decodedType = "Sig";
-
-  @override
-  String get _decodedType {
-    return SignatureRecord.decodedType;
+  TypeNameFormat get tnf {
+    return classTnf;
   }
 
-  static const int minPayloadLength=7;
+  static const String classType = "Sig";
 
-  int get _minPayloadLength{
-    return minPayloadLength;
+  @override
+  String get decodedType {
+    return SignatureRecord.classType;
+  }
+
+  static const int classMinPayloadLength=7;
+
+  int get minPayloadLength{
+    return classMinPayloadLength;
+  }
+
+  @override
+  String toString() {
+    var str = "SignatureRecord: ";
+    str+="signatureType=$signatureType ";
+    str+="hashType=$hashType ";
+    str+="signature="+signature.toString()+" ";
+    str+="signatureURI=$signatureURI ";
+    str+="certificateFormat=$certificateFormat ";
+    str+="certificateStore="+certificateStore.toString()+" ";
+    str+="certificateURI=$certificateURI";
+    return str;
   }
 
   static int version = 2;

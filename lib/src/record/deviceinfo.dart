@@ -12,33 +12,49 @@ class DataElement {
 }
 
 class DeviceInformationRecord extends Record {
-  static const String recordType = "urn:nfc:wkt:Di";
+  static const TypeNameFormat classTnf = TypeNameFormat.nfcWellKnown;
 
-  static const String decodedType = "Di";
-
-  @override
-  String get _decodedType {
-    return DeviceInformationRecord.decodedType;
+  TypeNameFormat get tnf {
+    return classTnf;
   }
 
-  static const int minPayloadLength=2;
+  static const String classType = "Di";
 
-  int get _minPayloadLength{
-    return minPayloadLength;
+  @override
+  String get decodedType {
+    return DeviceInformationRecord.classType;
+  }
+
+  static const int classMinPayloadLength=2;
+
+  int get minPayloadLength{
+    return classMinPayloadLength;
+  }
+
+  @override
+  String toString() {
+    var str = "DeviceInformationRecord: ";
+    str+="vendorName=$vendorName ";
+    str+="modelName=$modelName ";
+    str+="uniqueName=$uniqueName ";
+    str+="uuid=$uuid ";
+    str+="version= $versionString";
+    str+="undefined= $undefinedData ";
+    return str;
   }
 
   List<String> dataList;
   List<DataElement> undefinedData;
 
   DeviceInformationRecord(
-      {String venderName,
+      {String vendorName,
       String modelName,
       String uniqueName,
       String uuid,
       String versionString,
       List<DataElement> undefinedData}) {
     dataList = new List<String>(5);
-    this.venderName = venderName;
+    this.vendorName = vendorName;
     this.modelName = modelName;
     this.uniqueName = uniqueName;
     this.uuid = uuid;
@@ -50,8 +66,8 @@ class DeviceInformationRecord extends Record {
     return dataList[0];
   }
 
-  set venderName(String venderName) {
-    dataList[0] = venderName;
+  set vendorName(String vendorName) {
+    dataList[0] = vendorName;
   }
 
   get modelName {
@@ -115,7 +131,6 @@ class DeviceInformationRecord extends Record {
 
   set payload(Uint8List payload) {
     ByteStream stream = new ByteStream(payload);
-
     while (!stream.isEnd()) {
       int type = stream.readByte();
       int length = stream.readByte();

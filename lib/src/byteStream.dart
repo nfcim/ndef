@@ -96,7 +96,11 @@ class ByteStream {
   static String int2hexString(int value) {
     assert(value >= 0 && value < 256,
         "the number to decode into Hex String must be in the range of [0,256)");
-    return value.toRadixString(16);
+    var str = value.toRadixString(16);
+    if(str.length==1){
+      str='0'+str;
+    }
+    return str;
   }
 
   static int list2int(Uint8List list,{endianness=Endianness.big}) {
@@ -142,7 +146,7 @@ class ByteStream {
     for (int i = 0; i < hex.length; i += 2) {
       result.add(int.parse(hex.substring(i, i + 2), radix: 16));
     }
-    return result;
+    return new Uint8List.fromList(result);
   }
 
   static String list2hexString(Uint8List list) {
@@ -153,4 +157,8 @@ class ByteStream {
     return hex;
   }
 
+}
+
+int bool2int(bool value){
+  return value? 1 : 0;
 }

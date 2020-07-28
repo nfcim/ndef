@@ -22,9 +22,24 @@ List<Record> decodeRawNdefMessage(Uint8List data,
   var records = new List<Record>();
   var stream = new ByteStream(data);
   while (!stream.isEnd()) {
-    records.add(Record.decodeStream(stream, typeFactory));
+    var record = Record.decodeStream(stream, typeFactory);
+    if(records.length==0){
+      if(record.flags.MB==false){
+        throw "MB flag is not set in first record";
+      }
+    }else{
+      if(record.flags.MB==true){
+        throw "MB flag is set in middle record";
+      }
+    }
+    records.add(record);
   }
-
+  if(records.last.flags.ME!=true){
+    throw "ME flag is not set in last record";
+  }
+  if(records.last.flags.CF==true){
+    throw "CF flag is set in last record";
+  }
   return records;
 }
 
@@ -33,10 +48,10 @@ Record decodePartialNdefMessage(
     TypeNameFormat tnf, Uint8List type, Uint8List payload,
     {Uint8List id}) {
   var decoded = Record.doDecode(tnf, type, payload, id: id);
-  // add default flags
-  var flags = new RecordFlags();
-  flags.TNF = TypeNameFormat.values.indexOf(tnf);
-  decoded.flags = flags;
+  // add default flags (implemented in Record's constructor)
+  //var flags = new RecordFlags();
+  //flags.TNF = TypeNameFormat.values.indexOf(tnf);
+  //decoded.flags = flags;
   return decoded;
 }
 
@@ -49,10 +64,10 @@ Uint8List encodeNdefMessage(List<Record> records, {bool canonicalize = true}) {
     records.last.flags.ME = true;
   }
 
-  var encoded = new Uint8List(0);
+  var encoded = new List<int>();
   records.forEach((r) {
     encoded.addAll(r.encode());
   });
 
-  return encoded;
+  return new Uint8List.fromList(encoded);
 }

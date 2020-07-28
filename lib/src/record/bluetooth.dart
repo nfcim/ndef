@@ -520,10 +520,10 @@ class BluetoothRecord extends Record{
 
 class BluetoothEasyPairingRecord extends BluetoothRecord{
   
-  static const String decodedType="application/vnd.bluetooth.ep.oob";
+  static const String classType="application/vnd.bluetooth.ep.oob";
 
-  get _decodedType {
-    return BluetoothEasyPairingRecord.decodedType;
+  get decodedType {
+    return BluetoothEasyPairingRecord.classType;
   }
 
   Address address;
@@ -594,10 +594,10 @@ class BluetoothEasyPairingRecord extends BluetoothRecord{
 
 class BluetoothLowEnergyRecord extends BluetoothRecord{
 
-  static const String decodedType="application/vnd.bluetooth.le.oob";
+  static const String classType="application/vnd.bluetooth.le.oob";
 
-  get _decodedType {
-    return BluetoothEasyPairingRecord.decodedType;
+  get decodedType {
+    return BluetoothLowEnergyRecord.classType;
   }
 
   get address{

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:ndef/ndef.dart';
+import 'package:ndef/src/record/bluetooth.dart';
 
 import '../record.dart';
 import 'deviceinfo.dart';
@@ -11,19 +12,33 @@ import 'deviceinfo.dart';
 enum CarrierPowerState { inactive, active, activating, unknown }
 
 class AlternativeCarrierRecord extends Record {
-  static const String recordType = "urn:nfc:wkt:ac";
+  static const TypeNameFormat classTnf = TypeNameFormat.nfcWellKnown;
 
-  static const String decodedType = "ac";
-
-  @override
-  String get _decodedType {
-    return AlternativeCarrierRecord.decodedType;
+  TypeNameFormat get tnf {
+    return classTnf;
   }
 
-  static const int minPayloadLength=2;
+  static const String classType = "ac";
 
-  int get _minPayloadLength{
-    return minPayloadLength;
+  @override
+  String get decodedType {
+    return AlternativeCarrierRecord.classType;
+  }
+
+  static const int classMinPayloadLength=2;
+
+  int get minPayloadLength{
+    return classMinPayloadLength;
+  }
+
+  @override
+  String toString() {
+    var str = "AlternativeCarrierRecord: ";
+    str+=basicInfoString;
+    str+="carrierPowerState=$carrierPowerState ";
+    str+="carrierDataReference=$carrierDataReference ";
+    str+="auxDataReferences=$auxDataReferenceList ";
+    return str;
   }
 
   CarrierPowerState carrierPowerState;
@@ -86,26 +101,37 @@ class AlternativeCarrierRecord extends Record {
 
 class CollisionResolutionRecord extends Record {
   // a 16-bit random number used to resolve a collision
-  static const String recordType = "urn:nfc:wkt:cr";
+  static const TypeNameFormat classTnf = TypeNameFormat.nfcWellKnown;
 
-  static const String decodedType = "cr";
+  TypeNameFormat get tnf {
+    return classTnf;
+  }
+
+  static const String classType = "cr";
 
   @override
-  String get _decodedType {
-    return CollisionResolutionRecord.decodedType;
+  String get decodedType {
+    return CollisionResolutionRecord.classType;
   }
 
-  static const int minPayloadLength=2;
-  static const int maxPayloadLength=2;
+  static const int classMinPayloadLength=2;
+  static const int classMaxPayloadLength=2;
 
-  int get _minPayloadLength{
-    return minPayloadLength;
+  int get minPayloadLength{
+    return classMinPayloadLength;
   }
 
-  int get _maxPayloadLength{
-    return maxPayloadLength;
+  int get maxPayloadLength{
+    return classMaxPayloadLength;
   }
   
+  @override
+  String toString() {
+    var str = "CollisionResolutionRecord: ";
+    str+=basicInfoString;
+    str+="uri=$randomNumber ";
+    return str;
+  }
 
   int _randomNumber;
 
@@ -138,9 +164,13 @@ class CollisionResolutionRecord extends Record {
 
 class ErrorRecord extends Record {
   // used in the HandoverSelectRecord
-  static const String recordType = "urn:nfc:wkt:err";
+  static const TypeNameFormat classTnf = TypeNameFormat.nfcWellKnown;
 
-  static const String decodedType = "err";
+  TypeNameFormat get tnf {
+    return classTnf;
+  }
+
+  static const String classType = "err";
 
   static const List<String> errorStringMap = [
     "temporarily out of memory, may retry after X milliseconds",
@@ -148,18 +178,26 @@ class ErrorRecord extends Record {
     "carrier specific error, may retry after X milliseconds"
   ];
 
+  @override
+  String toString() {
+    var str = "ErrorRecord: ";
+    str+=basicInfoString;
+    str+="error=$errorString ";
+    return str;
+  }
+
   int errorReason;
   Uint8List errorData;
 
   @override
-  String get _decodedType {
-    return HandoverRequestRecord.decodedType;
+  String get decodedType {
+    return HandoverRequestRecord.classType;
   }
 
-  static const int minPayloadLength=1;
+  static const int classMinPayloadLength=1;
 
-  int get _minPayloadLength{
-    return minPayloadLength;
+  int get minPayloadLength{
+    return classMinPayloadLength;
   }
 
   get errorDataInt {
@@ -206,13 +244,23 @@ class HandoverRecord extends Record {
   List<AlternativeCarrierRecord> alternativeCarrierRecordList;
   List<Record> unknownRecordList;
 
-  static const int minPayloadLength=1;
+  static const int classMinPayloadLength=1;
 
-  int get _minPayloadLength{
-    return minPayloadLength;
+  int get minPayloadLength{
+    return classMinPayloadLength;
   }
 
-  HandoverCarrierRecord() {
+  @override
+  String toString() {
+    var str = "HandoverRecord: ";
+    str+=basicInfoString;
+    str+="version=$versionString ";
+    str+="alternativeCarrierRecords=$alternativeCarrierRecordList ";
+    str+="unknownRecords=$unknownRecordList ";
+    return str;
+  }
+
+  HandoverRecord() {
     alternativeCarrierRecordList = new List<AlternativeCarrierRecord>();
     unknownRecordList = new List<Record>();
   }
@@ -259,13 +307,28 @@ class HandoverRecord extends Record {
 }
 
 class HandoverRequestRecord extends HandoverRecord {
-  static const String recordType = "urn:nfc:wkt:Hr";
+  static const TypeNameFormat classTnf = TypeNameFormat.nfcWellKnown;
 
-  static const String decodedType = "Hr";
+  TypeNameFormat get tnf {
+    return classTnf;
+  }
+
+  static const String classType = "Hr";
 
   @override
-  String get _decodedType {
-    return HandoverRequestRecord.decodedType;
+  String get decodedType {
+    return HandoverRequestRecord.classType;
+  }
+
+  @override
+  String toString() {
+    var str = "HandoverRequestRecord: ";
+    str+=basicInfoString;
+    str+="version=$versionString ";
+    str+="alternativeCarrierRecords=$alternativeCarrierRecordList ";
+    str+="collisionResolutionRecords=$collisionResolutionRecordList ";
+    str+="unknownRecords=$unknownRecordList ";
+    return str;
   }
 
   List<CollisionResolutionRecord> collisionResolutionRecordList;
@@ -274,21 +337,29 @@ class HandoverRequestRecord extends HandoverRecord {
     collisionResolutionRecordList = new List<CollisionResolutionRecord>();
   }
 
-  static Record typeFactory(TypeNameFormat tnf, String decodedType) {
+  static Record typeFactory(TypeNameFormat tnf, String classType) {
     Record record;
     if (tnf == TypeNameFormat.nfcWellKnown) {
-      if (decodedType == AlternativeCarrierRecord.decodedType) {
+      if (classType == AlternativeCarrierRecord.classType) {
         record = AlternativeCarrierRecord();
-      } else if (decodedType == CollisionResolutionRecord.decodedType) {
+      } else if (classType == CollisionResolutionRecord.classType) {
         record = CollisionResolutionRecord();
-      } else if (decodedType == HandoverCarrierRecord.decodedType) {
+      } else if (classType == HandoverCarrierRecord.classType) {
         record = HandoverCarrierRecord();
-      } else if (decodedType == DeviceInformationRecord.decodedType) {
+      } else if (classType == DeviceInformationRecord.classType) {
         record = DeviceInformationRecord();
       } else {
         return Record();
       }
-    } else {
+    } else if(tnf==TypeNameFormat.media){
+      if(classType==BluetoothEasyPairingRecord.classType){
+        record = BluetoothEasyPairingRecord();
+      }else if(classType==BluetoothLowEnergyRecord.classType){
+        record = BluetoothLowEnergyRecord();
+      }else{
+        record = MimeRecord();
+      }
+    } else{
       record = new Record();
     }
     return record;
@@ -342,13 +413,27 @@ class HandoverRequestRecord extends HandoverRecord {
 }
 
 class HandoverSelectRecord extends HandoverRecord {
-  static const String recordType = "urn:nfc:wkt:Hs";
+  static const TypeNameFormat classTnf = TypeNameFormat.nfcWellKnown;
 
-  static const String decodedType = "Hs";
+  TypeNameFormat get tnf {
+    return classTnf;
+  }
+  static const String classType = "Hs";
 
   @override
-  String get _decodedType {
-    return HandoverSelectRecord.decodedType;
+  String get decodedType {
+    return HandoverSelectRecord.classType;
+  }
+
+  @override
+  String toString() {
+    var str = "HandoverSelectRecord: ";
+    str+=basicInfoString;
+    str+="version=$versionString ";
+    str+="alternativeCarrierRecords=$alternativeCarrierRecordList ";
+    str+="errorRecords=$errorRecordList ";
+    str+="unknownRecords=$unknownRecordList ";
+    return str;
   }
 
   List<ErrorRecord> errorRecordList;
@@ -357,17 +442,25 @@ class HandoverSelectRecord extends HandoverRecord {
     errorRecordList = new List<ErrorRecord>();
   }
 
-  static Record typeFactory(TypeNameFormat tnf, String decodedType) {
+  static Record typeFactory(TypeNameFormat tnf, String classType) {
     Record record;
     if (tnf == TypeNameFormat.nfcWellKnown) {
-      if (decodedType == AlternativeCarrierRecord.decodedType) {
+      if (classType == AlternativeCarrierRecord.classType) {
         record = AlternativeCarrierRecord();
-      } else if (decodedType == ErrorRecord.decodedType) {
+      } else if (classType == ErrorRecord.classType) {
         record = ErrorRecord();
-      } else if (decodedType == DeviceInformationRecord.decodedType) {
+      } else if (classType == DeviceInformationRecord.classType) {
         record = DeviceInformationRecord();
       } else {
         return Record();
+      }
+    } else if (tnf == TypeNameFormat.media) {
+      if(classType==BluetoothEasyPairingRecord.classType){
+        record = BluetoothEasyPairingRecord();
+      }else if(classType==BluetoothLowEnergyRecord.classType){
+        record = BluetoothLowEnergyRecord();
+      }else{
+        record = MimeRecord();
       }
     } else {
       record = new Record();
@@ -412,41 +505,83 @@ class HandoverSelectRecord extends HandoverRecord {
 }
 
 class HandoverMediationRecord extends HandoverRecord {
-  static const String recordType = "urn:nfc:wkt:Hm";
+  static const TypeNameFormat classTnf = TypeNameFormat.nfcWellKnown;
 
-  static const String decodedType = "Hm";
+  TypeNameFormat get tnf {
+    return classTnf;
+  }
+
+  static const String classType = "Hm";
 
   @override
-  String get _decodedType {
-    return HandoverMediationRecord.decodedType;
+  String get decodedType {
+    return HandoverMediationRecord.classType;
+  }
+
+  @override
+  String toString() {
+    var str = "HandoverMediationRecord: ";
+    str+=basicInfoString;
+    str+="version=$versionString ";
+    str+="alternativeCarrierRecords=$alternativeCarrierRecordList ";
+    str+="unknownRecords=$unknownRecordList ";
+    return str;
   }
 }
 
 class HandoverInitiateRecord extends HandoverRecord {
-  static const String recordType = "urn:nfc:wkt:Hi";
+  static const TypeNameFormat classTnf = TypeNameFormat.nfcWellKnown;
 
-  static const String decodedType = "Hi";
+  TypeNameFormat get tnf {
+    return classTnf;
+  }
+  static const String classType = "Hi";
 
   @override
-  String get _decodedType {
-    return HandoverInitiateRecord.decodedType;
+  String get decodedType {
+    return HandoverInitiateRecord.classType;
+  }
+
+  @override
+  String toString() {
+    var str = "HandoverInitiateRecord: ";
+    str+=basicInfoString;
+    str+="version=$versionString ";
+    str+="alternativeCarrierRecords=$alternativeCarrierRecordList ";
+    str+="unknownRecords=$unknownRecordList ";
+    return str;
   }
 }
 
 class HandoverCarrierRecord extends HandoverRecord {
-  static const String recordType = "urn:nfc:wkt:Hc";
+  static const TypeNameFormat classTnf = TypeNameFormat.nfcWellKnown;
 
-  static const String decodedType = "Hc";
-
-  @override
-  String get _decodedType {
-    return HandoverCarrierRecord.decodedType;
+  TypeNameFormat get tnf {
+    return classTnf;
   }
 
-  static const int minPayloadLength=1;
+  static const String classType = "Hc";
 
-  int get _minPayloadLength{
-    return minPayloadLength;
+  @override
+  String get decodedType {
+    return HandoverCarrierRecord.classType;
+  }
+
+  static const int classMinPayloadLength=1;
+
+  int get minPayloadLength{
+    return classMinPayloadLength;
+  }
+
+  @override
+  String toString() {
+    var str = "HandoverCarrierRecord: ";
+    str+=basicInfoString;
+    str+="version=$versionString ";
+    str+="carrierType=$carrierType ";
+    str+="alternativeCarrierRecords=$alternativeCarrierRecordList ";
+    str+="unknownRecords=$unknownRecordList ";
+    return str;
   }
 
   int ctf;

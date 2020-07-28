@@ -2,21 +2,24 @@ import 'dart:typed_data';
 
 import '../record.dart';
 
-class MIMERecord extends Record {
-  static const String recordType = "media";
+class MimeRecord extends Record {
 
-  static const String decodedType = "media";
+  static const TypeNameFormat classTnf = TypeNameFormat.media;
 
-  @override
-  String get _decodedType {
-    return MIMERecord.decodedType;
+  TypeNameFormat get tnf {
+    return classTnf;
   }
 
-  String contentType;
+  @override
+  String get decodedType {
+    return classType;
+  }
+
+  String classType;
   Uint8List _payload;
 
-  MIMERecord({String contentType, Uint8List payload}) {
-    this.contentType = contentType;
+  MimeRecord({String contentType, Uint8List payload}) {
+    this.classType = contentType;
     this.payload = payload;
   }
 
