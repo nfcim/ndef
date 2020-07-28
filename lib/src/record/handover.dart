@@ -25,19 +25,19 @@ class AlternativeCarrierRecord extends Record {
     return AlternativeCarrierRecord.classType;
   }
 
-  static const int classMinPayloadLength=2;
+  static const int classMinPayloadLength = 2;
 
-  int get minPayloadLength{
+  int get minPayloadLength {
     return classMinPayloadLength;
   }
 
   @override
   String toString() {
     var str = "AlternativeCarrierRecord: ";
-    str+=basicInfoString;
-    str+="carrierPowerState=$carrierPowerState ";
-    str+="carrierDataReference=$carrierDataReference ";
-    str+="auxDataReferences=$auxDataReferenceList ";
+    str += basicInfoString;
+    str += "carrierPowerState=$carrierPowerState ";
+    str += "carrierDataReference=$carrierDataReference ";
+    str += "auxDataReferences=$auxDataReferenceList ";
     return str;
   }
 
@@ -114,22 +114,22 @@ class CollisionResolutionRecord extends Record {
     return CollisionResolutionRecord.classType;
   }
 
-  static const int classMinPayloadLength=2;
-  static const int classMaxPayloadLength=2;
+  static const int classMinPayloadLength = 2;
+  static const int classMaxPayloadLength = 2;
 
-  int get minPayloadLength{
+  int get minPayloadLength {
     return classMinPayloadLength;
   }
 
-  int get maxPayloadLength{
+  int get maxPayloadLength {
     return classMaxPayloadLength;
   }
-  
+
   @override
   String toString() {
     var str = "CollisionResolutionRecord: ";
-    str+=basicInfoString;
-    str+="uri=$randomNumber ";
+    str += basicInfoString;
+    str += "uri=$randomNumber ";
     return str;
   }
 
@@ -181,8 +181,8 @@ class ErrorRecord extends Record {
   @override
   String toString() {
     var str = "ErrorRecord: ";
-    str+=basicInfoString;
-    str+="error=$errorString ";
+    str += basicInfoString;
+    str += "error=$errorString ";
     return str;
   }
 
@@ -194,9 +194,9 @@ class ErrorRecord extends Record {
     return HandoverRequestRecord.classType;
   }
 
-  static const int classMinPayloadLength=1;
+  static const int classMinPayloadLength = 1;
 
-  int get minPayloadLength{
+  int get minPayloadLength {
     return classMinPayloadLength;
   }
 
@@ -244,19 +244,19 @@ class HandoverRecord extends Record {
   List<AlternativeCarrierRecord> alternativeCarrierRecordList;
   List<Record> unknownRecordList;
 
-  static const int classMinPayloadLength=1;
+  static const int classMinPayloadLength = 1;
 
-  int get minPayloadLength{
+  int get minPayloadLength {
     return classMinPayloadLength;
   }
 
   @override
   String toString() {
     var str = "HandoverRecord: ";
-    str+=basicInfoString;
-    str+="version=$versionString ";
-    str+="alternativeCarrierRecords=$alternativeCarrierRecordList ";
-    str+="unknownRecords=$unknownRecordList ";
+    str += basicInfoString;
+    str += "version=$versionString ";
+    str += "alternativeCarrierRecords=$alternativeCarrierRecordList ";
+    str += "unknownRecords=$unknownRecordList ";
     return str;
   }
 
@@ -323,11 +323,11 @@ class HandoverRequestRecord extends HandoverRecord {
   @override
   String toString() {
     var str = "HandoverRequestRecord: ";
-    str+=basicInfoString;
-    str+="version=$versionString ";
-    str+="alternativeCarrierRecords=$alternativeCarrierRecordList ";
-    str+="collisionResolutionRecords=$collisionResolutionRecordList ";
-    str+="unknownRecords=$unknownRecordList ";
+    str += basicInfoString;
+    str += "version=$versionString ";
+    str += "alternativeCarrierRecords=$alternativeCarrierRecordList ";
+    str += "collisionResolutionRecords=$collisionResolutionRecordList ";
+    str += "unknownRecords=$unknownRecordList ";
     return str;
   }
 
@@ -351,15 +351,15 @@ class HandoverRequestRecord extends HandoverRecord {
       } else {
         return Record();
       }
-    } else if(tnf==TypeNameFormat.media){
-      if(classType==BluetoothEasyPairingRecord.classType){
+    } else if (tnf == TypeNameFormat.media) {
+      if (classType == BluetoothEasyPairingRecord.classType) {
         record = BluetoothEasyPairingRecord();
-      }else if(classType==BluetoothLowEnergyRecord.classType){
+      } else if (classType == BluetoothLowEnergyRecord.classType) {
         record = BluetoothLowEnergyRecord();
-      }else{
+      } else {
         record = MimeRecord();
       }
-    } else{
+    } else {
       record = new Record();
     }
     return record;
@@ -418,6 +418,7 @@ class HandoverSelectRecord extends HandoverRecord {
   TypeNameFormat get tnf {
     return classTnf;
   }
+
   static const String classType = "Hs";
 
   @override
@@ -428,11 +429,11 @@ class HandoverSelectRecord extends HandoverRecord {
   @override
   String toString() {
     var str = "HandoverSelectRecord: ";
-    str+=basicInfoString;
-    str+="version=$versionString ";
-    str+="alternativeCarrierRecords=$alternativeCarrierRecordList ";
-    str+="errorRecords=$errorRecordList ";
-    str+="unknownRecords=$unknownRecordList ";
+    str += basicInfoString;
+    str += "version=$versionString ";
+    str += "alternativeCarrierRecords=$alternativeCarrierRecordList ";
+    str += "errorRecords=$errorRecordList ";
+    str += "unknownRecords=$unknownRecordList ";
     return str;
   }
 
@@ -455,11 +456,11 @@ class HandoverSelectRecord extends HandoverRecord {
         return Record();
       }
     } else if (tnf == TypeNameFormat.media) {
-      if(classType==BluetoothEasyPairingRecord.classType){
+      if (classType == BluetoothEasyPairingRecord.classType) {
         record = BluetoothEasyPairingRecord();
-      }else if(classType==BluetoothLowEnergyRecord.classType){
+      } else if (classType == BluetoothLowEnergyRecord.classType) {
         record = BluetoothLowEnergyRecord();
-      }else{
+      } else {
         record = MimeRecord();
       }
     } else {
@@ -521,10 +522,10 @@ class HandoverMediationRecord extends HandoverRecord {
   @override
   String toString() {
     var str = "HandoverMediationRecord: ";
-    str+=basicInfoString;
-    str+="version=$versionString ";
-    str+="alternativeCarrierRecords=$alternativeCarrierRecordList ";
-    str+="unknownRecords=$unknownRecordList ";
+    str += basicInfoString;
+    str += "version=$versionString ";
+    str += "alternativeCarrierRecords=$alternativeCarrierRecordList ";
+    str += "unknownRecords=$unknownRecordList ";
     return str;
   }
 }
@@ -535,6 +536,7 @@ class HandoverInitiateRecord extends HandoverRecord {
   TypeNameFormat get tnf {
     return classTnf;
   }
+
   static const String classType = "Hi";
 
   @override
@@ -545,10 +547,10 @@ class HandoverInitiateRecord extends HandoverRecord {
   @override
   String toString() {
     var str = "HandoverInitiateRecord: ";
-    str+=basicInfoString;
-    str+="version=$versionString ";
-    str+="alternativeCarrierRecords=$alternativeCarrierRecordList ";
-    str+="unknownRecords=$unknownRecordList ";
+    str += basicInfoString;
+    str += "version=$versionString ";
+    str += "alternativeCarrierRecords=$alternativeCarrierRecordList ";
+    str += "unknownRecords=$unknownRecordList ";
     return str;
   }
 }
@@ -567,20 +569,20 @@ class HandoverCarrierRecord extends HandoverRecord {
     return HandoverCarrierRecord.classType;
   }
 
-  static const int classMinPayloadLength=1;
+  static const int classMinPayloadLength = 1;
 
-  int get minPayloadLength{
+  int get minPayloadLength {
     return classMinPayloadLength;
   }
 
   @override
   String toString() {
     var str = "HandoverCarrierRecord: ";
-    str+=basicInfoString;
-    str+="version=$versionString ";
-    str+="carrierType=$carrierType ";
-    str+="alternativeCarrierRecords=$alternativeCarrierRecordList ";
-    str+="unknownRecords=$unknownRecordList ";
+    str += basicInfoString;
+    str += "version=$versionString ";
+    str += "carrierType=$carrierType ";
+    str += "alternativeCarrierRecords=$alternativeCarrierRecordList ";
+    str += "unknownRecords=$unknownRecordList ";
     return str;
   }
 

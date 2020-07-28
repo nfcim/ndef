@@ -22,19 +22,19 @@ class TextRecord extends Record {
     return TextRecord.classType;
   }
 
-  static const int classMinPayloadLength=1;
+  static const int classMinPayloadLength = 1;
 
-  int get minPayloadLength{
+  int get minPayloadLength {
     return classMinPayloadLength;
   }
 
   @override
   String toString() {
     var str = "TextRecord: ";
-    str+=basicInfoString;
-    str+="encoding=$encodingString ";
-    str+="language=$language ";
-    str+="text=$text";
+    str += basicInfoString;
+    str += "encoding=$encodingString ";
+    str += "language=$language ";
+    str += "text=$text";
     return str;
   }
 
@@ -46,7 +46,7 @@ class TextRecord extends Record {
       String language,
       String text}) {
     this.encoding = encoding;
-    if(language!=null){
+    if (language != null) {
       this.language = language;
     }
     this.text = text;
@@ -63,16 +63,16 @@ class TextRecord extends Record {
   }
 
   get encodingString {
-    if(encoding==TextEncoding.UTF8){
+    if (encoding == TextEncoding.UTF8) {
       return "UTF-8";
-    }else if(encoding==TextEncoding.UTF16){
+    } else if (encoding == TextEncoding.UTF16) {
       return "UTF-16";
     }
   }
 
   Uint8List get payload {
-    Uint8List languagePayload = utf8.encode(language);
-    Uint8List textPayload;
+    List<int> languagePayload = utf8.encode(language);
+    List<int> textPayload;
     int encodingFlag;
     if (encoding == TextEncoding.UTF8) {
       textPayload = utf8.encode(text);

@@ -3,7 +3,6 @@ import 'dart:typed_data';
 import '../record.dart';
 
 class MimeRecord extends Record {
-
   static const TypeNameFormat classTnf = TypeNameFormat.media;
 
   TypeNameFormat get tnf {

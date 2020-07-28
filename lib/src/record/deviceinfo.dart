@@ -25,21 +25,21 @@ class DeviceInformationRecord extends Record {
     return DeviceInformationRecord.classType;
   }
 
-  static const int classMinPayloadLength=2;
+  static const int classMinPayloadLength = 2;
 
-  int get minPayloadLength{
+  int get minPayloadLength {
     return classMinPayloadLength;
   }
 
   @override
   String toString() {
     var str = "DeviceInformationRecord: ";
-    str+="vendorName=$vendorName ";
-    str+="modelName=$modelName ";
-    str+="uniqueName=$uniqueName ";
-    str+="uuid=$uuid ";
-    str+="version= $versionString";
-    str+="undefined= $undefinedData ";
+    str += "vendorName=$vendorName ";
+    str += "modelName=$modelName ";
+    str += "uniqueName=$uniqueName ";
+    str += "uuid=$uuid ";
+    str += "version= $versionString";
+    str += "undefined= $undefinedData ";
     return str;
   }
 

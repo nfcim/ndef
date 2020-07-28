@@ -8,7 +8,7 @@ class AbsoluteUriRecord extends Record {
   TypeNameFormat get tnf {
     return classTnf;
   }
-  
+
   String uri;
   Uint8List _payload;
 
@@ -21,7 +21,7 @@ class AbsoluteUriRecord extends Record {
   @override
   String toString() {
     var str = "AbsoluteUriRecord: ";
-    str+="uri=$uri";
+    str += "uri=$uri";
     return str;
   }
 

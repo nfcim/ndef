@@ -67,47 +67,48 @@ class UriRecord extends Record {
   @override
   String toString() {
     var str = "UriRecord: ";
-    str+=basicInfoString;
-    str+="uri=$uriString ";
+    str += basicInfoString;
+    str += "uri=$uriString ";
     return str;
   }
 
   String _uriPrefix, uriData;
 
-  UriRecord({String uriPrefix, String uriData}){
-    if(uriPrefix!=null){
-      this.uriPrefix=uriPrefix;
+  UriRecord({String uriPrefix, String uriData}) {
+    if (uriPrefix != null) {
+      this.uriPrefix = uriPrefix;
     }
-    this.uriData=uriData;
+    this.uriData = uriData;
   }
 
-  UriRecord.fromUriString(String uriString){
-    this.uriString=uriString;
+  UriRecord.fromUriString(String uriString) {
+    this.uriString = uriString;
   }
 
-  String get uriPrefix{
+  String get uriPrefix {
     return _uriPrefix;
   }
 
-  set uriPrefix(String uriPrefix){
-    assert(uriPrefixMap.contains(uriPrefix),"URI Prefix $uriPrefix is not correct");
-    _uriPrefix=uriPrefix;
+  set uriPrefix(String uriPrefix) {
+    assert(uriPrefixMap.contains(uriPrefix),
+        "URI Prefix $uriPrefix is not correct");
+    _uriPrefix = uriPrefix;
   }
 
   get uriString {
     return this.uriPrefix + this.uriData;
   }
 
-  set uriString(String uriString){
-    for(int i=1;i<uriPrefixMap.length;i++){
-      if(uriString.startsWith(uriPrefixMap[i])){
-        this._uriPrefix=uriPrefixMap[i];
-        this.uriData=uriString.substring(uriPrefix.length);
+  set uriString(String uriString) {
+    for (int i = 1; i < uriPrefixMap.length; i++) {
+      if (uriString.startsWith(uriPrefixMap[i])) {
+        this._uriPrefix = uriPrefixMap[i];
+        this.uriData = uriString.substring(uriPrefix.length);
         return;
       }
     }
-    this._uriPrefix="";
-    this.uriData=uriString;
+    this._uriPrefix = "";
+    this.uriData = uriString;
   }
 
   Uri get uri {
@@ -117,7 +118,7 @@ class UriRecord extends Record {
   Uint8List get payload {
     for (int i = 0; i < uriPrefixMap.length; i++) {
       if (uriPrefixMap[i] == uriPrefix) {
-        return new Uint8List.fromList([i]+utf8.encode(uriData));
+        return new Uint8List.fromList([i] + utf8.encode(uriData));
       }
     }
   }

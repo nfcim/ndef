@@ -18,22 +18,22 @@ class SignatureRecord extends Record {
     return SignatureRecord.classType;
   }
 
-  static const int classMinPayloadLength=7;
+  static const int classMinPayloadLength = 7;
 
-  int get minPayloadLength{
+  int get minPayloadLength {
     return classMinPayloadLength;
   }
 
   @override
   String toString() {
     var str = "SignatureRecord: ";
-    str+="signatureType=$signatureType ";
-    str+="hashType=$hashType ";
-    str+="signature="+signature.toString()+" ";
-    str+="signatureURI=$signatureURI ";
-    str+="certificateFormat=$certificateFormat ";
-    str+="certificateStore="+certificateStore.toString()+" ";
-    str+="certificateURI=$certificateURI";
+    str += "signatureType=$signatureType ";
+    str += "hashType=$hashType ";
+    str += "signature=" + signature.toString() + " ";
+    str += "signatureURI=$signatureURI ";
+    str += "certificateFormat=$certificateFormat ";
+    str += "certificateStore=" + certificateStore.toString() + " ";
+    str += "certificateURI=$certificateURI";
     return str;
   }
 

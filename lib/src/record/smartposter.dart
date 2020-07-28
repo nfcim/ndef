@@ -26,22 +26,22 @@ class ActionRecord extends Record {
     return ActionRecord.classType;
   }
 
-  static const int classMinPayloadLength=1;
-  static const int classMaxPayloadLength=1;
+  static const int classMinPayloadLength = 1;
+  static const int classMaxPayloadLength = 1;
 
-  int get minPayloadLength{
+  int get minPayloadLength {
     return classMinPayloadLength;
   }
 
-  int get maxPayloadLength{
+  int get maxPayloadLength {
     return classMaxPayloadLength;
   }
 
   @override
   String toString() {
     var str = "ActionRecord: ";
-    str+=basicInfoString;
-    str+="action=$action ";
+    str += basicInfoString;
+    str += "action=$action ";
     return str;
   }
 
@@ -78,22 +78,22 @@ class SizeRecord extends Record {
     return SizeRecord.classType;
   }
 
-  static const int classMinPayloadLength=4;
-  static const int classMaxPayloadLength=4;
+  static const int classMinPayloadLength = 4;
+  static const int classMaxPayloadLength = 4;
 
-  int get minPayloadLength{
+  int get minPayloadLength {
     return classMinPayloadLength;
   }
 
-  int get maxPayloadLength{
+  int get maxPayloadLength {
     return classMaxPayloadLength;
   }
-  
+
   @override
   String toString() {
     var str = "SizeRecord: ";
-    str+=basicInfoString;
-    str+="size=$size ";
+    str += basicInfoString;
+    str += "size=$size ";
     return str;
   }
 
@@ -106,7 +106,7 @@ class SizeRecord extends Record {
   }
 
   set payload(Uint8List payload) {
-    size = ByteStream.list2int(payload.sublist(0,4));
+    size = ByteStream.list2int(payload.sublist(0, 4));
   }
 }
 
@@ -127,8 +127,8 @@ class TypeRecord extends Record {
   @override
   String toString() {
     var str = "TypeRecord: ";
-    str+=basicInfoString;
-    str+="type=$typeInfo ";
+    str += basicInfoString;
+    str += "type=$typeInfo ";
     return str;
   }
 
@@ -162,13 +162,13 @@ class SmartposterRecord extends Record {
   @override
   String toString() {
     var str = "SmartRecord: ";
-    str+=basicInfoString;
-    str+="titleRecords=$titleRecords ";
-    str+="uriRecords=$uriRecords ";
-    str+="actionRecords=$actionRecords ";
-    str+="iconRecords=$iconRecords ";
-    str+="sizeRecords=$sizeRecords ";
-    str+="typeRecords=$typeRecords ";
+    str += basicInfoString;
+    str += "titleRecords=$titleRecords ";
+    str += "uriRecords=$uriRecords ";
+    str += "actionRecords=$actionRecords ";
+    str += "iconRecords=$iconRecords ";
+    str += "sizeRecords=$sizeRecords ";
+    str += "typeRecords=$typeRecords ";
     return str;
   }
 

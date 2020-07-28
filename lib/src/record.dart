@@ -60,7 +60,6 @@ class RecordFlags {
       TNF = data & 7;
     }
   }
-
 }
 
 enum TypeNameFormat {
@@ -91,8 +90,8 @@ class Record {
     return TypeNameFormat.values[flags.TNF];
   }
 
-  set tnf(TypeNameFormat tnf){
-    flags.TNF=TypeNameFormat.values.indexOf(tnf);
+  set tnf(TypeNameFormat tnf) {
+    flags.TNF = TypeNameFormat.values.indexOf(tnf);
   }
 
   Uint8List encodedType;
@@ -116,39 +115,39 @@ class Record {
   }
 
   String get recordType {
-    return typePrefixes[flags.TNF]+decodedType;
+    return typePrefixes[flags.TNF] + decodedType;
   }
 
-  String get idString{
-    if(id==null){
+  String get idString {
+    if (id == null) {
       return "";
-    }else{
+    } else {
       return utf8.decode(id);
     }
   }
 
-  static const int classMinPayloadLength=0;
-  static const int classMaxPayloadLength=null;
+  static const int classMinPayloadLength = 0;
+  static const int classMaxPayloadLength = null;
 
-  int get minPayloadLength{
+  int get minPayloadLength {
     return classMinPayloadLength;
   }
 
-  int get maxPayloadLength{
+  int get maxPayloadLength {
     return classMaxPayloadLength;
   }
 
-  String get basicInfoString{
+  String get basicInfoString {
     var str = "id=$idString ";
     return str;
   }
 
   @override
-  String toString(){
+  String toString() {
     var str = "Record: ";
-    str+=basicInfoString;
-    str+="typeNameFormat=$tnf ";
-    str+="type=$decodedType ";
+    str += basicInfoString;
+    str += "typeNameFormat=$tnf ";
+    str += "type=$decodedType ";
     return str;
   }
 
@@ -156,7 +155,7 @@ class Record {
   Uint8List payload;
   RecordFlags flags;
 
-  Record(){
+  Record() {
     flags = new RecordFlags();
     flags.TNF = TypeNameFormat.values.indexOf(tnf);
   }
@@ -185,11 +184,11 @@ class Record {
         record = new Record();
       }
     } else if (tnf == TypeNameFormat.media) {
-      if(classType==BluetoothEasyPairingRecord.classType){
+      if (classType == BluetoothEasyPairingRecord.classType) {
         record = BluetoothEasyPairingRecord();
-      }else if(classType==BluetoothLowEnergyRecord.classType){
+      } else if (classType == BluetoothLowEnergyRecord.classType) {
         record = BluetoothLowEnergyRecord();
-      }else{
+      } else {
         record = MimeRecord();
       }
     } else if (tnf == TypeNameFormat.absoluteURI) {
@@ -204,10 +203,11 @@ class Record {
   static Record doDecode(TypeNameFormat tnf, Uint8List type, Uint8List payload,
       {Uint8List id, var typeFactory = Record.typeFactory}) {
     Record record = typeFactory(tnf, utf8.decode(type));
-    if(payload.length<record.minPayloadLength){
+    if (payload.length < record.minPayloadLength) {
       throw "payload length must be >= ${record.minPayloadLength}";
     }
-    if(record.maxPayloadLength!=null && payload.length<record.maxPayloadLength){
+    if (record.maxPayloadLength != null &&
+        payload.length < record.maxPayloadLength) {
       throw "payload length must be <= ${record.maxPayloadLength}";
     }
     record.id = id;
@@ -278,7 +278,7 @@ class Record {
     if (payload.length < 256) {
       flags.SR = true;
     }
-    
+
     // flags
     var encodedFlags = flags.encode();
     encoded.add(encodedFlags);
@@ -322,12 +322,12 @@ class Record {
     return new Uint8List.fromList(encoded);
   }
 
-  bool isEqual(Record other){
-    Function eq=const ListEquality().equals;
-    return (other is Record) && 
-      (tnf==other.tnf) && 
-      eq(type,other.type) &&
-      (id==other.id) &&
-      eq(payload,other.payload);
+  bool isEqual(Record other) {
+    Function eq = const ListEquality().equals;
+    return (other is Record) &&
+        (tnf == other.tnf) &&
+        eq(type, other.type) &&
+        (id == other.id) &&
+        eq(payload, other.payload);
   }
 }
