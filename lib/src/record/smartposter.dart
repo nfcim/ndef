@@ -50,9 +50,9 @@ class ActionRecord extends Record {
   ActionRecord({this.action});
 
   Uint8List get payload {
-    Uint8List payload = new Uint8List(0);
+    var payload = new List<int>();
     payload.add(Action.values.indexOf(action));
-    return payload;
+    return new Uint8List.fromList(payload);
   }
 
   set payload(Uint8List payload) {

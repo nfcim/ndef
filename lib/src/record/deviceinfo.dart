@@ -106,7 +106,7 @@ class DeviceInformationRecord extends Record {
     if (!(vendorName != null && modelName != null)) {
       throw "decoding requires the manufacturer and model name TLVs";
     }
-    Uint8List payload = new Uint8List(0);
+    var payload = new List<int>();
 
     // known data
     for (int type = 0; type < 5; type++) {
@@ -126,7 +126,7 @@ class DeviceInformationRecord extends Record {
       payload.addAll(valueBytes);
     }
 
-    return payload;
+    return new Uint8List.fromList(payload);
   }
 
   set payload(Uint8List payload) {

@@ -60,7 +60,7 @@ class AlternativeCarrierRecord extends Record {
   }
 
   Uint8List get payload {
-    Uint8List payload = new Uint8List(0);
+    var payload = new List<int>();
     payload.add(carrierPowerStateIndex);
 
     // latin1 String and its corresponding Uint8List have the same length
@@ -76,7 +76,7 @@ class AlternativeCarrierRecord extends Record {
       payload.addAll(latin1.encode(auxDataReferenceList[i]));
     }
 
-    return payload;
+    return new Uint8List.fromList(payload);
   }
 
   set payload(Uint8List payload) {

@@ -143,19 +143,19 @@ class SignatureRecord extends Record {
     int certificateFlag = (certificateURIPresent << 7) |
         (certificateFormatIndex << 4) |
         certificateStore.length;
-    Uint8List certificateStoreBytes = new Uint8List(0);
+    var certificateStoreBytes = new List<int>();
     for (int i = 0; i < certificateStore.length; i++) {
       certificateStoreBytes
           .addAll(ByteStream.int2list(certificateStore[i].length, 2));
       certificateStoreBytes.addAll(certificateStore[i]);
     }
-    Uint8List certificateURIBytes = new Uint8List(0);
+    var certificateURIBytes = new List<int>();
     if (certificateURI != null) {
       certificateURIBytes.addAll(ByteStream.int2list(certificateURI.length, 2));
       certificateURIBytes.addAll(utf8.encode(certificateURI));
     }
-    Uint8List certificateBytes =
-        [certificateFlag] + certificateStoreBytes + certificateURIBytes;
+    Uint8List certificateBytes = new Uint8List.fromList(
+        [certificateFlag] + certificateStoreBytes + certificateURIBytes);
 
     payload = [version] + signatureBytes + certificateBytes;
     return payload;

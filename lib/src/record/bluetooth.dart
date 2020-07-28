@@ -34,11 +34,12 @@ class Address {
     RegExp exp = new RegExp(r"^([0-9A-F]{2}[:-]){5}([0-9A-F]{2})$");
     if (exp.hasMatch(address)) {
       var nums = address.split(new RegExp("[-:]"));
-      bytes = new Uint8List(0);
+      var bts = new List<int>();
       assert(nums.length == 6);
       for (var n in nums) {
-        bytes.add(int.parse(n, radix: 16));
+        bts.add(int.parse(n, radix: 16));
       }
+      bytes = new Uint8List.fromList(bts);
     } else {
       throw "Pattern of adress string is wrong";
     }
@@ -604,7 +605,7 @@ class BluetoothEasyPairingRecord extends BluetoothRecord {
   }
 
   Uint8List get payload {
-    Uint8List data = new Uint8List(0);
+    var data = new List<int>();
     for (var e in attributes.entries) {
       data.add(e.value.length + 1);
       data.add(EIR.typeNumMap[e.key]);
@@ -614,7 +615,7 @@ class BluetoothEasyPairingRecord extends BluetoothRecord {
         ByteStream.int2list(data.length, 2, endianness: Endianness.little) +
             address.bytes +
             data;
-    return payload;
+    return new Uint8List.fromList(payload);
   }
 
   set payload(Uint8List payload) {
@@ -675,9 +676,9 @@ class BluetoothLowEnergyRecord extends BluetoothRecord {
   set roleCapabilities(String value) {
     if (leRoleList.contains(value)) {
       int index = leRoleList.indexOf(value);
-      var bytes = new Uint8List(0);
+      var bytes = new List<int>(0);
       bytes.add(index);
-      attributes[EIRType.LERole] = bytes;
+      attributes[EIRType.LERole] = new Uint8List.fromList(bytes);
     } else {
       throw "Role capability $value is undefined";
     }
@@ -825,13 +826,13 @@ class BluetoothLowEnergyRecord extends BluetoothRecord {
   }
 
   Uint8List get payload {
-    Uint8List payload = new Uint8List(0);
+    Uint8List payload = new List<int>();
     for (var e in attributes.entries) {
       payload.add(e.value.length + 1);
       payload.add(EIR.typeNumMap[e.key]);
       payload.addAll(e.value);
     }
-    return payload;
+    return new Uint8List.fromList(payload);
   }
 
   set payload(Uint8List payload) {

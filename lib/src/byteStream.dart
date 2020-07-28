@@ -109,7 +109,7 @@ class ByteStream {
   static Uint8List int2list(int value, int length,
       {endianness = Endianness.big}) {
     assert(length <= 8);
-    Uint8List list = new Uint8List(0);
+    var list = new List<int>(0);
     for (int i = 0; i < length; i++) {
       list.add(value % 256);
       value ~/= 256;
@@ -117,7 +117,7 @@ class ByteStream {
     if (endianness == Endianness.big) {
       list = list.reversed;
     }
-    return list;
+    return new Uint8List.fromList(list);
   }
 
   static BigInt list2bigInt(Uint8List list, {endianness = Endianness.big}) {
@@ -127,7 +127,7 @@ class ByteStream {
 
   static Uint8List bigInt2list(BigInt value, int length,
       {endianness = Endianness.big}) {
-    Uint8List list = new Uint8List(0);
+    Uint8List list = new List<int>(0);
     for (int i = 0; i < length; i++) {
       list.add((value % (new BigInt.from(256))).toInt());
       value ~/= (new BigInt.from(256));
@@ -135,7 +135,7 @@ class ByteStream {
     if (endianness == Endianness.big) {
       list = list.reversed;
     }
-    return list;
+    return new Uint8List.fromList(list);
   }
 
   static Uint8List hexString2list(String hex) {
