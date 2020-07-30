@@ -204,6 +204,7 @@ class Record {
       {Uint8List id, var typeFactory = Record.typeFactory}) {
     Record record = typeFactory(tnf, utf8.decode(type));
     if (payload.length < record.minPayloadLength) {
+      print(payload);
       throw "payload length must be >= ${record.minPayloadLength}";
     }
     if (record.maxPayloadLength != null &&

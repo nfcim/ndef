@@ -46,12 +46,12 @@ class ByteStream {
     if (endianness == Endianness.big) {
       for (var n = 0; n < d.length; n++) {
         value <<= 256;
-        value += d[d.length - n - 1];
+        value += d[n];
       }
     } else if (endianness == Endianness.little) {
       for (var n = d.length - 1; n >= 0; n--) {
         value <<= 256;
-        value += d[d.length - n - 1];
+        value += d[n];
       }
     }
     return value;
@@ -109,13 +109,13 @@ class ByteStream {
   static Uint8List int2list(int value, int length,
       {endianness = Endianness.big}) {
     assert(length <= 8);
-    var list = new List<int>(0);
+    var list = new List<int>();
     for (int i = 0; i < length; i++) {
       list.add(value % 256);
       value ~/= 256;
     }
     if (endianness == Endianness.big) {
-      list = list.reversed;
+      list = list.reversed.toList();
     }
     return new Uint8List.fromList(list);
   }

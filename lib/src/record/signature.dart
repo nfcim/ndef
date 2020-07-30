@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import '../record.dart';
 import '../byteStream.dart';
 
+/// Signature Record is uesd to protect the integrity and authenticity of NDEF Messages.
 class SignatureRecord extends Record {
   static const TypeNameFormat classTnf = TypeNameFormat.nfcWellKnown;
 
@@ -18,7 +19,7 @@ class SignatureRecord extends Record {
     return SignatureRecord.classType;
   }
 
-  static const int classMinPayloadLength = 7;
+  static const int classMinPayloadLength = 6;
 
   int get minPayloadLength {
     return classMinPayloadLength;
@@ -29,7 +30,7 @@ class SignatureRecord extends Record {
     var str = "SignatureRecord: ";
     str += "signatureType=$signatureType ";
     str += "hashType=$hashType ";
-    str += "signature=" + signature.toString() + " ";
+    str += "signature=${ByteStream.list2hexString(signature)} ";
     str += "signatureURI=$signatureURI ";
     str += "certificateFormat=$certificateFormat ";
     str += "certificateStore=" + certificateStore.toString() + " ";
@@ -37,10 +38,10 @@ class SignatureRecord extends Record {
     return str;
   }
 
-  static int version = 2;
+  static const int classVersion = 0x20;
 
   static List<String> signatureTypeMap = [
-    "",
+    null,
     "RSASSA-PSS-1024",
     "RSASSA-PKCS1-v1_5-1024",
     "DSA-1024",
@@ -59,24 +60,29 @@ class SignatureRecord extends Record {
   static List<String> certificateFormatMap = ["X.509", "M2M"];
 
   String signatureURI, certificateURI;
-  List<Uint8List> certificateStore;
+  List<Uint8List> _certificateStore;
   Uint8List signature;
   int signatureTypeIndex, hashTypeIndex, certificateFormatIndex;
 
   SignatureRecord(
       {String signatureType,
-      String hashType,
+      String hashType = "SHA-256",
       Uint8List signature,
-      String signatureURI,
-      String certificateFormat,
+      String signatureURI = "",
+      String certificateFormat = "X.509",
       List<Uint8List> certificateStore,
-      String certificateURI}) {
+      String certificateURI = ""}) {
     this.signatureType = signatureType;
     this.hashType = hashType;
-    this.signature = signature;
+    this.signature = signature != null ? signature : new Uint8List(0);
     this.signatureURI = signatureURI;
     this.certificateFormat = certificateFormat;
-    this.certificateStore = certificateStore;
+    this._certificateStore = new List<Uint8List>();
+    if (certificateStore != null) {
+      for (var c in certificateStore) {
+        addCertificateStore(c);
+      }
+    }
     this.certificateURI = certificateURI;
   }
 
@@ -122,24 +128,37 @@ class SignatureRecord extends Record {
     throw "No certificate format called $certificateFormat";
   }
 
+  get certificateStore {
+    return _certificateStore;
+  }
+
+  void addCertificateStore(Uint8List certificate) {
+    if (certificate.length >= 1 << 16) {
+      throw "Bytes length of certificate must be < 2^16";
+    }
+    if (_certificateStore.length >= 1 << 4) {
+      throw "Number of certificates in certificate store must be < 2^4";
+    }
+    _certificateStore.add(certificate);
+  }
+
   Uint8List get payload {
-    Uint8List payload;
+    var payload;
 
     //Version Field pass
     //Signature Field
-    int signatureURIPresent = (signatureURI == null) ? 0 : 1;
+    int signatureURIPresent = (signatureURI == "") ? 0 : 1;
     int signatureFlag = (signatureURIPresent << 7) | signatureTypeIndex;
 
-    Uint8List signatureURIBytes =
-        utf8.encode((signatureURI == null ? signature : signatureURI));
-    Uint8List signatureLenthBytes =
-        ByteStream.int2list(signatureURIBytes.length, 2);
-    Uint8List signatureBytes = [signatureFlag, hashTypeIndex] +
+    var signatureURIBytes =
+        signatureURIPresent == 0 ? signature : utf8.encode(signatureURI);
+    var signatureLenthBytes = ByteStream.int2list(signatureURIBytes.length, 2);
+    var signatureBytes = [signatureFlag, hashTypeIndex] +
         signatureLenthBytes +
         signatureURIBytes;
 
     //Certificate Field
-    int certificateURIPresent = (certificateURI == null) ? 0 : 1;
+    int certificateURIPresent = (certificateURI == "") ? 0 : 1;
     int certificateFlag = (certificateURIPresent << 7) |
         (certificateFormatIndex << 4) |
         certificateStore.length;
@@ -150,26 +169,26 @@ class SignatureRecord extends Record {
       certificateStoreBytes.addAll(certificateStore[i]);
     }
     var certificateURIBytes = new List<int>();
-    if (certificateURI != null) {
+    if (certificateURIPresent != 0) {
       certificateURIBytes.addAll(ByteStream.int2list(certificateURI.length, 2));
       certificateURIBytes.addAll(utf8.encode(certificateURI));
     }
-    Uint8List certificateBytes = new Uint8List.fromList(
+    var certificateBytes = new Uint8List.fromList(
         [certificateFlag] + certificateStoreBytes + certificateURIBytes);
 
-    payload = [version] + signatureBytes + certificateBytes;
-    return payload;
+    payload = [classVersion] + signatureBytes + certificateBytes;
+    return new Uint8List.fromList(payload);
   }
 
   set payload(Uint8List payload) {
     ByteStream stream = new ByteStream(payload);
 
-    int version = stream.readByte(); //PAYLOAD[0];
-    int signatureFlag = stream.readByte(); //PAYLOAD[1];
-    hashTypeIndex = stream.readByte(); //PAYLOAD[2];
+    int version = stream.readByte();
+    int signatureFlag = stream.readByte();
+    hashTypeIndex = stream.readByte();
 
     //Version Field
-    if (version != 2) {
+    if (version != classVersion) {
       //TODO:find the document of smartposter 2.0
       throw "Signature Record is only implemented for smartposter 2.0";
     }
