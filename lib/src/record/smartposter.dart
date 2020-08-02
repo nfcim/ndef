@@ -181,12 +181,46 @@ class SmartposterRecord extends Record {
   List<String> _titleLanguages;
 
   SmartposterRecord({
-    List<Record> titleRecords,
-    List<Record> uriRecords,
-    List<Record> actionRecords,
-    List<Record> iconRecords,
-    List<Record> sizeRecords,
-    List<Record> typeRecords,
+    var title,
+    var uri,
+    Action action,
+    MimeRecord iconRecord,
+    int size,
+    String typeInfo,
+  }) {
+    _titleRecords = new List<TextRecord>();
+    _uriRecords = new List<UriRecord>();
+    _actionRecords = new List<ActionRecord>();
+    _iconRecords = new List<MimeRecord>();
+    _sizeRecords = new List<SizeRecord>();
+    _typeRecords = new List<TypeRecord>();
+    if (title != null) {
+      this.title=title;
+    }
+    if(uri!=null){
+      this.uri=uri;
+    }
+    if(action!=null){
+      this.action=action;
+    }
+    if(iconRecord!=null){
+      this.iconRecord=iconRecord;
+    }
+    if(size!=null){
+      this.size=size;
+    }
+    if(type!=null){
+      this.typeInfo=typeInfo;
+    }
+  }
+
+  SmartposterRecord.fromList({
+    List<TextRecord> titleRecords,
+    List<UriRecord> uriRecords,
+    List<ActionRecord> actionRecords,
+    List<MimeRecord> iconRecords,
+    List<SizeRecord> sizeRecords,
+    List<TypeRecord> typeRecords,
   }) {
     _titleRecords = new List<TextRecord>();
     _uriRecords = new List<UriRecord>();
@@ -268,6 +302,22 @@ class SmartposterRecord extends Record {
     _uriRecords.add(record);
   }
 
+  set uri(var uri){
+    if(uri is String){
+      if(_uriRecords.length==1){
+        _uriRecords[0]=new UriRecord.fromUriString(uri);
+      }else{
+        _uriRecords.add(new UriRecord.fromUriString(uri));
+      }
+    }else if(uri is Uri){
+      if(_uriRecords.length==1){
+        _uriRecords[0]=new UriRecord.fromUriString(uri.toString());
+      }else{
+        _uriRecords.add(new UriRecord.fromUriString(uri.toString()));
+      }
+    }
+  }
+
   get titleRecords {
     return new List<Record>.from(_titleRecords, growable: false);
   }
@@ -284,6 +334,25 @@ class SmartposterRecord extends Record {
     var titles = Map<String, String>();
     for (var r in _titleRecords) {
       titles[r.language] = r.text;
+    }
+  }
+
+  set title(var title){
+    var language = 'en';
+    var text;
+    if(title is String){
+      text=title;
+    }else if(title is Map<String,String>){
+      var t = title.entries.toList()[0];
+      language=t.key;
+      text=t.value;
+    }else{
+      throw "Title must be String or Map<String,String>";
+    }
+    if(_titleLanguages.contains(language)){
+      _titleRecords[_titleLanguages.indexOf(language)]=new TextRecord(text: text);
+    }else{
+      addTitle(text,language: language);
     }
   }
 

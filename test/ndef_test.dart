@@ -100,6 +100,30 @@ void main() {
     }
   });
 
+  test('ndef message with smart poster type', () {
+    List<String> hexStrings = [
+    ];
+
+    List<List<Record>> messages = [
+    ];
+
+    // parse
+    for (int i = 0; i < hexStrings.length; i++) {
+      var decoded =
+          decodeRawNdefMessage(ByteStream.hexString2list(hexStrings[i]));
+      assert(decoded.length == messages[i].length);
+      for (int j = 0; j < decoded.length; j++) {
+        assert(decoded[j].isEqual(messages[i][j]));
+      }
+    }
+
+    // generate
+    for (int i = 0; i < hexStrings.length; i++) {
+      assert(ByteStream.list2hexString(encodeNdefMessage(messages[i])) ==
+          hexStrings[i]);
+    }
+  });
+
   test('ndef message with signature type', () {
     //print(decodeRawNdefMessage(ByteStream.hexString2list()));
   });
