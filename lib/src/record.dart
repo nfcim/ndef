@@ -126,6 +126,10 @@ class Record {
     }
   }
 
+  set idString(String value) {
+    id = utf8.encode(value);
+  }
+
   static const int classMinPayloadLength = 0;
   static const int classMaxPayloadLength = null;
 
@@ -155,9 +159,19 @@ class Record {
   Uint8List payload;
   RecordFlags flags;
 
-  Record() {
+  Record({int tnf, Uint8List type, Uint8List id, Uint8List payload}) {
     flags = new RecordFlags();
-    flags.TNF = TypeNameFormat.values.indexOf(tnf);
+    if (tnf == null) {
+      flags.TNF = TypeNameFormat.values.indexOf(this.tnf);
+    } else {
+      if (this.tnf != TypeNameFormat.empty) {
+        throw "TNF has been set in subclass of Record";
+      }
+      flags.TNF = tnf;
+    }
+    this.type = type;
+    this.id = id;
+    this.payload = payload;
   }
 
   /// construct an instance of Record

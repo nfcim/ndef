@@ -85,6 +85,10 @@ class UriRecord extends Record {
     this.uriString = uriString;
   }
 
+  UriRecord.fromUri(Uri uri) {
+    this.uriString = uri.toString();
+  }
+
   String get uriPrefix {
     return _uriPrefix;
   }

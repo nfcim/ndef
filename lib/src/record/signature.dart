@@ -129,7 +129,7 @@ class SignatureRecord extends Record {
   }
 
   get certificateStore {
-    return _certificateStore;
+    return new List<Uint8List>.from(_certificateStore,growable: false);
   }
 
   void addCertificateStore(Uint8List certificate) {

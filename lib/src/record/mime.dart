@@ -17,8 +17,8 @@ class MimeRecord extends Record {
   String classType;
   Uint8List _payload;
 
-  MimeRecord({String contentType, Uint8List payload}) {
-    this.classType = contentType;
+  MimeRecord({String type, Uint8List payload}) {
+    this.classType = type;
     this.payload = payload;
   }
 

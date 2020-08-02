@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:ndef/ndef.dart';
-import 'package:utf/utf.dart';
 
 import '../record.dart';
 import '../byteStream.dart';
@@ -172,31 +171,53 @@ class SmartposterRecord extends Record {
     return str;
   }
 
-  List<dynamic> titleRecords,
-      uriRecords,
-      actionRecords,
-      iconRecords,
-      sizeRecords,
-      typeRecords;
+  List<TextRecord> _titleRecords;
+  List<UriRecord> _uriRecords;
+  List<ActionRecord> _actionRecords;
+  List<MimeRecord> _iconRecords;
+  List<SizeRecord> _sizeRecords;
+  List<TypeRecord> _typeRecords;
+
+  List<String> _titleLanguages;
+
+  SmartposterRecord({
+    List<Record> titleRecords,
+    List<Record> uriRecords,
+    List<Record> actionRecords,
+    List<Record> iconRecords,
+    List<Record> sizeRecords,
+    List<Record> typeRecords,
+  }) {
+    _titleRecords = new List<TextRecord>();
+    _uriRecords = new List<UriRecord>();
+    _actionRecords = new List<ActionRecord>();
+    _iconRecords = new List<MimeRecord>();
+    _sizeRecords = new List<SizeRecord>();
+    _typeRecords = new List<TypeRecord>();
+    if (titleRecords != null) {
+      for (var r in titleRecords) {
+        addTitleRecord(r);
+      }
+    }
+    if (uriRecords != null) {
+      for (var r in uriRecords) {
+        addUriRecord(r);
+      }
+    }
+  }
 
   static Record typeFactory(TypeNameFormat tnf, String classType) {
     Record record;
     if (tnf == TypeNameFormat.nfcWellKnown) {
-      // urn:nfc:wkt
       if (classType == UriRecord.classType) {
-        // URI
         record = UriRecord();
       } else if (classType == TextRecord.classType) {
-        // Text
         record = TextRecord();
       } else if (classType == SizeRecord.classType) {
-        // Size (local)
         record = SizeRecord();
       } else if (classType == TypeRecord.classType) {
-        // Type (local)
         record = TypeRecord();
       } else if (classType == ActionRecord.classType) {
-        // Action (local)
         record = ActionRecord();
       } else {
         record = Record();
@@ -204,21 +225,197 @@ class SmartposterRecord extends Record {
     } else if (tnf == TypeNameFormat.media) {
       record = MimeRecord();
     } else if (tnf == TypeNameFormat.absoluteURI) {
-      record = AbsoluteUriRecord(); // FIXME: seems wrong
+      record = AbsoluteUriRecord();
     } else {
-      // unknown
       record = new Record();
     }
     return record;
   }
 
-  Uint8List get payload {
-    var allRecords = titleRecords +
+  get allRecords {
+    return titleRecords +
         uriRecords +
         actionRecords +
         iconRecords +
         sizeRecords +
         typeRecords;
+  }
+
+  get uriRecords {
+    return new List<Record>.from(_uriRecords, growable: false);
+  }
+
+  get uriRecord {
+    if (uriRecords.length == 1) {
+      return _uriRecords[0];
+    } else {
+      return null;
+    }
+  }
+
+  get uri {
+    if (_uriRecords.length == 1) {
+      return _uriRecords[0].uri;
+    } else {
+      return null;
+    }
+  }
+
+  void addUriRecord(UriRecord record) {
+    if (_uriRecords.length == 1) {
+      throw "Number of URI Record in Smart Poster Record must be 1";
+    }
+    _uriRecords.add(record);
+  }
+
+  get titleRecords {
+    return new List<Record>.from(_titleRecords, growable: false);
+  }
+
+  get title {
+    if (_titleLanguages.contains('en')) {
+      return titles['en'];
+    } else {
+      return _titleRecords[0].text;
+    }
+  }
+
+  get titles {
+    var titles = Map<String, String>();
+    for (var r in _titleRecords) {
+      titles[r.language] = r.text;
+    }
+  }
+
+  void addTitle(String text,
+      {String language = 'en', TextEncoding encoding = TextEncoding.UTF8}) {
+    _titleRecords.add(
+        new TextRecord(language: language, text: text, encoding: encoding));
+    if (_titleLanguages.contains(language)) {
+      throw "Language of titles can not be repeated, got $language";
+    }
+    _titleLanguages.add(language);
+  }
+
+  void addTitleRecord(TextRecord record) {
+    _titleRecords.add(record);
+    if (_titleLanguages.contains(record.language)) {
+      throw "Language of titles can not be repeated, got ${record.language}";
+    }
+    _titleLanguages.add(record.language);
+  }
+
+  get actionRecords {
+    return new List<Record>.from(_actionRecords, growable: false);
+  }
+
+  /// get the first action if it exists
+  get action {
+    if (_actionRecords.length >= 1) {
+      return _actionRecords[0].action;
+    } else {
+      return null;
+    }
+  }
+
+  set action(Action action) {
+    if (_actionRecords.length >= 1) {
+      _actionRecords[0] = new ActionRecord(action: action);
+    } else {
+      addActionRecord(new ActionRecord(action: action));
+    }
+  }
+
+  void addActionRecord(ActionRecord record) {
+    _actionRecords.add(record);
+  }
+
+  get sizeRecords {
+    return new List<Record>.from(_sizeRecords, growable: false);
+  }
+
+  get size {
+    if (_sizeRecords.length >= 1) {
+      return _sizeRecords[0].size;
+    } else {
+      return null;
+    }
+  }
+
+  set size(int size) {
+    if (_sizeRecords.length >= 1) {
+      _sizeRecords[0] = new SizeRecord(size: size);
+    } else {
+      addSizeRecord(new SizeRecord(size: size));
+    }
+  }
+
+  void addSizeRecord(SizeRecord record) {
+    _sizeRecords.add(size);
+  }
+
+  get typeRecords {
+    return new List<Record>.from(_typeRecords, growable: false);
+  }
+
+  get typeInfo {
+    if (_typeRecords.length >= 1) {
+      return _typeRecords[0].typeInfo;
+    } else {
+      return null;
+    }
+  }
+
+  set typeInfo(String typeInfo) {
+    if (_typeRecords.length >= 1) {
+      _typeRecords[0] = new TypeRecord(typeInfo: typeInfo);
+    } else {
+      addTypeRecord(new TypeRecord(typeInfo: typeInfo));
+    }
+  }
+
+  void addTypeRecord(TypeRecord record) {
+    _typeRecords.add(record);
+  }
+
+  get iconRecords {
+    return new List<Record>.from(_iconRecords, growable: false);
+  }
+
+  get iconRecord {
+    if (_actionRecords.length >= 1) {
+      return _actionRecords[0];
+    } else {
+      return null;
+    }
+  }
+
+  set iconRecord(MimeRecord record) {
+    if (record.decodedType.startsWith('image/') ||
+        record.decodedType.startsWith('video/')) {
+      if (_iconRecords.length >= 1) {
+        _iconRecords[0] = record;
+      } else {
+        _iconRecords.add(record);
+      }
+    } else {
+      throw "Type of Icon Records must be image or video, not ${record.decodedType}";
+    }
+  }
+
+  void addIconRecord(MimeRecord record) {
+    if (record.decodedType.startsWith('image/') ||
+        record.decodedType.startsWith('video/')) {
+      _iconRecords.add(record);
+    } else {
+      throw "Type of Icon Records must be image or video, not ${record.decodedType}";
+    }
+  }
+
+  Uint8List get payload {
+    if (_uriRecords.length != 1) {
+      throw "Number of URI Record in Smart Poster Record must be 1";
+    }
     return encodeNdefMessage(allRecords);
   }
 
@@ -226,19 +423,21 @@ class SmartposterRecord extends Record {
     decodeRawNdefMessage(payload, typeFactory: SmartposterRecord.typeFactory)
         .forEach((e) {
       if (e is TextRecord) {
-        titleRecords.add(e);
+        addTitleRecord(e);
       } else if (e is UriRecord) {
-        uriRecords.add(e);
+        addUriRecord(e);
       } else if (e is MimeRecord) {
-        iconRecords.add(e);
+        addIconRecord(e);
       } else if (e is ActionRecord) {
-        actionRecords.add(e);
+        addActionRecord(e);
       } else if (e is SizeRecord) {
-        sizeRecords.add(e);
+        addSizeRecord(e);
       } else if (e is TypeRecord) {
-        typeRecords.add(e);
+        addTypeRecord(e);
       }
     });
-    assert(uriRecords.length == 1);
+    if (uriRecords.length != 1) {
+      throw "Number of URI Record in Smart Poster Record must be 1";
+    }
   }
 }
