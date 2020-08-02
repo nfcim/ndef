@@ -1,23 +1,32 @@
 # ndef
 
-A new Flutter package project.
+[![pub version](https://img.shields.io/pub/v/ndef)](https://pub.dev/packages/ndef)
+![Test](https://github.com/nfcim/ndef/workflows/Test/badge.svg)
 
-A NDEF parser/generator with Dart.
+`ndef` is a Dart library to decode & encode NDEF records, supporting multiple types including (grouped by Type Name Format):
 
-## Getting Started
+* NFC Well Known
+  * Text
+  * URI with well-known prefix
+  * Digital signature
+  * Smart poster
+  * Connection handover
+* Media (MIME data)
+  * Bluetooth easy pairing / Bluetooth low energy
+  * other MIME data
+* Absolute URI
 
-This project is a starting point for a Dart
-[package](https://flutter.dev/developing-packages/),
-a library module containing code that can be shared easily across
-multiple Flutter or Dart projects.
+## Usage
 
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.dev/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+```dart
+// TODO: example code
+```
+
+Refer to the [documentation](https://pub.dev/documentation/ndef/) for more information.
 
 ## TODO
 
 1. security
-2. class design (add getter/setter) 
+2. class design (add getter/setter)
 3. more types
 4. print methods
