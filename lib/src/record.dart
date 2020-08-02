@@ -165,7 +165,7 @@ class Record {
       flags.TNF = TypeNameFormat.values.indexOf(this.tnf);
     } else {
       if (this.tnf != TypeNameFormat.empty) {
-        throw "TNF has been set in subclass of Record";
+        throw "TNF has not been set in subclass of Record";
       }
       flags.TNF = tnf;
     }
