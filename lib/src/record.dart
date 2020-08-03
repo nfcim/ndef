@@ -14,8 +14,8 @@ import 'record/signature.dart';
 import 'record/mime.dart';
 import 'record/bluetooth.dart';
 import 'record/absoluteUri.dart';
-import 'record/raw.dart';
 
+/// Represent the flags in the header of a NDEF record.
 class RecordFlags {
   /// Message Begin */
   bool MB = false;
@@ -62,6 +62,7 @@ class RecordFlags {
   }
 }
 
+/// The TNF field of a NDEF record.
 enum TypeNameFormat {
   empty,
   nfcWellKnown,
@@ -72,7 +73,8 @@ enum TypeNameFormat {
   unchanged
 }
 
-/// base class of all types of records
+/// The base class of all types of records.
+/// Also reprents an record of unknown type.
 class Record {
   static List<String> typePrefixes = [
     "",
@@ -84,6 +86,7 @@ class Record {
     "unchanged"
   ];
 
+  /// Predefined TNF of a specific record type.
   static const TypeNameFormat classTnf = null;
 
   TypeNameFormat get tnf {
@@ -180,7 +183,7 @@ class Record {
     }
   }
 
-  /// construct an instance of Record
+  /// Construct an instance of a specific type (subclass) of [Record]
   static Record typeFactory(TypeNameFormat tnf, String classType) {
     Record record;
     if (tnf == TypeNameFormat.nfcWellKnown) {
@@ -219,7 +222,7 @@ class Record {
     return record;
   }
 
-  /// construct a record and decode record data
+  /// Decode a [Record] record from raw data.
   static Record doDecode(TypeNameFormat tnf, Uint8List type, Uint8List payload,
       {Uint8List id, var typeFactory = Record.typeFactory}) {
     Record record = typeFactory(tnf, utf8.decode(type));
@@ -238,7 +241,7 @@ class Record {
     return record;
   }
 
-  /// decode data from part of ByteStream
+  /// Decode a NDEF [Record] from part of [ByteStream]
   static Record decodeStream(ByteStream stream, var typeFactory) {
     var flags = new RecordFlags(data: stream.readByte());
 
@@ -285,9 +288,7 @@ class Record {
     return typePrefixes[tnf];
   }
 
-  static void error(String fmt) {}
-
-  /// encode this record to raw byte data
+  /// Encode this [Record] to raw byte data.
   Uint8List encode() {
     var encoded = new List<int>();
 
