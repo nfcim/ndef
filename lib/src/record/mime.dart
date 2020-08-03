@@ -9,24 +9,12 @@ class MimeRecord extends Record {
     return classTnf;
   }
 
-  @override
-  String get decodedType {
-    return classType;
-  }
-
-  String classType;
-  Uint8List _payload;
-
-  MimeRecord({String type, Uint8List payload}) {
-    this.classType = type;
-    this.payload = payload;
-  }
-
-  Uint8List get payload {
-    return _payload;
-  }
-
-  set payload(Uint8List payload) {
-    _payload = payload;
+  MimeRecord({String decodedType, Uint8List payload}) {
+    if (decodeType != null) {
+      this.decodedType = decodedType;
+    }
+    if (payload != null) {
+      this.payload = payload;
+    }
   }
 }

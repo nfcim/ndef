@@ -100,8 +100,11 @@ class Record {
   Uint8List encodedType;
 
   String get decodedType {
-    //throw "not implemented in base class";
     return utf8.decode(encodedType);
+  }
+
+  set decodedType(String decodedType) {
+    encodedType = utf8.encode(decodedType);
   }
 
   set type(Uint8List type) {
@@ -172,13 +175,13 @@ class Record {
       }
       flags.TNF = tnf;
     }
-    if(type!=null){
+    if (type != null) {
       this.type = type;
     }
-    if(id!=null){
+    if (id != null) {
       this.id = id;
     }
-    if(payload!=null){
+    if (payload != null) {
       this.payload = payload;
     }
   }

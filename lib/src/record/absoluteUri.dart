@@ -9,10 +9,19 @@ class AbsoluteUriRecord extends Record {
     return classTnf;
   }
 
-  String uri;
-  Uint8List _payload;
+  AbsoluteUriRecord({String uri}) {
+    if (uri != null) {
+      this.uri = uri;
+    }
+  }
 
-  AbsoluteUriRecord({this.uri});
+  get uri {
+    return decodedType;
+  }
+
+  set uri(String uri) {
+    decodedType = uri;
+  }
 
   get decodedType {
     return uri;
@@ -31,6 +40,6 @@ class AbsoluteUriRecord extends Record {
   }
 
   set payload(Uint8List payload) {
-    _payload = payload;
+    throw "AbsoluteURI record has no payload";
   }
 }

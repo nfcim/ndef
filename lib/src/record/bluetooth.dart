@@ -449,8 +449,12 @@ class EIR {
   Uint8List data;
 
   EIR({EIRType type, Uint8List data}) {
-    this.type = type;
-    this.data = data;
+    if (type != null) {
+      this.type = type;
+    }
+    if (data != null) {
+      this.data = data;
+    }
   }
 
   EIR.fromTypeNum(int typeNum, Uint8List data) {
@@ -491,27 +495,22 @@ class EIR {
   }
 
   set type(EIRType type) {
-    if (type != null) {
-      for (var entry in numTypeMap.entries) {
-        if (type == entry.value) {
-          typeNum = entry.key;
-          break;
-        }
+    for (var entry in numTypeMap.entries) {
+      if (type == entry.value) {
+        typeNum = entry.key;
+        break;
       }
-      if (typeNum == null) {
-        throw "EIR type $type is not supported";
-      }
+    }
+    if (typeNum == null) {
+      throw "EIR type $type is not supported";
     }
   }
 }
 
-class BluetoothRecord extends Record {
-  //List<EIR> eir;
-
+class BluetoothRecord extends MimeRecord {
   Map<EIRType, Uint8List> attributes;
 
   BluetoothRecord({Map<int, Uint8List> attributes}) {
-    //this.eir= eir==null ? new List<EIR>() : eir;
     this.attributes =
         attributes == null ? new Map<EIRType, Uint8List>() : attributes;
   }
@@ -561,6 +560,8 @@ class BluetoothEasyPairingRecord extends BluetoothRecord {
   get decodedType {
     return BluetoothEasyPairingRecord.classType;
   }
+
+  BluetoothEasyPairingRecord({Map<int, Uint8List> attributes}) : super(attributes:attributes) {}
 
   Address address;
 
@@ -637,6 +638,8 @@ class BluetoothLowEnergyRecord extends BluetoothRecord {
   get decodedType {
     return BluetoothLowEnergyRecord.classType;
   }
+
+  BluetoothLowEnergyRecord({Map<int, Uint8List> attributes}) : super(attributes:attributes) {}
 
   get address {
     if (attributes.containsKey(EIRType.LEBluetoothDeviceAddress)) {
