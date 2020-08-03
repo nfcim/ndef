@@ -10,7 +10,7 @@ class MimeRecord extends Record {
   }
 
   MimeRecord({String decodedType, Uint8List payload}) {
-    if (decodeType != null) {
+    if (decodedType != null) {
       this.decodedType = decodedType;
     }
     if (payload != null) {

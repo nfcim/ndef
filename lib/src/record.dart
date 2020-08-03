@@ -11,6 +11,7 @@ import 'byteStream.dart';
 import 'record/uri.dart';
 import 'record/text.dart';
 import 'record/signature.dart';
+import 'record/deviceinfo.dart';
 import 'record/mime.dart';
 import 'record/bluetooth.dart';
 import 'record/absoluteUri.dart';
@@ -158,6 +159,7 @@ class Record {
     str += basicInfoString;
     str += "typeNameFormat=$tnf ";
     str += "type=$decodedType ";
+    str += "payload=${ByteStream.list2hexString(payload)}";
     return str;
   }
 
@@ -206,8 +208,10 @@ class Record {
         record = HandoverMediationRecord();
       } else if (classType == HandoverInitiateRecord.classType) {
         record = HandoverInitiateRecord();
+      } else if (classType == DeviceInformationRecord.classType){
+        record = DeviceInformationRecord();
       } else {
-        record = new Record();
+        record = Record();
       }
     } else if (tnf == TypeNameFormat.media) {
       if (classType == BluetoothEasyPairingRecord.classType) {
@@ -220,7 +224,7 @@ class Record {
     } else if (tnf == TypeNameFormat.absoluteURI) {
       record = AbsoluteUriRecord();
     } else {
-      record = new Record();
+      record = Record();
     }
     return record;
   }
@@ -285,10 +289,6 @@ class Record {
     var decoded = doDecode(typeNameFormat, type, payload, id: id);
     decoded.flags = flags;
     return decoded;
-  }
-
-  static String decodeType(num tnf, Uint8List type) {
-    return typePrefixes[tnf];
   }
 
   /// Encode this [Record] to raw byte data.

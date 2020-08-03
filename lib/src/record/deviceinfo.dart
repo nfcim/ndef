@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:ndef/ndef.dart';
+import 'package:uuid/uuid.dart';
 
 import '../record.dart';
 
@@ -9,6 +10,17 @@ class DataElement {
   int type;
   Uint8List value;
   DataElement(this.type, this.value);
+  DataElement.fromString(int type, String valueString) {
+    this.type = type;
+    value = utf8.encode(valueString);
+  }
+  @override
+  String toString() {
+    var str = "DataElement: ";
+    str += "type=$type ";
+    str += "value=$value";
+    return str;
+  }
 }
 
 class DeviceInformationRecord extends Record {
@@ -38,12 +50,13 @@ class DeviceInformationRecord extends Record {
     str += "modelName=$modelName ";
     str += "uniqueName=$uniqueName ";
     str += "uuid=$uuid ";
-    str += "version= $versionString";
-    str += "undefined= $undefinedData ";
+    str += "version= $versionString ";
+    str += "undefined= $undefinedData";
     return str;
   }
 
-  List<String> dataList;
+  String vendorName, modelName, uniqueName, versionString;
+  Uint8List uuidData;
   List<DataElement> undefinedData;
 
   DeviceInformationRecord(
@@ -53,53 +66,34 @@ class DeviceInformationRecord extends Record {
       String uuid,
       String versionString,
       List<DataElement> undefinedData}) {
-    dataList = new List<String>(5);
     this.vendorName = vendorName;
     this.modelName = modelName;
     this.uniqueName = uniqueName;
-    this.uuid = uuid;
+    if (uuid != null) {
+      this.uuid = uuid;
+    }
     this.versionString = versionString;
-    this.undefinedData = undefinedData;
-  }
-
-  get vendorName {
-    return dataList[0];
-  }
-
-  set vendorName(String vendorName) {
-    dataList[0] = vendorName;
-  }
-
-  get modelName {
-    return dataList[1];
-  }
-
-  set modelName(String modelName) {
-    dataList[1] = modelName;
-  }
-
-  get uniqueName {
-    return dataList[2];
-  }
-
-  set uniqueName(String uniqueName) {
-    dataList[2] = uniqueName;
+    this.undefinedData =
+        undefinedData == null ? new List<DataElement>() : undefinedData;
   }
 
   get uuid {
-    return dataList[3];
+    var u = new Uuid();
+    return u.unparse(uuidData);
   }
 
   set uuid(String uuid) {
-    dataList[3] = uuid;
+    var u = new Uuid();
+    uuidData = new Uint8List.fromList(u.parse(uuid));
   }
 
-  get versionString {
-    return dataList[4];
-  }
-
-  set versionString(String versionString) {
-    dataList[4] = versionString;
+  void _addEncodedData(String value, int type, List<int> payload) {
+    if (value != null) {
+      payload.add(type);
+      Uint8List valueBytes = utf8.encode(value);
+      payload.add(valueBytes.length);
+      payload.addAll(valueBytes);
+    }
   }
 
   Uint8List get payload {
@@ -109,14 +103,13 @@ class DeviceInformationRecord extends Record {
     var payload = new List<int>();
 
     // known data
-    for (int type = 0; type < 5; type++) {
-      if (dataList[type] != null) {
-        payload.add(type);
-        Uint8List valueBytes = utf8.encode(dataList[type]);
-        payload.add(valueBytes.length);
-        payload.addAll(valueBytes);
-      }
-    }
+    _addEncodedData(vendorName, 0, payload);
+    _addEncodedData(modelName, 1, payload);
+    _addEncodedData(uniqueName, 2, payload);
+    payload.add(3);
+    payload.add(uuidData.length);
+    payload.addAll(uuidData);
+    _addEncodedData(versionString, 4, payload);
 
     // undefined data
     for (int i = 0; i < undefinedData.length; i++) {
@@ -125,7 +118,6 @@ class DeviceInformationRecord extends Record {
       payload.add(valueBytes.length);
       payload.addAll(valueBytes);
     }
-
     return new Uint8List.fromList(payload);
   }
 
@@ -135,10 +127,25 @@ class DeviceInformationRecord extends Record {
       int type = stream.readByte();
       int length = stream.readByte();
       Uint8List value = stream.readBytes(length);
-      if (type >= 0 && type < 5) {
-        dataList[type] = utf8.decode(value);
-      } else {
-        undefinedData.add(DataElement(type, value));
+      switch (type) {
+        case 0:
+          vendorName = utf8.decode(value);
+          break;
+        case 1:
+          modelName = utf8.decode(value);
+          break;
+        case 2:
+          uniqueName = utf8.decode(value);
+          break;
+        case 3:
+          uuidData = value;
+          break;
+        case 4:
+          versionString = utf8.decode(value);
+          break;
+        default:
+          undefinedData.add(DataElement(type, value));
+          break;
       }
     }
     if (!(vendorName != null && modelName != null)) {

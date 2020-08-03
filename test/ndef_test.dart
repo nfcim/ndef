@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ndef/src/record/deviceinfo.dart';
 import 'package:utf/utf.dart' as utf;
 
 import 'package:ndef/ndef.dart';
@@ -98,11 +100,23 @@ void main() {
     }
   });
 
-  test('ndef message with smart poster type', () {
+  test('ndef message with device information type', () {
     List<String> hexStrings = [
+      "d1023b446900056e6663696d01096e666344657669636502076e66634e616d6503106361ae18d5b011ea9d0840a3ccfd09570405312e302e30ff054e4643494d",
     ];
 
     List<List<Record>> messages = [
+      [
+        new DeviceInformationRecord(
+            vendorName: "nfcim",
+            modelName: "nfcDevice",
+            uniqueName: "nfcName",
+            uuid: "6361ae18-d5b0-11ea-9d08-40a3ccfd0957",
+            versionString: "1.0.0",
+            undefinedData: [
+              new DataElement.fromString(255, "NFCIM"),
+            ])
+      ],
     ];
 
     // parse
@@ -123,7 +137,8 @@ void main() {
   });
 
   test('ndef message with signature type', () {
-    //print(decodeRawNdefMessage(ByteStream.hexString2list()));
+    //print(decodeRawNdefMessage(ByteStream.hexString2list(
+    //    "")));
   });
 
   // TODO: more tests
