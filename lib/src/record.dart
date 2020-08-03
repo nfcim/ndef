@@ -169,9 +169,15 @@ class Record {
       }
       flags.TNF = tnf;
     }
-    this.type = type;
-    this.id = id;
-    this.payload = payload;
+    if(type!=null){
+      this.type = type;
+    }
+    if(id!=null){
+      this.id = id;
+    }
+    if(payload!=null){
+      this.payload = payload;
+    }
   }
 
   /// construct an instance of Record

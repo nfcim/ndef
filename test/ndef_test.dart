@@ -60,8 +60,6 @@ void main() {
 
     // generate
     for (int i = 0; i < hexStrings.length; i++) {
-      print((messages[i][0] as TextRecord).text);
-      print(ByteStream.list2hexString(encodeNdefMessage(messages[i])));
       assert(ByteStream.list2hexString(encodeNdefMessage(messages[i])) ==
           hexStrings[i]);
     }
