@@ -208,7 +208,7 @@ class Record {
         record = HandoverMediationRecord();
       } else if (classType == HandoverInitiateRecord.classType) {
         record = HandoverInitiateRecord();
-      } else if (classType == DeviceInformationRecord.classType){
+      } else if (classType == DeviceInformationRecord.classType) {
         record = DeviceInformationRecord();
       } else {
         record = WellKnownRecord();
@@ -285,7 +285,8 @@ class Record {
     var payload = stream.readBytes(payloadLength);
     var typeNameFormat = TypeNameFormat.values[flags.TNF];
 
-    var decoded = doDecode(typeNameFormat, type, payload, id: id, typeFactory: typeFactory);
+    var decoded = doDecode(typeNameFormat, type, payload,
+        id: id, typeFactory: typeFactory);
     decoded.flags = flags;
     return decoded;
   }

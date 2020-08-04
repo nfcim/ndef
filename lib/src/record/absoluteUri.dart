@@ -9,7 +9,7 @@ class AbsoluteUriRecord extends Record {
     return classTnf;
   }
 
-  AbsoluteUriRecord({String uri, Uint8List id}) :super(id:id) {
+  AbsoluteUriRecord({String uri, Uint8List id}) : super(id: id) {
     if (uri != null) {
       this.uri = uri;
     }
