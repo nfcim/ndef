@@ -142,10 +142,18 @@ void main() {
 
     List<List<Record>> messages = [
       [
-        new SmartPosterRecord(title:"ndef",uri:"https://github.com/nfcim/ndef",action:Action.exec,icon:{"image/png":new Uint8List.fromList(utf8.encode("a picture"))},size:10000,typeInfo:null),
+        new SmartPosterRecord(
+            title: "ndef",
+            uri: "https://github.com/nfcim/ndef",
+            action: Action.exec,
+            icon: {
+              "image/png": new Uint8List.fromList(utf8.encode("a picture"))
+            },
+            size: 10000,
+            typeInfo: null),
       ],
       [
-        new SmartPosterRecord(uri:"https://github.com"),
+        new SmartPosterRecord(uri: "https://github.com"),
       ]
     ];
 
