@@ -1,7 +1,7 @@
-## 0.1.0 [Unreleased]
+## 0.1.0
 
-* Initial release, preliminary decoding & encoding
-* Support type:
+* Initial release, preliminary decoding & encoding support
+* Support types:
   * NFC Well Known
     * Text
     * URI with well-known prefix
