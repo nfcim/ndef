@@ -4,8 +4,9 @@ import 'dart:typed_data';
 import 'package:ndef/ndef.dart';
 
 import '../record.dart';
+import 'wellknown.dart';
 
-class UriRecord extends Record {
+class UriRecord extends WellKnownRecord {
   static List<String> uriPrefixMap = [
     "",
     "http://www.",
@@ -45,12 +46,6 @@ class UriRecord extends Record {
     "urn:nfc:",
   ];
 
-  static const TypeNameFormat classTnf = TypeNameFormat.nfcWellKnown;
-
-  TypeNameFormat get tnf {
-    return classTnf;
-  }
-
   static const String classType = "U";
 
   @override
@@ -68,7 +63,7 @@ class UriRecord extends Record {
   String toString() {
     var str = "UriRecord: ";
     str += basicInfoString;
-    str += "uri=$uriString ";
+    str += "uri=$uriString";
     return str;
   }
 

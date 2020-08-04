@@ -3,13 +3,13 @@ import 'dart:typed_data';
 import '../record.dart';
 
 class AbsoluteUriRecord extends Record {
-  static const TypeNameFormat classTnf = TypeNameFormat.nfcWellKnown;
+  static const TypeNameFormat classTnf = TypeNameFormat.absoluteURI;
 
   TypeNameFormat get tnf {
     return classTnf;
   }
 
-  AbsoluteUriRecord({String uri}) {
+  AbsoluteUriRecord({String uri, Uint8List id}) :super(id:id) {
     if (uri != null) {
       this.uri = uri;
     }

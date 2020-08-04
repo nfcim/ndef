@@ -5,6 +5,7 @@ import 'package:ndef/ndef.dart';
 import 'package:uuid/uuid.dart';
 
 import '../record.dart';
+import 'wellknown.dart';
 
 class DataElement {
   int type;
@@ -14,6 +15,7 @@ class DataElement {
     this.type = type;
     value = utf8.encode(valueString);
   }
+
   @override
   String toString() {
     var str = "DataElement: ";
@@ -23,13 +25,7 @@ class DataElement {
   }
 }
 
-class DeviceInformationRecord extends Record {
-  static const TypeNameFormat classTnf = TypeNameFormat.nfcWellKnown;
-
-  TypeNameFormat get tnf {
-    return classTnf;
-  }
-
+class DeviceInformationRecord extends WellKnownRecord {
   static const String classType = "Di";
 
   @override

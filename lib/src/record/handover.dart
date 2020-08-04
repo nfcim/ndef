@@ -37,7 +37,7 @@ class AlternativeCarrierRecord extends Record {
     str += basicInfoString;
     str += "carrierPowerState=$carrierPowerState ";
     str += "carrierDataReference=$carrierDataReference ";
-    str += "auxDataReferences=$auxDataReferenceList ";
+    str += "auxDataReferences=$auxDataReferenceList";
     return str;
   }
 
@@ -129,7 +129,7 @@ class CollisionResolutionRecord extends Record {
   String toString() {
     var str = "CollisionResolutionRecord: ";
     str += basicInfoString;
-    str += "uri=$randomNumber ";
+    str += "uri=$randomNumber";
     return str;
   }
 
@@ -182,7 +182,7 @@ class ErrorRecord extends Record {
   String toString() {
     var str = "ErrorRecord: ";
     str += basicInfoString;
-    str += "error=$errorString ";
+    str += "error=$errorString";
     return str;
   }
 
@@ -256,7 +256,7 @@ class HandoverRecord extends Record {
     str += basicInfoString;
     str += "version=$versionString ";
     str += "alternativeCarrierRecords=$alternativeCarrierRecordList ";
-    str += "unknownRecords=$unknownRecordList ";
+    str += "unknownRecords=$unknownRecordList";
     return str;
   }
 
@@ -327,7 +327,7 @@ class HandoverRequestRecord extends HandoverRecord {
     str += "version=$versionString ";
     str += "alternativeCarrierRecords=$alternativeCarrierRecordList ";
     str += "collisionResolutionRecords=$collisionResolutionRecordList ";
-    str += "unknownRecords=$unknownRecordList ";
+    str += "unknownRecords=$unknownRecordList";
     return str;
   }
 
@@ -433,7 +433,7 @@ class HandoverSelectRecord extends HandoverRecord {
     str += "version=$versionString ";
     str += "alternativeCarrierRecords=$alternativeCarrierRecordList ";
     str += "errorRecords=$errorRecordList ";
-    str += "unknownRecords=$unknownRecordList ";
+    str += "unknownRecords=$unknownRecordList";
     return str;
   }
 
@@ -525,7 +525,7 @@ class HandoverMediationRecord extends HandoverRecord {
     str += basicInfoString;
     str += "version=$versionString ";
     str += "alternativeCarrierRecords=$alternativeCarrierRecordList ";
-    str += "unknownRecords=$unknownRecordList ";
+    str += "unknownRecords=$unknownRecordList";
     return str;
   }
 }
@@ -550,7 +550,7 @@ class HandoverInitiateRecord extends HandoverRecord {
     str += basicInfoString;
     str += "version=$versionString ";
     str += "alternativeCarrierRecords=$alternativeCarrierRecordList ";
-    str += "unknownRecords=$unknownRecordList ";
+    str += "unknownRecords=$unknownRecordList";
     return str;
   }
 }
@@ -582,7 +582,7 @@ class HandoverCarrierRecord extends HandoverRecord {
     str += "version=$versionString ";
     str += "carrierType=$carrierType ";
     str += "alternativeCarrierRecords=$alternativeCarrierRecordList ";
-    str += "unknownRecords=$unknownRecordList ";
+    str += "unknownRecords=$unknownRecordList";
     return str;
   }
 

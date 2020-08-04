@@ -2,22 +2,18 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:ndef/ndef.dart';
+import 'package:collection/collection.dart';
 
 import '../record.dart';
 import '../byteStream.dart';
 import 'text.dart';
 import 'uri.dart';
 import 'mime.dart';
+import 'wellknown.dart';
 
 enum Action { exec, save, edit }
 
-class ActionRecord extends Record {
-  static const TypeNameFormat classTnf = TypeNameFormat.nfcWellKnown;
-
-  TypeNameFormat get tnf {
-    return classTnf;
-  }
-
+class ActionRecord extends WellKnownRecord {
   static const String classType = "act";
 
   @override
@@ -40,7 +36,7 @@ class ActionRecord extends Record {
   String toString() {
     var str = "ActionRecord: ";
     str += basicInfoString;
-    str += "action=$action ";
+    str += "action=$action";
     return str;
   }
 
@@ -63,13 +59,7 @@ class ActionRecord extends Record {
   }
 }
 
-class SizeRecord extends Record {
-  static const TypeNameFormat classTnf = TypeNameFormat.nfcWellKnown;
-
-  TypeNameFormat get tnf {
-    return classTnf;
-  }
-
+class SizeRecord extends WellKnownRecord {
   static const String classType = "s";
 
   @override
@@ -92,13 +82,28 @@ class SizeRecord extends Record {
   String toString() {
     var str = "SizeRecord: ";
     str += basicInfoString;
-    str += "size=$size ";
+    str += "size=$_size";
     return str;
   }
 
-  int size;
+  int _size;
 
-  SizeRecord({this.size});
+  get size {
+    return _size;
+  }
+
+  set size(int size) {
+    if (size < 0 || size >= 1 << 32) {
+      throw "Size of smart poster must be in [0, 2^32), got $size";
+    }
+    _size = size;
+  }
+
+  SizeRecord({int size}) {
+    if (size != null) {
+      this.size = size;
+    }
+  }
 
   Uint8List get payload {
     return ByteStream.int2list(size, 4);
@@ -109,13 +114,7 @@ class SizeRecord extends Record {
   }
 }
 
-class TypeRecord extends Record {
-  static const TypeNameFormat classTnf = TypeNameFormat.nfcWellKnown;
-
-  TypeNameFormat get tnf {
-    return classTnf;
-  }
-
+class TypeRecord extends WellKnownRecord {
   static const String classType = "t";
 
   @override
@@ -127,7 +126,7 @@ class TypeRecord extends Record {
   String toString() {
     var str = "TypeRecord: ";
     str += basicInfoString;
-    str += "type=$typeInfo ";
+    str += "type=$typeInfo";
     return str;
   }
 
@@ -144,18 +143,12 @@ class TypeRecord extends Record {
   }
 }
 
-class SmartposterRecord extends Record {
-  static const TypeNameFormat classTnf = TypeNameFormat.nfcWellKnown;
-
-  TypeNameFormat get tnf {
-    return classTnf;
-  }
-
+class SmartPosterRecord extends WellKnownRecord {
   static const String classType = "Sp";
 
   @override
   String get decodedType {
-    return SmartposterRecord.classType;
+    return SmartPosterRecord.classType;
   }
 
   @override
@@ -167,7 +160,7 @@ class SmartposterRecord extends Record {
     str += "actionRecords=$actionRecords ";
     str += "iconRecords=$iconRecords ";
     str += "sizeRecords=$sizeRecords ";
-    str += "typeRecords=$typeRecords ";
+    str += "typeRecords=$typeRecords";
     return str;
   }
 
@@ -180,41 +173,46 @@ class SmartposterRecord extends Record {
 
   List<String> _titleLanguages;
 
-  SmartposterRecord({
-    var title,
-    var uri,
-    Action action,
-    MimeRecord iconRecord,
-    int size,
-    String typeInfo,
-  }) {
+  void _init() {
     _titleRecords = new List<TextRecord>();
+    _titleLanguages = new List<String>();
     _uriRecords = new List<UriRecord>();
     _actionRecords = new List<ActionRecord>();
     _iconRecords = new List<MimeRecord>();
     _sizeRecords = new List<SizeRecord>();
     _typeRecords = new List<TypeRecord>();
+  }
+
+  SmartPosterRecord({
+    var title,
+    var uri,
+    Action action,
+    Map<String, Uint8List> icon,
+    int size,
+    String typeInfo,
+  }) {
+    _init();
     if (title != null) {
-      this.title=title;
+      this.title = title;
     }
-    if(uri!=null){
-      this.uri=uri;
+    if (uri != null) {
+      this.uri = uri;
     }
-    if(action!=null){
-      this.action=action;
+    if (action != null) {
+      this.action = action;
     }
-    if(iconRecord!=null){
-      this.iconRecord=iconRecord;
+    if (icon != null) {
+      this.icon = icon;
     }
-    if(size!=null){
-      this.size=size;
+    if (size != null) {
+      this.size = size;
     }
-    if(type!=null){
-      this.typeInfo=typeInfo;
+    if (typeInfo != null) {
+      this.typeInfo = typeInfo;
     }
   }
 
-  SmartposterRecord.fromList({
+  SmartPosterRecord.fromList({
     List<TextRecord> titleRecords,
     List<UriRecord> uriRecords,
     List<ActionRecord> actionRecords,
@@ -222,12 +220,7 @@ class SmartposterRecord extends Record {
     List<SizeRecord> sizeRecords,
     List<TypeRecord> typeRecords,
   }) {
-    _titleRecords = new List<TextRecord>();
-    _uriRecords = new List<UriRecord>();
-    _actionRecords = new List<ActionRecord>();
-    _iconRecords = new List<MimeRecord>();
-    _sizeRecords = new List<SizeRecord>();
-    _typeRecords = new List<TypeRecord>();
+    _init();
     if (titleRecords != null) {
       for (var r in titleRecords) {
         addTitleRecord(r);
@@ -236,6 +229,26 @@ class SmartposterRecord extends Record {
     if (uriRecords != null) {
       for (var r in uriRecords) {
         addUriRecord(r);
+      }
+    }
+    if (actionRecords != null) {
+      for (var r in actionRecords) {
+        addActionRecord(r);
+      }
+    }
+    if (iconRecords != null) {
+      for (var r in iconRecords) {
+        addIconRecord(r);
+      }
+    }
+    if (sizeRecords != null) {
+      for (var r in sizeRecords) {
+        addSizeRecord(r);
+      }
+    }
+    if (typeRecords != null) {
+      for (var r in typeRecords) {
+        addTypeRecord(r);
       }
     }
   }
@@ -261,14 +274,14 @@ class SmartposterRecord extends Record {
     } else if (tnf == TypeNameFormat.absoluteURI) {
       record = AbsoluteUriRecord();
     } else {
-      record = new Record();
+      record = Record();
     }
     return record;
   }
 
   get allRecords {
-    return titleRecords +
-        uriRecords +
+    return uriRecords +
+        titleRecords +
         actionRecords +
         iconRecords +
         sizeRecords +
@@ -302,17 +315,17 @@ class SmartposterRecord extends Record {
     _uriRecords.add(record);
   }
 
-  set uri(var uri){
-    if(uri is String){
-      if(_uriRecords.length==1){
-        _uriRecords[0]=new UriRecord.fromUriString(uri);
-      }else{
+  set uri(var uri) {
+    if (uri is String) {
+      if (_uriRecords.length == 1) {
+        _uriRecords[0] = new UriRecord.fromUriString(uri);
+      } else {
         _uriRecords.add(new UriRecord.fromUriString(uri));
       }
-    }else if(uri is Uri){
-      if(_uriRecords.length==1){
-        _uriRecords[0]=new UriRecord.fromUriString(uri.toString());
-      }else{
+    } else if (uri is Uri) {
+      if (_uriRecords.length == 1) {
+        _uriRecords[0] = new UriRecord.fromUriString(uri.toString());
+      } else {
         _uriRecords.add(new UriRecord.fromUriString(uri.toString()));
       }
     }
@@ -322,11 +335,14 @@ class SmartposterRecord extends Record {
     return new List<Record>.from(_titleRecords, growable: false);
   }
 
+  /// get the English title; if not existing, get the first title
   get title {
     if (_titleLanguages.contains('en')) {
       return titles['en'];
-    } else {
+    } else if (_titleLanguages.length >= 1) {
       return _titleRecords[0].text;
+    } else {
+      return null;
     }
   }
 
@@ -337,22 +353,23 @@ class SmartposterRecord extends Record {
     }
   }
 
-  set title(var title){
+  set title(var title) {
     var language = 'en';
     var text;
-    if(title is String){
-      text=title;
-    }else if(title is Map<String,String>){
+    if (title is String) {
+      text = title;
+    } else if (title is Map<String, String>) {
       var t = title.entries.toList()[0];
-      language=t.key;
-      text=t.value;
-    }else{
+      language = t.key;
+      text = t.value;
+    } else {
       throw "Title must be String or Map<String,String>";
     }
-    if(_titleLanguages.contains(language)){
-      _titleRecords[_titleLanguages.indexOf(language)]=new TextRecord(text: text);
-    }else{
-      addTitle(text,language: language);
+    if (_titleLanguages.contains(language)) {
+      _titleRecords[_titleLanguages.indexOf(language)] =
+          new TextRecord(text: text);
+    } else {
+      addTitle(text, language: language);
     }
   }
 
@@ -420,7 +437,7 @@ class SmartposterRecord extends Record {
   }
 
   void addSizeRecord(SizeRecord record) {
-    _sizeRecords.add(size);
+    _sizeRecords.add(record);
   }
 
   get typeRecords {
@@ -459,26 +476,80 @@ class SmartposterRecord extends Record {
     }
   }
 
-  set iconRecord(MimeRecord record) {
-    if (record.decodedType.startsWith('image/') ||
-        record.decodedType.startsWith('video/')) {
-      if (_iconRecords.length >= 1) {
-        _iconRecords[0] = record;
-      } else {
-        _iconRecords.add(record);
-      }
+  Map<String, Uint8List> get icon {
+    if (iconRecord != null) {
+      return {iconRecord.decodedType: iconRecord.payload};
     } else {
-      throw "Type of Icon Records must be image or video, not ${record.decodedType}";
+      return null;
+    }
+  }
+
+  static void _checkValidIconType(String decodedType) {
+    if (!(decodedType.startsWith('image/') ||
+        decodedType.startsWith('video'))) {
+      throw "Type of Icon Records must be image or video, not $decodedType";
+    }
+  }
+
+  set icon(Map<String, Uint8List> icon) {
+    String decodedType = icon.keys.toList()[0];
+    _checkValidIconType(decodedType);
+    iconRecord = new MimeRecord(
+        decodedType: decodedType, payload: icon.values.toList()[0]);
+  }
+
+  void addIcon(Map<String, Uint8List> icon) {
+    String decodedType = icon.keys.toList()[0];
+    _checkValidIconType(decodedType);
+    _iconRecords.add(new MimeRecord(
+        decodedType: decodedType, payload: icon.values.toList()[0]));
+  }
+
+  set iconRecord(MimeRecord record) {
+    _checkValidIconType(record.decodedType);
+    if (_iconRecords.length >= 1) {
+      _iconRecords[0] = record;
+    } else {
+      _iconRecords.add(record);
     }
   }
 
   void addIconRecord(MimeRecord record) {
-    if (record.decodedType.startsWith('image/') ||
-        record.decodedType.startsWith('video/')) {
-      _iconRecords.add(record);
-    } else {
-      throw "Type of Icon Records must be image or video, not ${record.decodedType}";
+    _checkValidIconType(record.decodedType);
+    _iconRecords.add(record);
+  }
+
+  static bool _isEqualRecords(List<Record> own, List<Record> other) {
+    for (var i = 0; i < own.length; i++) {
+      if (!own[i].isEqual(other[i])) {
+        return false;
+      }
     }
+    return true;
+  }
+
+  @override
+  bool isEqual(Record other) {
+    Function eq = const ListEquality().equals;
+    if (!(other is Record)) {
+      return false;
+    }
+    var o = other as SmartPosterRecord;
+    return (tnf == other.tnf) &&
+        eq(type, other.type) &&
+        (id == other.id) &&
+        (titleRecords.length == o.titleRecords.length) &&
+        (uriRecords.length == o.uriRecords.length) &&
+        (actionRecords.length == o.actionRecords.length) &&
+        (iconRecords.length == o.iconRecords.length) &&
+        (sizeRecords.length == o.sizeRecords.length) &&
+        (typeRecords.length == o.typeRecords.length) &&
+        _isEqualRecords(titleRecords, o.titleRecords) &&
+        _isEqualRecords(uriRecords, o.uriRecords) &&
+        _isEqualRecords(actionRecords, o.actionRecords) &&
+        _isEqualRecords(iconRecords, o.iconRecords) &&
+        _isEqualRecords(sizeRecords, o.sizeRecords) &&
+        _isEqualRecords(typeRecords, o.typeRecords);
   }
 
   Uint8List get payload {
@@ -489,7 +560,7 @@ class SmartposterRecord extends Record {
   }
 
   set payload(Uint8List payload) {
-    decodeRawNdefMessage(payload, typeFactory: SmartposterRecord.typeFactory)
+    decodeRawNdefMessage(payload, typeFactory: SmartPosterRecord.typeFactory)
         .forEach((e) {
       if (e is TextRecord) {
         addTitleRecord(e);

@@ -2,8 +2,6 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ndef/src/record/deviceinfo.dart';
-import 'package:utf/utf.dart' as utf;
 
 import 'package:ndef/ndef.dart';
 import 'package:ndef/src/byteStream.dart';
@@ -136,7 +134,39 @@ void main() {
     }
   });
 
-  test('ndef message with signature type', () {
+  test('ndef message with smart poster type', () {
+    List<String> hexStrings = [
+      "d10249537091011655046769746875622e636f6d2f6e6663696d2f6e6465661101075402656e6e64656611030161637400120909696d6167652f706e676120706963747572655101047300002710",
+      "d1020f5370d1010b55046769746875622e636f6d",
+    ];
+
+    List<List<Record>> messages = [
+      [
+        new SmartPosterRecord(title:"ndef",uri:"https://github.com/nfcim/ndef",action:Action.exec,icon:{"image/png":new Uint8List.fromList(utf8.encode("a picture"))},size:10000,typeInfo:null),
+      ],
+      [
+        new SmartPosterRecord(uri:"https://github.com"),
+      ]
+    ];
+
+    // parse
+    for (int i = 0; i < hexStrings.length; i++) {
+      var decoded =
+          decodeRawNdefMessage(ByteStream.hexString2list(hexStrings[i]));
+      assert(decoded.length == messages[i].length);
+      for (int j = 0; j < decoded.length; j++) {
+        assert(decoded[j].isEqual(messages[i][j]));
+      }
+    }
+
+    // generate
+    for (int i = 0; i < hexStrings.length; i++) {
+      assert(ByteStream.list2hexString(encodeNdefMessage(messages[i])) ==
+          hexStrings[i]);
+    }
+  });
+
+  test('print test', () {
     //print(decodeRawNdefMessage(ByteStream.hexString2list(
     //    "")));
   });

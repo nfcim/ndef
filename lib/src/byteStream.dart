@@ -45,12 +45,12 @@ class ByteStream {
     int value = 0;
     if (endianness == Endianness.big) {
       for (var n = 0; n < d.length; n++) {
-        value <<= 256;
+        value <<= 8;
         value += d[n];
       }
     } else if (endianness == Endianness.little) {
       for (var n = d.length - 1; n >= 0; n--) {
-        value <<= 256;
+        value <<= 8;
         value += d[n];
       }
     }

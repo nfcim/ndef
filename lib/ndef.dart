@@ -7,6 +7,7 @@ export 'src/byteStream.dart';
 // record types
 export 'src/record/absoluteUri.dart';
 export 'src/record/mime.dart';
+export 'src/record/deviceinfo.dart';
 export 'src/record/signature.dart';
 export 'src/record/smartposter.dart';
 export 'src/record/text.dart';
@@ -48,16 +49,14 @@ Record decodePartialNdefMessage(
     TypeNameFormat tnf, Uint8List type, Uint8List payload,
     {Uint8List id}) {
   var decoded = Record.doDecode(tnf, type, payload, id: id);
-  // add default flags (implemented in Record's constructor)
-  //var flags = new RecordFlags();
-  //flags.TNF = TypeNameFormat.values.indexOf(tnf);
-  //decoded.flags = flags;
   return decoded;
 }
 
 /// encode an NDEF message to byte array
 Uint8List encodeNdefMessage(List<Record> records, {bool canonicalize = true}) {
-  assert(records.length > 0);
+  if(records.length == 0){
+    return new Uint8List(0);
+  }
 
   if (canonicalize) {
     records.first.flags.MB = true;

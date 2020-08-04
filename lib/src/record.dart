@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:typed_data';
 
 import 'package:ndef/ndef.dart';
@@ -196,8 +195,8 @@ class Record {
         record = UriRecord();
       } else if (classType == TextRecord.classType) {
         record = TextRecord();
-      } else if (classType == SmartposterRecord.classType) {
-        record = SmartposterRecord();
+      } else if (classType == SmartPosterRecord.classType) {
+        record = SmartPosterRecord();
       } else if (classType == SignatureRecord.classType) {
         record = SignatureRecord();
       } else if (classType == HandoverRequestRecord.classType) {
@@ -234,7 +233,6 @@ class Record {
       {Uint8List id, var typeFactory = Record.typeFactory}) {
     Record record = typeFactory(tnf, utf8.decode(type));
     if (payload.length < record.minPayloadLength) {
-      print(payload);
       throw "payload length must be >= ${record.minPayloadLength}";
     }
     if (record.maxPayloadLength != null &&
@@ -286,7 +284,7 @@ class Record {
     var payload = stream.readBytes(payloadLength);
     var typeNameFormat = TypeNameFormat.values[flags.TNF];
 
-    var decoded = doDecode(typeNameFormat, type, payload, id: id);
+    var decoded = doDecode(typeNameFormat, type, payload, id: id, typeFactory: typeFactory);
     decoded.flags = flags;
     return decoded;
   }

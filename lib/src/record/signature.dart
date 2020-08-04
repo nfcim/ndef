@@ -3,15 +3,10 @@ import 'dart:typed_data';
 
 import '../record.dart';
 import '../byteStream.dart';
+import 'wellknown.dart';
 
 /// Signature Record is uesd to protect the integrity and authenticity of NDEF Messages.
-class SignatureRecord extends Record {
-  static const TypeNameFormat classTnf = TypeNameFormat.nfcWellKnown;
-
-  TypeNameFormat get tnf {
-    return classTnf;
-  }
-
+class SignatureRecord extends WellKnownRecord {
   static const String classType = "Sig";
 
   @override

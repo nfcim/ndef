@@ -5,16 +5,11 @@ import 'package:ndef/ndef.dart';
 import 'package:utf/utf.dart' as utf;
 
 import '../record.dart';
+import 'wellknown.dart';
 
 enum TextEncoding { UTF8, UTF16 }
 
-class TextRecord extends Record {
-  static const TypeNameFormat classTnf = TypeNameFormat.nfcWellKnown;
-
-  TypeNameFormat get tnf {
-    return classTnf;
-  }
-
+class TextRecord extends WellKnownRecord {
   static const String classType = "T";
 
   @override
