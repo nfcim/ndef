@@ -560,7 +560,7 @@ class BluetoothEasyPairingRecord extends BluetoothRecord {
   }
 
   BluetoothEasyPairingRecord({Map<int, Uint8List> attributes})
-      : super(attributes: attributes) {}
+      : super(attributes: attributes);
 
   Address address;
 
@@ -639,7 +639,7 @@ class BluetoothLowEnergyRecord extends BluetoothRecord {
   }
 
   BluetoothLowEnergyRecord({Map<int, Uint8List> attributes})
-      : super(attributes: attributes) {}
+      : super(attributes: attributes);
 
   get address {
     if (attributes.containsKey(EIRType.LEBluetoothDeviceAddress)) {

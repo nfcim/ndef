@@ -18,21 +18,27 @@ import 'record/handover.dart';
 /// Represent the flags in the header of a NDEF record.
 class NDEFRecordFlags {
   /// Message Begin */
+  // ignore: non_constant_identifier_names
   bool MB = false;
 
   /// Message End */
+  // ignore: non_constant_identifier_names
   bool ME = false;
 
   /// Chunk Flag */
+  // ignore: non_constant_identifier_names
   bool CF = false;
 
   /// Short Record */
+  // ignore: non_constant_identifier_names
   bool SR = false;
 
   /// ID Length */
+  // ignore: non_constant_identifier_names
   bool IL = false;
 
   /// Type Name Format */
+  // ignore: non_constant_identifier_names
   int TNF = 0;
 
   NDEFRecordFlags({int data}) {

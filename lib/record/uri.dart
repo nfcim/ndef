@@ -117,6 +117,7 @@ class UriRecord extends WellKnownRecord {
         return new Uint8List.fromList([i] + utf8.encode(uriData));
       }
     }
+    throw "uri prefix not recognized";
   }
 
   set payload(Uint8List payload) {
