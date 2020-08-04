@@ -8,8 +8,6 @@ import '../record.dart';
 import 'deviceinfo.dart';
 import 'wellknown.dart';
 
-// Handover is use to connect Wifi or bluetooth
-
 enum CarrierPowerState { inactive, active, activating, unknown }
 
 class AlternativeCarrierRecord extends WellKnownRecord {
@@ -63,7 +61,7 @@ class AlternativeCarrierRecord extends WellKnownRecord {
     payload.addAll(latin1.encode(carrierDataReference));
 
     assert(auxDataReferenceList.length < 255,
-        "number of auxDataReference must be in [0,256)");
+        "Number of auxDataReference must be in [0,256)");
 
     payload.add(auxDataReferenceList.length);
     for (int i = 0; i < auxDataReferenceList.length; i++) {
@@ -184,7 +182,7 @@ class ErrorRecord extends WellKnownRecord {
   }
 
   get errorDataInt {
-    assert(errorReason >= 0 && errorReason < 3);
+    assert(errorReason >= 1 && errorReason <= 3);
     return ByteStream.list2int(errorData);
   }
 
@@ -218,7 +216,6 @@ class ErrorRecord extends WellKnownRecord {
     } else {
       errorData = stream.readBytes(stream.unreadLength);
     }
-    stream.checkEmpty();
   }
 }
 

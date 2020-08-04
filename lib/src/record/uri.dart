@@ -89,8 +89,9 @@ class UriRecord extends WellKnownRecord {
   }
 
   set uriPrefix(String uriPrefix) {
-    assert(uriPrefixMap.contains(uriPrefix),
-        "URI Prefix $uriPrefix is not correct");
+    if (!uriPrefixMap.contains(uriPrefix)) {
+      throw "URI Prefix $uriPrefix is not supported";
+    }
     _uriPrefix = uriPrefix;
   }
 

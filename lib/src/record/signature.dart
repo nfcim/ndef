@@ -124,7 +124,7 @@ class SignatureRecord extends WellKnownRecord {
   }
 
   get certificateStore {
-    return new List<Uint8List>.from(_certificateStore,growable: false);
+    return new List<Uint8List>.from(_certificateStore, growable: false);
   }
 
   void addCertificateStore(Uint8List certificate) {

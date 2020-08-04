@@ -34,14 +34,24 @@ class RecordFlags {
   bool IL = false;
 
   /// Type Name Format */
-  int TNF = 0;
+  int _TNF = 0;
+
+  int get TNF {
+    return _TNF;
+  }
+
+  set TNF(int TNF) {
+    if (TNF < 0 || TNF >= 8) {
+      throw "TNF number must be in [0,8)";
+    }
+    _TNF = TNF;
+  }
 
   RecordFlags({int data}) {
     decode(data);
   }
 
   int encode() {
-    assert(0 <= TNF && TNF <= 7);
     return (bool2int(MB) << 7) |
         (bool2int(ME) << 6) |
         (bool2int(CF) << 5) |
@@ -52,7 +62,9 @@ class RecordFlags {
 
   void decode(int data) {
     if (data != null) {
-      assert(0 <= data && data <= 255);
+      if (data < 0 || data >= 256) {
+        throw "Data to decode in flags must be 1 byte";
+      }
       MB = ((data >> 7) & 1) == 1;
       ME = ((data >> 6) & 1) == 1;
       CF = ((data >> 5) & 1) == 1;
@@ -208,7 +220,7 @@ class Record {
         record = HandoverMediationRecord();
       } else if (classType == HandoverInitiateRecord.classType) {
         record = HandoverInitiateRecord();
-      } else if (classType == DeviceInformationRecord.classType){
+      } else if (classType == DeviceInformationRecord.classType) {
         record = DeviceInformationRecord();
       } else {
         record = WellKnownRecord();
@@ -285,7 +297,8 @@ class Record {
     var payload = stream.readBytes(payloadLength);
     var typeNameFormat = TypeNameFormat.values[flags.TNF];
 
-    var decoded = doDecode(typeNameFormat, type, payload, id: id, typeFactory: typeFactory);
+    var decoded = doDecode(typeNameFormat, type, payload,
+        id: id, typeFactory: typeFactory);
     decoded.flags = flags;
     return decoded;
   }
@@ -308,7 +321,9 @@ class Record {
     encoded.add(encodedFlags);
 
     // type length
-    assert(type.length > 0 && type.length < 256);
+    if (type.length >= 256) {
+      throw "Number of bytes of type must be in [0,256)";
+    }
     encoded += [type.length];
 
     // use gettter for implicit encoding
@@ -328,7 +343,9 @@ class Record {
 
     // ID length
     if (id != null) {
-      assert(id.length > 0 && id.length < 256);
+      if (id.length >= 256) {
+        throw "Number of bytes of identifier must be in [0,256)";
+      }
       encoded += [id.length];
     }
 

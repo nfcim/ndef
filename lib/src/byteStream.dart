@@ -40,7 +40,9 @@ class ByteStream {
   }
 
   int readInt(int number, {Endianness endianness = Endianness.big}) {
-    assert(number <= 8);
+    if (number > 8) {
+      throw "Number of bytes converted to a int must be in [0,8)";
+    }
     Uint8List d = readBytes(number);
     int value = 0;
     if (endianness == Endianness.big) {
@@ -84,16 +86,21 @@ class ByteStream {
   }
 
   void checkBytesAvailable(int number) {
-    assert(number <= unreadLength, "there is no enough data in stream");
+    if (number > unreadLength) {
+      throw "there is not enough $number bytes in stream";
+    }
   }
 
   void checkEmpty() {
-    assert(unreadLength == 0, "stream has $unreadLength bytes after decode");
+    if (unreadLength != 0) {
+      throw "stream has $unreadLength bytes after decode";
+    }
   }
 
   static String int2hexString(int value) {
-    assert(value >= 0 && value < 256,
-        "the number to decode into Hex String must be in the range of [0,256)");
+    if (value < 0 || value >= 256) {
+      throw "Int to decode into Hex String must be in the range of [0,256), got $value";
+    }
     var str = value.toRadixString(16);
     if (str.length == 1) {
       str = '0' + str;
@@ -108,7 +115,6 @@ class ByteStream {
 
   static Uint8List int2list(int value, int length,
       {endianness = Endianness.big}) {
-    assert(length <= 8);
     var list = new List<int>();
     for (int i = 0; i < length; i++) {
       list.add(value % 256);

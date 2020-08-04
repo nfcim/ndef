@@ -52,8 +52,9 @@ class TextRecord extends WellKnownRecord {
   }
 
   set language(String language) {
-    assert(0 < language.length && language.length < 64,
-        "the length of language code must be in [1,64), got ${language.length}");
+    if (language.length >= 64 || language.length <= 0) {
+      throw "the length of language code must be in [1,64), got ${language.length}";
+    }
     this._language = language;
   }
 
@@ -84,10 +85,9 @@ class TextRecord extends WellKnownRecord {
     var stream = new ByteStream(payload);
 
     int flag = stream.readByte();
+    int languagePayloadLength = flag & 0x3F;
 
-    assert(flag & 0x3F != 0, "language code length can not be zero");
-    assert(flag & 0x3F < payload.length,
-        "language code length exceeds payload length");
+    assert(languagePayloadLength != 0, "language code length can not be zero");
 
     if (flag >> 7 == 1) {
       encoding = TextEncoding.UTF16;
@@ -95,7 +95,7 @@ class TextRecord extends WellKnownRecord {
       encoding = TextEncoding.UTF8;
     }
 
-    var languagePayload = stream.readBytes(flag & 0x3F);
+    var languagePayload = stream.readBytes(languagePayloadLength);
     var textPayload = stream.readAll();
     language = utf8.decode(languagePayload);
 

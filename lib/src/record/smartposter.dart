@@ -52,9 +52,9 @@ class ActionRecord extends WellKnownRecord {
 
   set payload(Uint8List payload) {
     int actionIndex = payload[0];
-    assert(actionIndex < Action.values.length && actionIndex >= 0,
-        'Action code must be in [0,${Action.values.length})');
-
+    if (actionIndex < Action.values.length && actionIndex >= 0) {
+      throw 'Action code must be in [0,${Action.values.length})';
+    }
     action = Action.values[actionIndex];
   }
 }
