@@ -1,10 +1,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:ndef/ndef.dart';
-import 'package:ndef/src/record/bluetooth.dart';
-
-import '../record.dart';
+import '../ndef.dart';
+import 'bluetooth.dart';
 import 'deviceinfo.dart';
 import 'wellknown.dart';
 
@@ -225,7 +223,7 @@ class ErrorRecord extends WellKnownRecord {
 class HandoverRecord extends WellKnownRecord {
   int _version;
   List<AlternativeCarrierRecord> alternativeCarrierRecordList;
-  List<Record> unknownRecordList;
+  List<NDEFRecord> unknownRecordList;
 
   static const int classMinPayloadLength = 1;
 
@@ -245,7 +243,7 @@ class HandoverRecord extends WellKnownRecord {
 
   HandoverRecord() {
     alternativeCarrierRecordList = new List<AlternativeCarrierRecord>();
-    unknownRecordList = new List<Record>();
+    unknownRecordList = new List<NDEFRecord>();
   }
 
   get versionMajor {
@@ -264,7 +262,7 @@ class HandoverRecord extends WellKnownRecord {
     return alternativeCarrierRecordList + unknownRecordList;
   }
 
-  void addRecord(Record record) {
+  void addRecord(NDEFRecord record) {
     if (record is AlternativeCarrierRecord) {
       alternativeCarrierRecordList.add(record);
     } else {
@@ -314,8 +312,8 @@ class HandoverRequestRecord extends HandoverRecord {
     collisionResolutionRecordList = new List<CollisionResolutionRecord>();
   }
 
-  static Record typeFactory(TypeNameFormat tnf, String classType) {
-    Record record;
+  static NDEFRecord typeFactory(TypeNameFormat tnf, String classType) {
+    NDEFRecord record;
     if (tnf == TypeNameFormat.nfcWellKnown) {
       if (classType == AlternativeCarrierRecord.classType) {
         record = AlternativeCarrierRecord();
@@ -337,13 +335,13 @@ class HandoverRequestRecord extends HandoverRecord {
         record = MimeRecord();
       }
     } else {
-      record = new Record();
+      record = new NDEFRecord();
     }
     return record;
   }
 
   @override
-  void addRecord(Record record) {
+  void addRecord(NDEFRecord record) {
     if (record is AlternativeCarrierRecord) {
       alternativeCarrierRecordList.add(record);
     } else if (record is CollisionResolutionRecord) {
@@ -414,8 +412,8 @@ class HandoverSelectRecord extends HandoverRecord {
     errorRecordList = new List<ErrorRecord>();
   }
 
-  static Record typeFactory(TypeNameFormat tnf, String classType) {
-    Record record;
+  static NDEFRecord typeFactory(TypeNameFormat tnf, String classType) {
+    NDEFRecord record;
     if (tnf == TypeNameFormat.nfcWellKnown) {
       if (classType == AlternativeCarrierRecord.classType) {
         record = AlternativeCarrierRecord();
@@ -435,13 +433,13 @@ class HandoverSelectRecord extends HandoverRecord {
         record = MimeRecord();
       }
     } else {
-      record = new Record();
+      record = new NDEFRecord();
     }
     return record;
   }
 
   @override
-  void addRecord(Record record) {
+  void addRecord(NDEFRecord record) {
     if (record is AlternativeCarrierRecord) {
       alternativeCarrierRecordList.add(record);
     } else if (record is ErrorRecord) {
@@ -544,7 +542,7 @@ class HandoverCarrierRecord extends HandoverRecord {
   Uint8List carrierData;
 
   get carrierType {
-    return Record.typePrefixes[ctf] + carrierTypeSuffix;
+    return NDEFRecord.typePrefixes[ctf] + carrierTypeSuffix;
   }
 
   Uint8List get payload {

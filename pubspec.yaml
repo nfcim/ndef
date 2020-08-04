@@ -5,11 +5,9 @@ author: nfc.im
 homepage: https://github.com/nfcim/ndef
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
-  flutter:
-    sdk: flutter
   utf: 0.9.0+5
   collection: ^1.14.3
   uuid: ^2.2.0

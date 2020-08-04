@@ -1,9 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:ndef/ndef.dart';
-
-import '../record.dart';
 import 'wellknown.dart';
 
 class UriRecord extends WellKnownRecord {

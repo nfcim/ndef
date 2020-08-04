@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:ndef/ndef.dart';
-import 'package:ndef/src/byteStream.dart';
+import 'package:ndef/byteStream.dart';
 
 void main() {
   test('ndef message with uri type', () {
@@ -13,7 +13,7 @@ void main() {
       "91011655046769746875622e636f6d2f6e6663696d2f6e64656651010b55046769746875622e636f6d",
     ];
 
-    List<List<Record>> messages = [
+    List<List<NDEFRecord>> messages = [
       [
         new UriRecord.fromUriString("https://github.com/nfcim/ndef"),
         new UriRecord.fromUriString("https://github.com")
@@ -43,7 +43,7 @@ void main() {
       //"d101145485656d6f6a69fffe3dd801de3dd802de3ed828dd"  // can only decode emoji correctly, but can not encode
     ];
 
-    List<List<Record>> messages = [
+    List<List<NDEFRecord>> messages = [
       [new TextRecord(language: 'en', text: 'Hello World!')],
       //[new TextRecord(language:'emoji',text:'😁😂🤨',encoding:TextEncoding.UTF16)],
     ];
@@ -71,7 +71,7 @@ void main() {
       "d1034d536967200b0200473045022100a410c28fd9437fd24f6656f121e62bcc5f65e36257f5faadf68e3e83d40d481a0220335b1dff8d6fe722fcf7018be9684d2de5670b256fdfc02aa25bdae16f624b8000",
     ];
 
-    List<List<Record>> messages = [
+    List<List<NDEFRecord>> messages = [
       [new SignatureRecord()],
       [
         new SignatureRecord(
@@ -103,7 +103,7 @@ void main() {
       "d1023b446900056e6663696d01096e666344657669636502076e66634e616d6503106361ae18d5b011ea9d0840a3ccfd09570405312e302e30ff054e4643494d",
     ];
 
-    List<List<Record>> messages = [
+    List<List<NDEFRecord>> messages = [
       [
         new DeviceInformationRecord(
             vendorName: "nfcim",
@@ -140,7 +140,7 @@ void main() {
       "d1020f5370d1010b55046769746875622e636f6d",
     ];
 
-    List<List<Record>> messages = [
+    List<List<NDEFRecord>> messages = [
       [
         new SmartPosterRecord(
             title: "ndef",

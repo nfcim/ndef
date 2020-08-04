@@ -1,0 +1,12 @@
+name: ndef_example
+description: Example for ndef Dart library
+version: 0.0.1
+author: nfc.im
+homepage: https://github.com/nfcim/ndef
+
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+
+dependencies:
+  ndef:
+    path: ../

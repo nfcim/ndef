@@ -1,8 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import '../record.dart';
-import '../byteStream.dart';
+import '../ndef.dart';
 import 'wellknown.dart';
 
 /// Signature Record is uesd to protect the integrity and authenticity of NDEF Messages.

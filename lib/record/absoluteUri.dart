@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
-import '../record.dart';
+import '../ndef.dart';
 
-class AbsoluteUriRecord extends Record {
+class AbsoluteUriRecord extends NDEFRecord {
   static const TypeNameFormat classTnf = TypeNameFormat.absoluteURI;
 
   TypeNameFormat get tnf {

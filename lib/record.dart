@@ -2,8 +2,6 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:ndef/ndef.dart';
-import 'package:ndef/src/record/bluetooth.dart';
-import 'package:ndef/src/record/handover.dart';
 import 'package:collection/collection.dart';
 
 import 'byteStream.dart';
@@ -15,9 +13,10 @@ import 'record/deviceinfo.dart';
 import 'record/mime.dart';
 import 'record/bluetooth.dart';
 import 'record/absoluteUri.dart';
+import 'record/handover.dart';
 
 /// Represent the flags in the header of a NDEF record.
-class RecordFlags {
+class NDEFRecordFlags {
   /// Message Begin */
   bool MB = false;
 
@@ -36,7 +35,7 @@ class RecordFlags {
   /// Type Name Format */
   int TNF = 0;
 
-  RecordFlags({int data}) {
+  NDEFRecordFlags({int data}) {
     decode(data);
   }
 
@@ -76,7 +75,7 @@ enum TypeNameFormat {
 
 /// The base class of all types of records.
 /// Also reprents an record of unknown type.
-class Record {
+class NDEFRecord {
   static List<String> typePrefixes = [
     "",
     "urn:nfc:wkt:",
@@ -126,11 +125,7 @@ class Record {
   }
 
   String get idString {
-    if (id == null) {
-      return "";
-    } else {
-      return utf8.decode(id);
-    }
+    return id == null ? "(empty)" : ByteStream.list2hexString(id);
   }
 
   set idString(String value) {
@@ -150,6 +145,8 @@ class Record {
 
   String get basicInfoString {
     var str = "id=$idString ";
+    str += "typeNameFormat=$tnf ";
+    str += "type=$decodedType ";
     return str;
   }
 
@@ -157,18 +154,16 @@ class Record {
   String toString() {
     var str = "Record: ";
     str += basicInfoString;
-    str += "typeNameFormat=$tnf ";
-    str += "type=$decodedType ";
     str += "payload=${ByteStream.list2hexString(payload)}";
     return str;
   }
 
   Uint8List id;
   Uint8List payload;
-  RecordFlags flags;
+  NDEFRecordFlags flags;
 
-  Record({int tnf, Uint8List type, Uint8List id, Uint8List payload}) {
-    flags = new RecordFlags();
+  NDEFRecord({int tnf, Uint8List type, Uint8List id, Uint8List payload}) {
+    flags = new NDEFRecordFlags();
     if (tnf == null) {
       flags.TNF = TypeNameFormat.values.indexOf(this.tnf);
     } else {
@@ -188,9 +183,9 @@ class Record {
     }
   }
 
-  /// Construct an instance of a specific type (subclass) of [Record]
-  static Record typeFactory(TypeNameFormat tnf, String classType) {
-    Record record;
+  /// Construct an instance of a specific type (subclass) of [NDEFRecord]
+  static NDEFRecord typeFactory(TypeNameFormat tnf, String classType) {
+    NDEFRecord record;
     if (tnf == TypeNameFormat.nfcWellKnown) {
       if (classType == UriRecord.classType) {
         record = UriRecord();
@@ -224,15 +219,15 @@ class Record {
     } else if (tnf == TypeNameFormat.absoluteURI) {
       record = AbsoluteUriRecord();
     } else {
-      record = Record();
+      record = NDEFRecord();
     }
     return record;
   }
 
-  /// Decode a [Record] record from raw data.
-  static Record doDecode(TypeNameFormat tnf, Uint8List type, Uint8List payload,
-      {Uint8List id, var typeFactory = Record.typeFactory}) {
-    Record record = typeFactory(tnf, utf8.decode(type));
+  /// Decode a [NDEFRecord] record from raw data.
+  static NDEFRecord doDecode(TypeNameFormat tnf, Uint8List type, Uint8List payload,
+      {Uint8List id, var typeFactory = NDEFRecord.typeFactory}) {
+    NDEFRecord record = typeFactory(tnf, utf8.decode(type));
     if (payload.length < record.minPayloadLength) {
       throw "payload length must be >= ${record.minPayloadLength}";
     }
@@ -247,9 +242,9 @@ class Record {
     return record;
   }
 
-  /// Decode a NDEF [Record] from part of [ByteStream]
-  static Record decodeStream(ByteStream stream, var typeFactory) {
-    var flags = new RecordFlags(data: stream.readByte());
+  /// Decode a NDEF [NDEFRecord] from part of [ByteStream]
+  static NDEFRecord decodeStream(ByteStream stream, var typeFactory) {
+    var flags = new NDEFRecordFlags(data: stream.readByte());
 
     num typeLength = stream.readByte();
     num payloadLength;
@@ -291,7 +286,7 @@ class Record {
     return decoded;
   }
 
-  /// Encode this [Record] to raw byte data.
+  /// Encode this [NDEFRecord] to raw byte data.
   Uint8List encode() {
     var encoded = new List<int>();
 
@@ -347,9 +342,9 @@ class Record {
     return new Uint8List.fromList(encoded);
   }
 
-  bool isEqual(Record other) {
+  bool isEqual(NDEFRecord other) {
     Function eq = const ListEquality().equals;
-    return (other is Record) &&
+    return (other is NDEFRecord) &&
         (tnf == other.tnf) &&
         eq(type, other.type) &&
         (id == other.id) &&

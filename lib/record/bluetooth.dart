@@ -1,9 +1,7 @@
 import 'dart:typed_data';
 import 'dart:convert';
 
-import 'package:ndef/ndef.dart';
-
-import '../record.dart';
+import '../ndef.dart';
 
 class Address {
   Uint8List bytes;

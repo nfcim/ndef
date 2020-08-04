@@ -1,16 +1,16 @@
 import 'dart:typed_data';
 
-import '../record.dart';
-import '../byteStream.dart';
+import '../ndef.dart';
 
-class WellKnownRecord extends Record {
-  static const TypeNameFormat classTnf = TypeNameFormat.nfcWellKnown;
+
+class MimeRecord extends NDEFRecord {
+  static const TypeNameFormat classTnf = TypeNameFormat.media;
 
   TypeNameFormat get tnf {
     return classTnf;
   }
 
-  WellKnownRecord({String decodedType, Uint8List payload, Uint8List id})
+  MimeRecord({String decodedType, Uint8List payload, Uint8List id})
       : super(id: id, payload: payload) {
     if (decodedType != null) {
       this.decodedType = decodedType;
