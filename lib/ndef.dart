@@ -55,7 +55,8 @@ NDEFRecord decodePartialNdefMessage(
 
 /// Encode an NDEF message (containing several [NDEFRecord]s) to byte array.
 /// Set [canonicalize] to set the MB and ME fields automatically in the first / last record.
-Uint8List encodeNdefMessage(List<NDEFRecord> records, {bool canonicalize = true}) {
+Uint8List encodeNdefMessage(List<NDEFRecord> records,
+    {bool canonicalize = true}) {
   if (records.length == 0) {
     return new Uint8List(0);
   }

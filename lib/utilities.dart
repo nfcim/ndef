@@ -4,7 +4,6 @@ enum Endianness { big, little }
 
 /// Utility class to play with raw bytes
 class ByteUtils {
-
   static int bool2int(bool value) {
     return value ? 1 : 0;
   }
@@ -165,4 +164,3 @@ class ByteStream {
     assert(unreadLength == 0, "stream has $unreadLength bytes after decode");
   }
 }
-

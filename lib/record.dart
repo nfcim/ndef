@@ -73,7 +73,6 @@ enum TypeNameFormat {
   unchanged
 }
 
-
 /// Construct an instance of a specific type (subclass) of [NDEFRecord] according to [tnf] and [classType]
 typedef NDEFRecord TypeFactory(TypeNameFormat tnf, String classType);
 
@@ -188,7 +187,6 @@ class NDEFRecord {
     }
   }
 
-
   /// Construct an instance of a specific type (subclass) of [NDEFRecord] according to tnf and type
   static NDEFRecord defaultTypeFactory(TypeNameFormat tnf, String classType) {
     NDEFRecord record;
@@ -231,7 +229,8 @@ class NDEFRecord {
   }
 
   /// Decode a [NDEFRecord] record from raw data.
-  static NDEFRecord doDecode(TypeNameFormat tnf, Uint8List type, Uint8List payload,
+  static NDEFRecord doDecode(
+      TypeNameFormat tnf, Uint8List type, Uint8List payload,
       {Uint8List id, TypeFactory typeFactory = NDEFRecord.defaultTypeFactory}) {
     NDEFRecord record = typeFactory(tnf, utf8.decode(type));
     if (payload.length < record.minPayloadLength) {

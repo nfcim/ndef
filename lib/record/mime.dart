@@ -2,7 +2,6 @@ import 'dart:typed_data';
 
 import '../ndef.dart';
 
-
 class MimeRecord extends NDEFRecord {
   static const TypeNameFormat classTnf = TypeNameFormat.media;
 
