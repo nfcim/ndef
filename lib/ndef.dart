@@ -3,7 +3,7 @@ library ndef;
 // base class
 export 'record.dart';
 // utility
-export 'byteStream.dart';
+export 'utilities.dart';
 // record types
 export 'record/absoluteUri.dart';
 export 'record/mime.dart';
@@ -15,11 +15,11 @@ export 'record/uri.dart';
 
 import 'dart:typed_data';
 import 'record.dart';
-import 'byteStream.dart';
+import 'utilities.dart';
 
-/// decode raw NDEF messages from byte array
+/// Decode raw NDEF messages (containing at least one [NDEFRecord]) from byte array.
 List<NDEFRecord> decodeRawNdefMessage(Uint8List data,
-    {var typeFactory = NDEFRecord.typeFactory}) {
+    {var typeFactory = NDEFRecord.defaultTypeFactory}) {
   var records = new List<NDEFRecord>();
   var stream = new ByteStream(data);
   while (!stream.isEnd()) {
@@ -44,7 +44,8 @@ List<NDEFRecord> decodeRawNdefMessage(Uint8List data,
   return records;
 }
 
-/// Decode partially parsed NDEF record
+/// Decode a NDEF record, providing its parts separately.
+/// This is most useful in mobile envrionment because the APIs will give you these information in a separate manner.
 NDEFRecord decodePartialNdefMessage(
     TypeNameFormat tnf, Uint8List type, Uint8List payload,
     {Uint8List id}) {

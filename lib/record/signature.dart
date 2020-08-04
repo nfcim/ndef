@@ -24,7 +24,7 @@ class SignatureRecord extends WellKnownRecord {
     var str = "SignatureRecord: ";
     str += "signatureType=$signatureType ";
     str += "hashType=$hashType ";
-    str += "signature=${ByteStream.list2hexString(signature)} ";
+    str += "signature=${ByteUtils.list2hexString(signature)} ";
     str += "signatureURI=$signatureURI ";
     str += "certificateFormat=$certificateFormat ";
     str += "certificateStore=" + certificateStore.toString() + " ";
@@ -146,7 +146,7 @@ class SignatureRecord extends WellKnownRecord {
 
     var signatureURIBytes =
         signatureURIPresent == 0 ? signature : utf8.encode(signatureURI);
-    var signatureLenthBytes = ByteStream.int2list(signatureURIBytes.length, 2);
+    var signatureLenthBytes = ByteUtils.int2list(signatureURIBytes.length, 2);
     var signatureBytes = [signatureFlag, hashTypeIndex] +
         signatureLenthBytes +
         signatureURIBytes;
@@ -159,12 +159,12 @@ class SignatureRecord extends WellKnownRecord {
     var certificateStoreBytes = new List<int>();
     for (int i = 0; i < certificateStore.length; i++) {
       certificateStoreBytes
-          .addAll(ByteStream.int2list(certificateStore[i].length, 2));
+          .addAll(ByteUtils.int2list(certificateStore[i].length, 2));
       certificateStoreBytes.addAll(certificateStore[i]);
     }
     var certificateURIBytes = new List<int>();
     if (certificateURIPresent != 0) {
-      certificateURIBytes.addAll(ByteStream.int2list(certificateURI.length, 2));
+      certificateURIBytes.addAll(ByteUtils.int2list(certificateURI.length, 2));
       certificateURIBytes.addAll(utf8.encode(certificateURI));
     }
     var certificateBytes = new Uint8List.fromList(

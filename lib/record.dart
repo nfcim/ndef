@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:ndef/ndef.dart';
 import 'package:collection/collection.dart';
 
-import 'byteStream.dart';
+import 'utilities.dart';
 import 'record/wellknown.dart';
 import 'record/uri.dart';
 import 'record/text.dart';
@@ -41,11 +41,11 @@ class NDEFRecordFlags {
 
   int encode() {
     assert(0 <= TNF && TNF <= 7);
-    return (bool2int(MB) << 7) |
-        (bool2int(ME) << 6) |
-        (bool2int(CF) << 5) |
-        (bool2int(SR) << 4) |
-        (bool2int(IL) << 3) |
+    return (ByteUtils.bool2int(MB) << 7) |
+        (ByteUtils.bool2int(ME) << 6) |
+        (ByteUtils.bool2int(CF) << 5) |
+        (ByteUtils.bool2int(SR) << 4) |
+        (ByteUtils.bool2int(IL) << 3) |
         (TNF & 7);
   }
 
@@ -72,6 +72,10 @@ enum TypeNameFormat {
   unknown,
   unchanged
 }
+
+
+/// Construct an instance of a specific type (subclass) of [NDEFRecord] according to [tnf] and [classType]
+typedef NDEFRecord TypeFactory(TypeNameFormat tnf, String classType);
 
 /// The base class of all types of records.
 /// Also reprents an record of unknown type.
@@ -125,7 +129,7 @@ class NDEFRecord {
   }
 
   String get idString {
-    return id == null ? "(empty)" : ByteStream.list2hexString(id);
+    return id == null ? "(empty)" : ByteUtils.list2hexString(id);
   }
 
   set idString(String value) {
@@ -154,7 +158,7 @@ class NDEFRecord {
   String toString() {
     var str = "Record: ";
     str += basicInfoString;
-    str += "payload=${ByteStream.list2hexString(payload)}";
+    str += "payload=${ByteUtils.list2hexString(payload)}";
     return str;
   }
 
@@ -162,6 +166,7 @@ class NDEFRecord {
   Uint8List payload;
   NDEFRecordFlags flags;
 
+  /// Initialize a new [NDEFRecord], and set the corresponding fields
   NDEFRecord({int tnf, Uint8List type, Uint8List id, Uint8List payload}) {
     flags = new NDEFRecordFlags();
     if (tnf == null) {
@@ -183,8 +188,9 @@ class NDEFRecord {
     }
   }
 
-  /// Construct an instance of a specific type (subclass) of [NDEFRecord]
-  static NDEFRecord typeFactory(TypeNameFormat tnf, String classType) {
+
+  /// Construct an instance of a specific type (subclass) of [NDEFRecord] according to tnf and type
+  static NDEFRecord defaultTypeFactory(TypeNameFormat tnf, String classType) {
     NDEFRecord record;
     if (tnf == TypeNameFormat.nfcWellKnown) {
       if (classType == UriRecord.classType) {
@@ -226,7 +232,7 @@ class NDEFRecord {
 
   /// Decode a [NDEFRecord] record from raw data.
   static NDEFRecord doDecode(TypeNameFormat tnf, Uint8List type, Uint8List payload,
-      {Uint8List id, var typeFactory = NDEFRecord.typeFactory}) {
+      {Uint8List id, TypeFactory typeFactory = NDEFRecord.defaultTypeFactory}) {
     NDEFRecord record = typeFactory(tnf, utf8.decode(type));
     if (payload.length < record.minPayloadLength) {
       throw "payload length must be >= ${record.minPayloadLength}";
@@ -242,8 +248,8 @@ class NDEFRecord {
     return record;
   }
 
-  /// Decode a NDEF [NDEFRecord] from part of [ByteStream]
-  static NDEFRecord decodeStream(ByteStream stream, var typeFactory) {
+  /// Decode a NDEF [NDEFRecord] from part of [ByteStream].
+  static NDEFRecord decodeStream(ByteStream stream, TypeFactory typeFactory) {
     var flags = new NDEFRecordFlags(data: stream.readByte());
 
     num typeLength = stream.readByte();

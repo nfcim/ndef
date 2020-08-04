@@ -104,11 +104,11 @@ class SizeRecord extends WellKnownRecord {
   }
 
   Uint8List get payload {
-    return ByteStream.int2list(size, 4);
+    return ByteUtils.int2list(size, 4);
   }
 
   set payload(Uint8List payload) {
-    size = ByteStream.list2int(payload.sublist(0, 4));
+    size = ByteUtils.list2int(payload.sublist(0, 4));
   }
 }
 

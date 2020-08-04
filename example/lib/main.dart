@@ -12,7 +12,7 @@ void main() {
   ];
 
   // decode full ndef message (concatenation of records)
-  var decodedurlRecords = ndef.decodeRawNdefMessage(ndef.ByteStream.hexString2list(encodedUrlRecord));
+  var decodedurlRecords = ndef.decodeRawNdefMessage(ndef.ByteUtils.hexString2list(encodedUrlRecord));
 
   assert(urlRecords.length == decodedurlRecords.length);
 
@@ -27,24 +27,25 @@ void main() {
   // modify the record by data-binding
   var origPayload = urlRecords[0].payload;
   print('===================');
-  print('original payload: ' + ndef.ByteStream.list2hexString(origPayload));
+  print('original payload: ' + ndef.ByteUtils.list2hexString(origPayload));
   print('original uri: ' + urlRecords[0].uri.toString());
 
   // change uri
   print('===================');
   urlRecords[0].uriData = 'github.com/nfcim/flutter_nfc_kit'; // thats also our awesome library, check it out!
-  print('payload after change uriData: ' + ndef.ByteStream.list2hexString(urlRecords[0].payload)); // encoded when invoking
+  print('payload after change uriData: ' + ndef.ByteUtils.list2hexString(urlRecords[0].payload)); // encoded when invoking
   print('uri after change uriData: ' + urlRecords[0].uri.toString());
 
   // change it back (by using payload)
   print('===================');
   urlRecords[0].payload = origPayload; // decoded when invoking
-  print('payload after changed back: ' + ndef.ByteStream.list2hexString(urlRecords[0].payload));
+  print('payload after changed back: ' + ndef.ByteUtils.list2hexString(urlRecords[0].payload));
   print('uri after changed back: ' + urlRecords[0].uri.toString());
 
   // encoded into message again (also canonicalize MB & MF fields)
   var encodedAgain = ndef.encodeNdefMessage(urlRecords);
-  assert(ndef.ByteStream.list2hexString(encodedAgain) == encodedUrlRecord);
+  assert(ndef.ByteUtils.list2hexString(encodedAgain) == encodedUrlRecord);
+  print('encoded single record: ' + ndef.ByteUtils.list2hexString(urlRecords[0].encode()));
 
   // also you can decode by providing id, type and payload separately (normally from phone API)
   print('===================');

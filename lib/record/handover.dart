@@ -132,7 +132,7 @@ class CollisionResolutionRecord extends WellKnownRecord {
 
   set randomNumber(var randomNumber) {
     if (randomNumber is Uint8List) {
-      randomNumber = ByteStream.list2int(randomNumber);
+      randomNumber = ByteUtils.list2int(randomNumber);
     } else if (!randomNumber is int) {
       throw "randomNumber expects an int or Uint8List";
     }
@@ -141,7 +141,7 @@ class CollisionResolutionRecord extends WellKnownRecord {
   }
 
   Uint8List get payload {
-    return ByteStream.int2list(randomNumber, 2);
+    return ByteUtils.int2list(randomNumber, 2);
   }
 
   set payload(Uint8List payload) {
@@ -183,14 +183,14 @@ class ErrorRecord extends WellKnownRecord {
 
   get errorDataInt {
     assert(errorReason >= 0 && errorReason < 3);
-    return ByteStream.list2int(errorData);
+    return ByteUtils.list2int(errorData);
   }
 
   get errorString {
     if (errorReason >= 0 && errorReason < 3) {
       return errorStringMap[errorReason].replaceFirst('X', '$errorDataInt');
     } else {
-      var errorDataString = ByteStream.list2hexString(errorData);
+      var errorDataString = ByteUtils.list2hexString(errorData);
       return "Reason $errorReason Data $errorDataString";
     }
   }

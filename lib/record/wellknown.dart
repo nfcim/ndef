@@ -21,7 +21,7 @@ class WellKnownRecord extends NDEFRecord {
     var str = "WellKnownRecord: ";
     str += basicInfoString;
     str += "type=$decodedType ";
-    str += "payload=${ByteStream.list2hexString(payload)}";
+    str += "payload=${ByteUtils.list2hexString(payload)}";
     return str;
   }
 }

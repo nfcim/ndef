@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:ndef/ndef.dart';
-import 'package:ndef/byteStream.dart';
+import 'package:ndef/utilities.dart';
 
 void main() {
   test('ndef message with uri type', () {
@@ -23,7 +23,7 @@ void main() {
     // parse
     for (int i = 0; i < hexStrings.length; i++) {
       var decoded =
-          decodeRawNdefMessage(ByteStream.hexString2list(hexStrings[i]));
+          decodeRawNdefMessage(ByteUtils.hexString2list(hexStrings[i]));
       assert(decoded.length == messages[i].length);
       for (int j = 0; j < decoded.length; j++) {
         assert(decoded[j].isEqual(messages[i][j]));
@@ -32,7 +32,7 @@ void main() {
 
     // generate
     for (int i = 0; i < hexStrings.length; i++) {
-      assert(ByteStream.list2hexString(encodeNdefMessage(messages[i])) ==
+      assert(ByteUtils.list2hexString(encodeNdefMessage(messages[i])) ==
           hexStrings[i]);
     }
   });
@@ -51,7 +51,7 @@ void main() {
     // parse
     for (int i = 0; i < hexStrings.length; i++) {
       var decoded =
-          decodeRawNdefMessage(ByteStream.hexString2list(hexStrings[i]));
+          decodeRawNdefMessage(ByteUtils.hexString2list(hexStrings[i]));
       assert(decoded.length == messages[i].length);
       for (int j = 0; j < decoded.length; j++) {
         assert(decoded[j].isEqual(messages[i][j]));
@@ -60,7 +60,7 @@ void main() {
 
     // generate
     for (int i = 0; i < hexStrings.length; i++) {
-      assert(ByteStream.list2hexString(encodeNdefMessage(messages[i])) ==
+      assert(ByteUtils.list2hexString(encodeNdefMessage(messages[i])) ==
           hexStrings[i]);
     }
   });
@@ -76,7 +76,7 @@ void main() {
       [
         new SignatureRecord(
             signatureType: 'ECDSA-P256',
-            signature: ByteStream.hexString2list(
+            signature: ByteUtils.hexString2list(
                 "3045022100a410c28fd9437fd24f6656f121e62bcc5f65e36257f5faadf68e3e83d40d481a0220335b1dff8d6fe722fcf7018be9684d2de5670b256fdfc02aa25bdae16f624b80"))
       ],
     ];
@@ -84,7 +84,7 @@ void main() {
     // parse
     for (int i = 0; i < hexStrings.length; i++) {
       var decoded =
-          decodeRawNdefMessage(ByteStream.hexString2list(hexStrings[i]));
+          decodeRawNdefMessage(ByteUtils.hexString2list(hexStrings[i]));
       assert(decoded.length == messages[i].length);
       for (int j = 0; j < decoded.length; j++) {
         assert(decoded[j].isEqual(messages[i][j]));
@@ -93,7 +93,7 @@ void main() {
 
     // generate
     for (int i = 0; i < hexStrings.length; i++) {
-      assert(ByteStream.list2hexString(encodeNdefMessage(messages[i])) ==
+      assert(ByteUtils.list2hexString(encodeNdefMessage(messages[i])) ==
           hexStrings[i]);
     }
   });
@@ -120,7 +120,7 @@ void main() {
     // parse
     for (int i = 0; i < hexStrings.length; i++) {
       var decoded =
-          decodeRawNdefMessage(ByteStream.hexString2list(hexStrings[i]));
+          decodeRawNdefMessage(ByteUtils.hexString2list(hexStrings[i]));
       assert(decoded.length == messages[i].length);
       for (int j = 0; j < decoded.length; j++) {
         assert(decoded[j].isEqual(messages[i][j]));
@@ -129,7 +129,7 @@ void main() {
 
     // generate
     for (int i = 0; i < hexStrings.length; i++) {
-      assert(ByteStream.list2hexString(encodeNdefMessage(messages[i])) ==
+      assert(ByteUtils.list2hexString(encodeNdefMessage(messages[i])) ==
           hexStrings[i]);
     }
   });
@@ -160,7 +160,7 @@ void main() {
     // parse
     for (int i = 0; i < hexStrings.length; i++) {
       var decoded =
-          decodeRawNdefMessage(ByteStream.hexString2list(hexStrings[i]));
+          decodeRawNdefMessage(ByteUtils.hexString2list(hexStrings[i]));
       assert(decoded.length == messages[i].length);
       for (int j = 0; j < decoded.length; j++) {
         assert(decoded[j].isEqual(messages[i][j]));
@@ -169,13 +169,13 @@ void main() {
 
     // generate
     for (int i = 0; i < hexStrings.length; i++) {
-      assert(ByteStream.list2hexString(encodeNdefMessage(messages[i])) ==
+      assert(ByteUtils.list2hexString(encodeNdefMessage(messages[i])) ==
           hexStrings[i]);
     }
   });
 
   test('print test', () {
-    //print(decodeRawNdefMessage(ByteStream.hexString2list(
+    //print(decodeRawNdefMessage(ByteUtils.hexString2list(
     //    "")));
   });
 
