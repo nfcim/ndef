@@ -267,7 +267,7 @@ class SmartPosterRecord extends WellKnownRecord {
       } else if (classType == ActionRecord.classType) {
         record = ActionRecord();
       } else {
-        record = Record();
+        record = WellKnownRecord();
       }
     } else if (tnf == TypeNameFormat.media) {
       record = MimeRecord();

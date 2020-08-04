@@ -6,18 +6,13 @@ import 'package:ndef/src/record/bluetooth.dart';
 
 import '../record.dart';
 import 'deviceinfo.dart';
+import 'wellknown.dart';
 
 // Handover is use to connect Wifi or bluetooth
 
 enum CarrierPowerState { inactive, active, activating, unknown }
 
-class AlternativeCarrierRecord extends Record {
-  static const TypeNameFormat classTnf = TypeNameFormat.nfcWellKnown;
-
-  TypeNameFormat get tnf {
-    return classTnf;
-  }
-
+class AlternativeCarrierRecord extends WellKnownRecord {
   static const String classType = "ac";
 
   @override
@@ -99,14 +94,8 @@ class AlternativeCarrierRecord extends Record {
   }
 }
 
-class CollisionResolutionRecord extends Record {
+class CollisionResolutionRecord extends WellKnownRecord {
   // a 16-bit random number used to resolve a collision
-  static const TypeNameFormat classTnf = TypeNameFormat.nfcWellKnown;
-
-  TypeNameFormat get tnf {
-    return classTnf;
-  }
-
   static const String classType = "cr";
 
   @override
@@ -162,14 +151,8 @@ class CollisionResolutionRecord extends Record {
   }
 }
 
-class ErrorRecord extends Record {
+class ErrorRecord extends WellKnownRecord {
   // used in the HandoverSelectRecord
-  static const TypeNameFormat classTnf = TypeNameFormat.nfcWellKnown;
-
-  TypeNameFormat get tnf {
-    return classTnf;
-  }
-
   static const String classType = "err";
 
   static const List<String> errorStringMap = [
@@ -239,7 +222,7 @@ class ErrorRecord extends Record {
   }
 }
 
-class HandoverRecord extends Record {
+class HandoverRecord extends WellKnownRecord {
   int _version;
   List<AlternativeCarrierRecord> alternativeCarrierRecordList;
   List<Record> unknownRecordList;
@@ -307,12 +290,6 @@ class HandoverRecord extends Record {
 }
 
 class HandoverRequestRecord extends HandoverRecord {
-  static const TypeNameFormat classTnf = TypeNameFormat.nfcWellKnown;
-
-  TypeNameFormat get tnf {
-    return classTnf;
-  }
-
   static const String classType = "Hr";
 
   @override
@@ -349,7 +326,7 @@ class HandoverRequestRecord extends HandoverRecord {
       } else if (classType == DeviceInformationRecord.classType) {
         record = DeviceInformationRecord();
       } else {
-        return Record();
+        return WellKnownRecord();
       }
     } else if (tnf == TypeNameFormat.media) {
       if (classType == BluetoothEasyPairingRecord.classType) {
@@ -413,12 +390,6 @@ class HandoverRequestRecord extends HandoverRecord {
 }
 
 class HandoverSelectRecord extends HandoverRecord {
-  static const TypeNameFormat classTnf = TypeNameFormat.nfcWellKnown;
-
-  TypeNameFormat get tnf {
-    return classTnf;
-  }
-
   static const String classType = "Hs";
 
   @override
@@ -453,7 +424,7 @@ class HandoverSelectRecord extends HandoverRecord {
       } else if (classType == DeviceInformationRecord.classType) {
         record = DeviceInformationRecord();
       } else {
-        return Record();
+        return WellKnownRecord();
       }
     } else if (tnf == TypeNameFormat.media) {
       if (classType == BluetoothEasyPairingRecord.classType) {
@@ -506,12 +477,6 @@ class HandoverSelectRecord extends HandoverRecord {
 }
 
 class HandoverMediationRecord extends HandoverRecord {
-  static const TypeNameFormat classTnf = TypeNameFormat.nfcWellKnown;
-
-  TypeNameFormat get tnf {
-    return classTnf;
-  }
-
   static const String classType = "Hm";
 
   @override
@@ -531,12 +496,6 @@ class HandoverMediationRecord extends HandoverRecord {
 }
 
 class HandoverInitiateRecord extends HandoverRecord {
-  static const TypeNameFormat classTnf = TypeNameFormat.nfcWellKnown;
-
-  TypeNameFormat get tnf {
-    return classTnf;
-  }
-
   static const String classType = "Hi";
 
   @override
@@ -556,12 +515,6 @@ class HandoverInitiateRecord extends HandoverRecord {
 }
 
 class HandoverCarrierRecord extends HandoverRecord {
-  static const TypeNameFormat classTnf = TypeNameFormat.nfcWellKnown;
-
-  TypeNameFormat get tnf {
-    return classTnf;
-  }
-
   static const String classType = "Hc";
 
   @override

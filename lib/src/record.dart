@@ -7,6 +7,7 @@ import 'package:ndef/src/record/handover.dart';
 import 'package:collection/collection.dart';
 
 import 'byteStream.dart';
+import 'record/wellknown.dart';
 import 'record/uri.dart';
 import 'record/text.dart';
 import 'record/signature.dart';
@@ -210,7 +211,7 @@ class Record {
       } else if (classType == DeviceInformationRecord.classType){
         record = DeviceInformationRecord();
       } else {
-        record = Record();
+        record = WellKnownRecord();
       }
     } else if (tnf == TypeNameFormat.media) {
       if (classType == BluetoothEasyPairingRecord.classType) {
