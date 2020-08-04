@@ -16,6 +16,8 @@
   * other MIME data
 * Absolute URI
 
+**This library is still under active development and subject to breaking API changes and malfunction. Pull requests and issues are most welcomed.**
+
 ## Usage
 
 ```dart
