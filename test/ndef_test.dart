@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:ndef/ndef.dart';
 import 'package:ndef/src/byteStream.dart';
+import 'package:ndef/src/record/handover.dart';
 
 void main() {
   test('ndef message with uri type', () {
@@ -174,19 +175,27 @@ void main() {
     }
   });
 
-    test('ndef message with handover type', () {
+  test('ndef message with handover type', () {
     List<String> hexStrings = [
-      "d10249537091011655046769746875622e636f6d2f6e6663696d2f6e6465661101075402656e6e64656611030161637400120909696d6167652f706e676120706963747572655101047300002710",
-      "d1020f5370d1010b55046769746875622e636f6d",
+      'd10201487211',
+      '910211487212 91020263721234 510204616301013100 590205014863310203612f62',
     ];
 
     List<List<Record>> messages = [
       [
-        new SmartPosterRecord(title:"ndef",uri:"https://github.com/nfcim/ndef",action:Action.exec,icon:{"image/png":new Uint8List.fromList(utf8.encode("a picture"))},size:10000,typeInfo:null),
+        new HandoverRequestRecord(versionString: "1.1"),
       ],
       [
-        new SmartPosterRecord(uri:"https://github.com"),
-      ]
+        new HandoverRequestRecord(
+            versionString: "1.2",
+            collisionResolutionNumber: 0x1234,
+            alternativeCarrierRecordList: [
+              AlternativeCarrierRecord(
+                  carrierPowerState: CarrierPowerState.active,
+                  carrierDataReference: '1')
+            ]),
+        new Record()
+      ],
     ];
 
     // parse
@@ -207,8 +216,7 @@ void main() {
   });
 
   test('print test', () {
-    //print(decodeRawNdefMessage(ByteStream.hexString2list(
-    //    "")));
+    print(decodeRawNdefMessage(ByteStream.hexString2list("d102014872 11")));
   });
 
   // TODO: more tests

@@ -89,7 +89,7 @@ enum TypeNameFormat {
 /// The base class of all types of records.
 /// Also reprents an record of unknown type.
 class Record {
-  static List<String> typePrefixes = [
+  static const List<String> tnfString = [
     "",
     "urn:nfc:wkt:",
     "",
@@ -133,20 +133,20 @@ class Record {
     }
   }
 
-  String get recordType {
-    return typePrefixes[flags.TNF] + decodedType;
+  String get fullType {
+    return tnfString[flags.TNF] + decodedType;
   }
 
   String get idString {
     if (id == null) {
       return "";
     } else {
-      return utf8.decode(id);
+      return latin1.decode(id);
     }
   }
 
   set idString(String value) {
-    id = utf8.encode(value);
+    id = latin1.encode(value);
   }
 
   static const int classMinPayloadLength = 0;
@@ -179,7 +179,7 @@ class Record {
   Uint8List payload;
   RecordFlags flags;
 
-  Record({int tnf, Uint8List type, Uint8List id, Uint8List payload}) {
+  Record({TypeNameFormat tnf, Uint8List type, Uint8List id, Uint8List payload}) {
     flags = new RecordFlags();
     if (tnf == null) {
       flags.TNF = TypeNameFormat.values.indexOf(this.tnf);
@@ -187,14 +187,10 @@ class Record {
       if (this.tnf != TypeNameFormat.empty) {
         throw "TNF has not been set in subclass of Record";
       }
-      flags.TNF = tnf;
+      this.tnf = tnf;
     }
-    if (type != null) {
-      this.type = type;
-    }
-    if (id != null) {
-      this.id = id;
-    }
+    this.type = type;
+    this.id = id;
     if (payload != null) {
       this.payload = payload;
     }
@@ -236,7 +232,7 @@ class Record {
     } else if (tnf == TypeNameFormat.absoluteURI) {
       record = AbsoluteUriRecord();
     } else {
-      record = Record();
+      record = Record(tnf:tnf);
     }
     return record;
   }

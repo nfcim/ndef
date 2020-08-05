@@ -38,8 +38,19 @@ class AlternativeCarrierRecord extends WellKnownRecord {
   String carrierDataReference;
   List<String> auxDataReferenceList;
 
-  AlternativeCarrierRecord({String carrierPower}) {
-    auxDataReferenceList = new List<String>();
+  AlternativeCarrierRecord(
+      {CarrierPowerState carrierPowerState,
+      String carrierDataReference,
+      List<String> auxDataReferenceList}) {
+    if (carrierPowerState != null) {
+      this.carrierPowerState = carrierPowerState;
+    }
+    if (carrierDataReference != null) {
+      this.carrierDataReference = carrierDataReference;
+    }
+    this.auxDataReferenceList = auxDataReferenceList == null
+        ? new List<String>()
+        : auxDataReferenceList;
   }
 
   get carrierPowerStateIndex {
@@ -116,14 +127,16 @@ class CollisionResolutionRecord extends WellKnownRecord {
   String toString() {
     var str = "CollisionResolutionRecord: ";
     str += basicInfoString;
-    str += "uri=$randomNumber";
+    str += "randomNumber=$randomNumber";
     return str;
   }
 
   int _randomNumber;
 
   CollisionResolutionRecord({int randomNumber}) {
-    this.randomNumber = randomNumber;
+    if (randomNumber != null) {
+      this.randomNumber = randomNumber;
+    }
   }
 
   get randomNumber {
@@ -133,7 +146,7 @@ class CollisionResolutionRecord extends WellKnownRecord {
   set randomNumber(var randomNumber) {
     if (randomNumber is Uint8List) {
       randomNumber = ByteStream.list2int(randomNumber);
-    } else if (!randomNumber is int) {
+    } else if (!(randomNumber is int)) {
       throw "randomNumber expects an int or Uint8List";
     }
     assert(randomNumber >= 0 && randomNumber <= 0xffff);
@@ -167,8 +180,17 @@ class ErrorRecord extends WellKnownRecord {
     return str;
   }
 
-  int errorReason;
+  int _errorReason;
   Uint8List errorData;
+
+  ErrorRecord({int errorReason, Uint8List errorData}) {
+    if (errorReason != null) {
+      this.errorReason = errorReason;
+    }
+    if (errorData != null) {
+      this.errorData = errorData;
+    }
+  }
 
   @override
   String get decodedType {
@@ -181,12 +203,23 @@ class ErrorRecord extends WellKnownRecord {
     return classMinPayloadLength;
   }
 
-  get errorDataInt {
-    assert(errorReason >= 1 && errorReason <= 3);
+  int get errorReason {
+    return _errorReason;
+  }
+
+  set errorReason(int errorReason) {
+    if (errorReason == 0) {
+      throw "error reason must not be 0";
+    }
+    _errorReason = errorReason;
+  }
+
+  int get errorDataInt {
     return ByteStream.list2int(errorData);
   }
 
-  get errorString {
+  /// A read-only description of error reason and error data
+  String get errorString {
     if (errorReason >= 0 && errorReason < 3) {
       return errorStringMap[errorReason].replaceFirst('X', '$errorDataInt');
     } else {
@@ -197,7 +230,6 @@ class ErrorRecord extends WellKnownRecord {
 
   Uint8List get payload {
     Uint8List payload;
-    assert(errorReason != 0, "error reason must not be 0");
     payload = [errorReason] + errorData;
     return payload;
   }
@@ -205,7 +237,6 @@ class ErrorRecord extends WellKnownRecord {
   set payload(Uint8List payload) {
     ByteStream stream = new ByteStream(payload);
     errorReason = stream.readByte();
-    assert(errorReason != 0, "error reason must not be 0");
 
     if (errorReason == 1) {
       errorData = stream.readBytes(1);
@@ -240,25 +271,51 @@ class HandoverRecord extends WellKnownRecord {
     return str;
   }
 
-  HandoverRecord() {
-    alternativeCarrierRecordList = new List<AlternativeCarrierRecord>();
-    unknownRecordList = new List<Record>();
+  HandoverRecord(
+      {String versionString,
+      List<AlternativeCarrierRecord> alternativeCarrierRecordList}) {
+    this.alternativeCarrierRecordList = alternativeCarrierRecordList == null
+        ? new List<AlternativeCarrierRecord>()
+        : alternativeCarrierRecordList;
+    this.unknownRecordList = new List<Record>();
+    this.versionString=versionString;
   }
 
-  get versionMajor {
+  int get versionMajor {
     return _version >> 4;
   }
 
-  get versionMinor {
+  int get versionMinor {
     return _version & 0xf;
   }
 
-  get versionString {
+  String get versionString {
     return "$versionMajor.$versionMinor";
   }
 
-  get allRecordList {
-    return alternativeCarrierRecordList + unknownRecordList;
+  set versionMajor(int versionMajor) {
+    _version = versionMajor << 4 + versionMinor;
+  }
+
+  set versionMinor(int versionMinor) {
+    _version = versionMajor << 4 + versionMinor;
+  }
+
+  set versionString(String versionString) {
+    var versions = versionString.split('.');
+    _version = (int.parse(versions[0]) << 4 ) + int.parse(versions[1]);
+  }
+
+  void setVersion(int versionMajor, int versionMinor) {
+    _version = versionMajor << 4 + versionMinor;
+  }
+
+  List<Record> get allRecordList {
+    return List<Record>.from(alternativeCarrierRecordList) + unknownRecordList;
+  }
+
+  get _typeFactory {
+    return null;
   }
 
   void addRecord(Record record) {
@@ -270,18 +327,19 @@ class HandoverRecord extends WellKnownRecord {
   }
 
   Uint8List get payload {
-    Uint8List data = encodeNdefMessage(allRecordList);
-    Uint8List payload = [_version] + data;
-    return payload;
+    var data = encodeNdefMessage(allRecordList);
+    var payload = [_version] + data;
+    return Uint8List.fromList(payload);
   }
 
   set payload(Uint8List payload) {
     _version = payload[0];
-    var records = decodeRawNdefMessage(
-      payload.sublist(1),
-    );
-    for (int i = 0; i < records.length; i++) {
-      addRecord(records[i]);
+    if (payload.length > 1) {
+      var records =
+          decodeRawNdefMessage(payload.sublist(1), typeFactory: _typeFactory);
+      for (int i = 0; i < records.length; i++) {
+        addRecord(records[i]);
+      }
     }
   }
 }
@@ -307,8 +365,17 @@ class HandoverRequestRecord extends HandoverRecord {
 
   List<CollisionResolutionRecord> collisionResolutionRecordList;
 
-  HandoverRequestRecord() {
+  HandoverRequestRecord(
+      {String versionString = "1.3",
+      int collisionResolutionNumber,
+      List<AlternativeCarrierRecord> alternativeCarrierRecordList})
+      : super(
+            versionString: versionString,
+            alternativeCarrierRecordList: alternativeCarrierRecordList) {
     collisionResolutionRecordList = new List<CollisionResolutionRecord>();
+    if (collisionResolutionNumber != null) {
+      this.collisionResolutionNumber = collisionResolutionNumber;
+    }
   }
 
   static Record typeFactory(TypeNameFormat tnf, String classType) {
@@ -334,7 +401,7 @@ class HandoverRequestRecord extends HandoverRecord {
         record = MimeRecord();
       }
     } else {
-      record = new Record();
+      record = new Record(tnf:tnf);
     }
     return record;
   }
@@ -354,7 +421,7 @@ class HandoverRequestRecord extends HandoverRecord {
     return HandoverRequestRecord.typeFactory;
   }
 
-  get collisionResolutionNumber {
+  int get collisionResolutionNumber {
     if (collisionResolutionRecordList.length >= 1) {
       return collisionResolutionRecordList[0].randomNumber;
     } else {
@@ -362,8 +429,17 @@ class HandoverRequestRecord extends HandoverRecord {
     }
   }
 
+  set collisionResolutionNumber(int collisionResolutionNumber) {
+    if (collisionResolutionRecordList.length == 0) {
+      collisionResolutionRecordList.add(new CollisionResolutionRecord(
+          randomNumber: collisionResolutionNumber));
+    } else {
+      collisionResolutionRecordList[0].randomNumber = collisionResolutionNumber;
+    }
+  }
+
   @override
-  get allRecordList {
+  List<Record> get allRecordList {
     return super.allRecordList + collisionResolutionRecordList;
   }
 
@@ -407,8 +483,15 @@ class HandoverSelectRecord extends HandoverRecord {
 
   List<ErrorRecord> errorRecordList;
 
-  HandoverSelectRecord() {
+  HandoverSelectRecord(
+      {String versionString = "1.3",
+      ErrorRecord error,
+      List<AlternativeCarrierRecord> alternativeCarrierRecordList})
+      : super(
+            versionString: versionString,
+            alternativeCarrierRecordList: alternativeCarrierRecordList) {
     errorRecordList = new List<ErrorRecord>();
+    this.error = error;
   }
 
   static Record typeFactory(TypeNameFormat tnf, String classType) {
@@ -452,11 +535,19 @@ class HandoverSelectRecord extends HandoverRecord {
     return HandoverSelectRecord.typeFactory;
   }
 
-  get error {
+  ErrorRecord get error {
     if (errorRecordList.length >= 1) {
       return errorRecordList[0];
     } else {
       return null;
+    }
+  }
+
+  set error(ErrorRecord error) {
+    if (errorRecordList.length == 0) {
+      errorRecordList.add(error);
+    } else {
+      errorRecordList[0] = error;
     }
   }
 
@@ -490,6 +581,13 @@ class HandoverMediationRecord extends HandoverRecord {
     str += "unknownRecords=$unknownRecordList";
     return str;
   }
+
+  HandoverMediationRecord(
+      {String versionString = "1.3",
+      List<AlternativeCarrierRecord> alternativeCarrierRecordList})
+      : super(
+            versionString: versionString,
+            alternativeCarrierRecordList: alternativeCarrierRecordList);
 }
 
 class HandoverInitiateRecord extends HandoverRecord {
@@ -509,6 +607,13 @@ class HandoverInitiateRecord extends HandoverRecord {
     str += "unknownRecords=$unknownRecordList";
     return str;
   }
+
+  HandoverInitiateRecord(
+      {String versionString = "1.3",
+      List<AlternativeCarrierRecord> alternativeCarrierRecordList})
+      : super(
+            versionString: versionString,
+            alternativeCarrierRecordList: alternativeCarrierRecordList);
 }
 
 class HandoverCarrierRecord extends HandoverRecord {
@@ -536,26 +641,48 @@ class HandoverCarrierRecord extends HandoverRecord {
     return str;
   }
 
-  int ctf;
-  String carrierTypeSuffix;
+  HandoverCarrierRecord(
+      {TypeNameFormat carrierTnf,
+      String carrierType,
+      Uint8List carrierData,
+      Uint8List id}) {
+    if (carrierTnf != null) {
+      this.carrierTnf = carrierTnf;
+    }
+    this.carrierType = carrierType;
+    this.carrierData = carrierData;
+    this.id = id;
+  }
+
+  int _carrierTnf;
+  String carrierType;
   Uint8List carrierData;
 
-  get carrierType {
-    return Record.typePrefixes[ctf] + carrierTypeSuffix;
+  TypeNameFormat get carrierTnf {
+    return TypeNameFormat.values[_carrierTnf];
+  }
+
+  set carrierTnf(TypeNameFormat carrierTnf) {
+    _carrierTnf = TypeNameFormat.values.indexOf(carrierTnf);
+  }
+
+  String get carrierFullType {
+    return Record.tnfString[_carrierTnf] + carrierType;
   }
 
   Uint8List get payload {
     Uint8List payload;
-    Uint8List carrierTypeBytes = utf8.encode(carrierTypeSuffix);
-    payload = [ctf, carrierTypeBytes.length] + carrierTypeBytes + carrierData;
+    Uint8List carrierTypeBytes = utf8.encode(carrierType);
+    payload =
+        [_carrierTnf, carrierTypeBytes.length] + carrierTypeBytes + carrierData;
     return payload;
   }
 
   set payload(Uint8List payload) {
     ByteStream stream = new ByteStream(payload);
-    ctf = stream.readByte() & 7;
+    _carrierTnf = stream.readByte() & 7;
     int carrierTypeLength = stream.readByte();
-    carrierTypeSuffix = utf8.decode(stream.readBytes(carrierTypeLength));
+    carrierType = utf8.decode(stream.readBytes(carrierTypeLength));
     carrierData = stream.readAll();
   }
 }

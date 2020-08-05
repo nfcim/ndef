@@ -26,7 +26,7 @@ Refer to the [documentation](https://pub.dev/documentation/ndef/) for more infor
 
 ## TODO
 
-1. security
-2. class design (add getter/setter)
-3. more types
-4. print methods
+1. handle exceptions
+2. add return types
+3. add class types
+4. add test
