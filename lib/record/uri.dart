@@ -1,9 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:ndef/ndef.dart';
-
-import '../record.dart';
 import 'wellknown.dart';
 
 class UriRecord extends WellKnownRecord {
@@ -121,6 +118,7 @@ class UriRecord extends WellKnownRecord {
         return new Uint8List.fromList([i] + utf8.encode(uriData));
       }
     }
+    throw "uri prefix not recognized";
   }
 
   set payload(Uint8List payload) {

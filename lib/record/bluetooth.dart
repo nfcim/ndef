@@ -1,9 +1,7 @@
 import 'dart:typed_data';
 import 'dart:convert';
 
-import 'package:ndef/ndef.dart';
-
-import '../record.dart';
+import '../ndef.dart';
 
 class Address {
   Uint8List bytes;
@@ -24,9 +22,9 @@ class Address {
   get address {
     String address = "";
     for (int i = 0; i < 5; i++) {
-      address += ByteStream.int2hexString(bytes[i]) + ":";
+      address += ByteUtils.int2hexString(bytes[i]) + ":";
     }
-    address += ByteStream.int2hexString(bytes[5]);
+    address += ByteUtils.int2hexString(bytes[5]);
     return address;
   }
 
@@ -301,12 +299,12 @@ class DeviceClass {
   }
 
   get bytes {
-    return ByteStream.int2list(value, 3, endianness: Endianness.little);
+    return ByteUtils.int2list(value, 3, endianness: Endianness.little);
   }
 
   set bytes(Uint8List bytes) {
     assert(bytes.length == 3, "Bytes length of Class of Device must be 3");
-    value = ByteStream.list2int(bytes, endianness: Endianness.little);
+    value = ByteUtils.list2int(bytes, endianness: Endianness.little);
   }
 }
 
@@ -544,13 +542,13 @@ class BluetoothRecord extends MimeRecord {
   }
 
   BigInt getIntValue(EIRType type) {
-    return ByteStream.list2bigInt(attributes[type],
+    return ByteUtils.list2bigInt(attributes[type],
         endianness: Endianness.little);
   }
 
   void setIntValue(EIRType type, BigInt value) {
     setAttribute(
-        type, ByteStream.bigInt2list(value, 16, endianness: Endianness.little));
+        type, ByteUtils.bigInt2list(value, 16, endianness: Endianness.little));
   }
 }
 
@@ -614,7 +612,7 @@ class BluetoothEasyPairingRecord extends BluetoothRecord {
       data.addAll(e.value);
     }
     var payload =
-        ByteStream.int2list(data.length, 2, endianness: Endianness.little) +
+        ByteUtils.int2list(data.length, 2, endianness: Endianness.little) +
             address.bytes +
             data;
     return new Uint8List.fromList(payload);
@@ -745,7 +743,7 @@ class BluetoothLowEnergyRecord extends BluetoothRecord {
     if (attributes.containsKey(EIRType.Appearance)) {
       assert(attributes[EIRType.Appearance].length == 4,
           "Bytes length of appearance must be 4");
-      int value = ByteStream.list2int(attributes[EIRType.Appearance],
+      int value = ByteUtils.list2int(attributes[EIRType.Appearance],
           endianness: Endianness.little);
       if (appearanceMap.containsKey(value)) {
         return appearanceMap[value];
@@ -769,7 +767,7 @@ class BluetoothLowEnergyRecord extends BluetoothRecord {
       throw "Appearance $appearance is not correct";
     }
     attributes[EIRType.Appearance] =
-        ByteStream.int2list(index, 4, endianness: Endianness.little);
+        ByteUtils.int2list(index, 4, endianness: Endianness.little);
   }
 
   static const flagsList = [

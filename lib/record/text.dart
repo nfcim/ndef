@@ -1,10 +1,9 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:ndef/ndef.dart';
 import 'package:utf/utf.dart' as utf;
 
-import '../record.dart';
+import '../ndef.dart';
 import 'wellknown.dart';
 
 enum TextEncoding { UTF8, UTF16 }

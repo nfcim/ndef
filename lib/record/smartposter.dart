@@ -1,11 +1,9 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:ndef/ndef.dart';
 import 'package:collection/collection.dart';
 
-import '../record.dart';
-import '../byteStream.dart';
+import '../ndef.dart';
 import 'text.dart';
 import 'uri.dart';
 import 'mime.dart';
@@ -52,7 +50,7 @@ class ActionRecord extends WellKnownRecord {
 
   set payload(Uint8List payload) {
     int actionIndex = payload[0];
-    if (actionIndex < Action.values.length && actionIndex >= 0) {
+    if (actionIndex >= Action.values.length && actionIndex < 0) {
       throw 'Action code must be in [0,${Action.values.length})';
     }
     action = Action.values[actionIndex];
@@ -106,11 +104,11 @@ class SizeRecord extends WellKnownRecord {
   }
 
   Uint8List get payload {
-    return ByteStream.int2list(size, 4);
+    return ByteUtils.int2list(size, 4);
   }
 
   set payload(Uint8List payload) {
-    size = ByteStream.list2int(payload.sublist(0, 4));
+    size = ByteUtils.list2int(payload.sublist(0, 4));
   }
 }
 
@@ -253,8 +251,8 @@ class SmartPosterRecord extends WellKnownRecord {
     }
   }
 
-  static Record typeFactory(TypeNameFormat tnf, String classType) {
-    Record record;
+  static NDEFRecord typeFactory(TypeNameFormat tnf, String classType) {
+    NDEFRecord record;
     if (tnf == TypeNameFormat.nfcWellKnown) {
       if (classType == UriRecord.classType) {
         record = UriRecord();
@@ -274,7 +272,7 @@ class SmartPosterRecord extends WellKnownRecord {
     } else if (tnf == TypeNameFormat.absoluteURI) {
       record = AbsoluteUriRecord();
     } else {
-      record = Record();
+      record = NDEFRecord();
     }
     return record;
   }
@@ -289,7 +287,7 @@ class SmartPosterRecord extends WellKnownRecord {
   }
 
   get uriRecords {
-    return new List<Record>.from(_uriRecords, growable: false);
+    return new List<NDEFRecord>.from(_uriRecords, growable: false);
   }
 
   get uriRecord {
@@ -332,7 +330,7 @@ class SmartPosterRecord extends WellKnownRecord {
   }
 
   get titleRecords {
-    return new List<Record>.from(_titleRecords, growable: false);
+    return new List<NDEFRecord>.from(_titleRecords, growable: false);
   }
 
   /// get the English title; if not existing, get the first title
@@ -392,7 +390,7 @@ class SmartPosterRecord extends WellKnownRecord {
   }
 
   get actionRecords {
-    return new List<Record>.from(_actionRecords, growable: false);
+    return new List<NDEFRecord>.from(_actionRecords, growable: false);
   }
 
   /// get the first action if it exists
@@ -417,7 +415,7 @@ class SmartPosterRecord extends WellKnownRecord {
   }
 
   get sizeRecords {
-    return new List<Record>.from(_sizeRecords, growable: false);
+    return new List<NDEFRecord>.from(_sizeRecords, growable: false);
   }
 
   get size {
@@ -441,7 +439,7 @@ class SmartPosterRecord extends WellKnownRecord {
   }
 
   get typeRecords {
-    return new List<Record>.from(_typeRecords, growable: false);
+    return new List<NDEFRecord>.from(_typeRecords, growable: false);
   }
 
   get typeInfo {
@@ -465,7 +463,7 @@ class SmartPosterRecord extends WellKnownRecord {
   }
 
   get iconRecords {
-    return new List<Record>.from(_iconRecords, growable: false);
+    return new List<NDEFRecord>.from(_iconRecords, growable: false);
   }
 
   get iconRecord {
@@ -519,7 +517,7 @@ class SmartPosterRecord extends WellKnownRecord {
     _iconRecords.add(record);
   }
 
-  static bool _isEqualRecords(List<Record> own, List<Record> other) {
+  static bool _isEqualRecords(List<NDEFRecord> own, List<NDEFRecord> other) {
     for (var i = 0; i < own.length; i++) {
       if (!own[i].isEqual(other[i])) {
         return false;
@@ -529,9 +527,9 @@ class SmartPosterRecord extends WellKnownRecord {
   }
 
   @override
-  bool isEqual(Record other) {
+  bool isEqual(NDEFRecord other) {
     Function eq = const ListEquality().equals;
-    if (!(other is Record)) {
+    if (!(other is NDEFRecord)) {
       return false;
     }
     var o = other as SmartPosterRecord;

@@ -4,8 +4,24 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:ndef/ndef.dart';
-import 'package:ndef/src/byteStream.dart';
-import 'package:ndef/src/record/handover.dart';
+import 'package:ndef/utilities.dart';
+
+void testParse(List<String> hexStrings, List<List<NDEFRecord>> messages) {
+  for (int i = 0; i < hexStrings.length; i++) {
+    var decoded = decodeRawNdefMessage(ByteUtils.hexString2list(hexStrings[i]));
+    assert(decoded.length == messages[i].length);
+    for (int j = 0; j < decoded.length; j++) {
+      assert(decoded[j].isEqual(messages[i][j]));
+    }
+  }
+}
+
+void testGenerate(List<String> hexStrings, List<List<NDEFRecord>> messages) {
+  for (int i = 0; i < hexStrings.length; i++) {
+    assert(ByteUtils.list2hexString(encodeNdefMessage(messages[i])) ==
+        hexStrings[i]);
+  }
+}
 
 void main() {
   test('ndef message with uri type', () {
@@ -14,7 +30,7 @@ void main() {
       "91011655046769746875622e636f6d2f6e6663696d2f6e64656651010b55046769746875622e636f6d",
     ];
 
-    List<List<Record>> messages = [
+    List<List<NDEFRecord>> messages = [
       [
         new UriRecord.fromUriString("https://github.com/nfcim/ndef"),
         new UriRecord.fromUriString("https://github.com")
@@ -22,20 +38,10 @@ void main() {
     ];
 
     // parse
-    for (int i = 0; i < hexStrings.length; i++) {
-      var decoded =
-          decodeRawNdefMessage(ByteStream.hexString2list(hexStrings[i]));
-      assert(decoded.length == messages[i].length);
-      for (int j = 0; j < decoded.length; j++) {
-        assert(decoded[j].isEqual(messages[i][j]));
-      }
-    }
+    testParse(hexStrings, messages);
 
     // generate
-    for (int i = 0; i < hexStrings.length; i++) {
-      assert(ByteStream.list2hexString(encodeNdefMessage(messages[i])) ==
-          hexStrings[i]);
-    }
+    testGenerate(hexStrings, messages);
   });
 
   test('ndef message with text type', () {
@@ -44,26 +50,16 @@ void main() {
       //"d101145485656d6f6a69fffe3dd801de3dd802de3ed828dd"  // can only decode emoji correctly, but can not encode
     ];
 
-    List<List<Record>> messages = [
+    List<List<NDEFRecord>> messages = [
       [new TextRecord(language: 'en', text: 'Hello World!')],
       //[new TextRecord(language:'emoji',text:'😁😂🤨',encoding:TextEncoding.UTF16)],
     ];
 
     // parse
-    for (int i = 0; i < hexStrings.length; i++) {
-      var decoded =
-          decodeRawNdefMessage(ByteStream.hexString2list(hexStrings[i]));
-      assert(decoded.length == messages[i].length);
-      for (int j = 0; j < decoded.length; j++) {
-        assert(decoded[j].isEqual(messages[i][j]));
-      }
-    }
+    testParse(hexStrings, messages);
 
     // generate
-    for (int i = 0; i < hexStrings.length; i++) {
-      assert(ByteStream.list2hexString(encodeNdefMessage(messages[i])) ==
-          hexStrings[i]);
-    }
+    testGenerate(hexStrings, messages);
   });
 
   test('ndef message with signature type', () {
@@ -72,31 +68,21 @@ void main() {
       "d1034d536967200b0200473045022100a410c28fd9437fd24f6656f121e62bcc5f65e36257f5faadf68e3e83d40d481a0220335b1dff8d6fe722fcf7018be9684d2de5670b256fdfc02aa25bdae16f624b8000",
     ];
 
-    List<List<Record>> messages = [
+    List<List<NDEFRecord>> messages = [
       [new SignatureRecord()],
       [
         new SignatureRecord(
             signatureType: 'ECDSA-P256',
-            signature: ByteStream.hexString2list(
+            signature: ByteUtils.hexString2list(
                 "3045022100a410c28fd9437fd24f6656f121e62bcc5f65e36257f5faadf68e3e83d40d481a0220335b1dff8d6fe722fcf7018be9684d2de5670b256fdfc02aa25bdae16f624b80"))
       ],
     ];
 
     // parse
-    for (int i = 0; i < hexStrings.length; i++) {
-      var decoded =
-          decodeRawNdefMessage(ByteStream.hexString2list(hexStrings[i]));
-      assert(decoded.length == messages[i].length);
-      for (int j = 0; j < decoded.length; j++) {
-        assert(decoded[j].isEqual(messages[i][j]));
-      }
-    }
+    testParse(hexStrings, messages);
 
     // generate
-    for (int i = 0; i < hexStrings.length; i++) {
-      assert(ByteStream.list2hexString(encodeNdefMessage(messages[i])) ==
-          hexStrings[i]);
-    }
+    testGenerate(hexStrings, messages);
   });
 
   test('ndef message with device information type', () {
@@ -104,7 +90,7 @@ void main() {
       "d1023b446900056e6663696d01096e666344657669636502076e66634e616d6503106361ae18d5b011ea9d0840a3ccfd09570405312e302e30ff054e4643494d",
     ];
 
-    List<List<Record>> messages = [
+    List<List<NDEFRecord>> messages = [
       [
         new DeviceInformationRecord(
             vendorName: "nfcim",
@@ -119,20 +105,10 @@ void main() {
     ];
 
     // parse
-    for (int i = 0; i < hexStrings.length; i++) {
-      var decoded =
-          decodeRawNdefMessage(ByteStream.hexString2list(hexStrings[i]));
-      assert(decoded.length == messages[i].length);
-      for (int j = 0; j < decoded.length; j++) {
-        assert(decoded[j].isEqual(messages[i][j]));
-      }
-    }
+    testParse(hexStrings, messages);
 
     // generate
-    for (int i = 0; i < hexStrings.length; i++) {
-      assert(ByteStream.list2hexString(encodeNdefMessage(messages[i])) ==
-          hexStrings[i]);
-    }
+    testGenerate(hexStrings, messages);
   });
 
   test('ndef message with smart poster type', () {
@@ -141,7 +117,7 @@ void main() {
       "d1020f5370d1010b55046769746875622e636f6d",
     ];
 
-    List<List<Record>> messages = [
+    List<List<NDEFRecord>> messages = [
       [
         new SmartPosterRecord(
             title: "ndef",
@@ -159,29 +135,22 @@ void main() {
     ];
 
     // parse
-    for (int i = 0; i < hexStrings.length; i++) {
-      var decoded =
-          decodeRawNdefMessage(ByteStream.hexString2list(hexStrings[i]));
-      assert(decoded.length == messages[i].length);
-      for (int j = 0; j < decoded.length; j++) {
-        assert(decoded[j].isEqual(messages[i][j]));
-      }
-    }
+    testParse(hexStrings, messages);
 
     // generate
-    for (int i = 0; i < hexStrings.length; i++) {
-      assert(ByteStream.list2hexString(encodeNdefMessage(messages[i])) ==
-          hexStrings[i]);
-    }
+    testGenerate(hexStrings, messages);
   });
 
   test('ndef message with handover type', () {
     List<String> hexStrings = [
       'd10201487211',
-      '910211487212 91020263721234 510204616301013100 590205014863310203612f62',
+      '910211487212910202637212345102046163010131005a030201612f62310001',
+      '91021248731391020461630101310051030265727201ff5a030201612f62310001',
+      '91020a486d13d102046163010161005a0a0301746578742f706c61696e61000102',
+      '91021148721291020263721234510204616301013100590205014863310203612f62'
     ];
 
-    List<List<Record>> messages = [
+    List<List<NDEFRecord>> messages = [
       [
         new HandoverRequestRecord(versionString: "1.1"),
       ],
@@ -192,16 +161,61 @@ void main() {
             alternativeCarrierRecordList: [
               AlternativeCarrierRecord(
                   carrierPowerState: CarrierPowerState.active,
-                  carrierDataReference: '1')
+                  carrierDataReference: latin1.encode('1'))
             ]),
-        new Record()
+        new MimeRecord(
+            decodedType: 'a/b',
+            id: latin1.encode('1'),
+            payload: ByteUtils.hexString2list('0001'))
       ],
+      [
+        new HandoverSelectRecord(
+            error:
+                ErrorRecord(errorNum: 1, errorData: ByteUtils.int2list(255, 1)),
+            alternativeCarrierRecordList: [
+              AlternativeCarrierRecord(
+                  carrierPowerState: CarrierPowerState.active,
+                  carrierDataReference: latin1.encode('1'))
+            ]),
+        new MimeRecord(
+            decodedType: 'a/b',
+            id: latin1.encode('1'),
+            payload: ByteUtils.hexString2list('0001'))
+      ],
+      [
+        new HandoverMediationRecord(
+            versionString: '1.3',
+            alternativeCarrierRecordList: [
+              AlternativeCarrierRecord(
+                  carrierPowerState: CarrierPowerState.active,
+                  carrierDataReference: latin1.encode('a'))
+            ]),
+        new MimeRecord(
+            decodedType: 'text/plain',
+            id: latin1.encode('a'),
+            payload: ByteUtils.hexString2list('000102'))
+      ],
+      [
+        new HandoverRequestRecord(
+            versionString: "1.2",
+            collisionResolutionNumber: 0x1234,
+            alternativeCarrierRecordList: [
+              AlternativeCarrierRecord(
+                  carrierPowerState: CarrierPowerState.active,
+                  carrierDataReference: latin1.encode('1'))
+            ]),
+        new HandoverCarrierRecord(
+            carrierTnf: TypeNameFormat.media,
+            carrierType: 'a/b',
+            carrierData: Uint8List(0),
+            id: latin1.encode('1'))
+      ]
     ];
 
     // parse
     for (int i = 0; i < hexStrings.length; i++) {
       var decoded =
-          decodeRawNdefMessage(ByteStream.hexString2list(hexStrings[i]));
+          decodeRawNdefMessage(ByteUtils.hexString2list(hexStrings[i]));
       assert(decoded.length == messages[i].length);
       for (int j = 0; j < decoded.length; j++) {
         assert(decoded[j].isEqual(messages[i][j]));
@@ -210,14 +224,16 @@ void main() {
 
     // generate
     for (int i = 0; i < hexStrings.length; i++) {
-      assert(ByteStream.list2hexString(encodeNdefMessage(messages[i])) ==
-          hexStrings[i]);
+      var decoded = decodeRawNdefMessage(encodeNdefMessage(messages[i]));
+      assert(decoded.length == messages[i].length);
+      for (int j = 0; j < decoded.length; j++) {
+        assert(decoded[j].isEqual(messages[i][j]));
+      }
     }
   });
 
   test('print test', () {
-    print(decodeRawNdefMessage(ByteStream.hexString2list("d102014872 11")));
+    //print(decodeRawNdefMessage(ByteUtils.hexString2list("")));
   });
-
   // TODO: more tests
 }

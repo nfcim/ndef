@@ -1,10 +1,9 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:ndef/ndef.dart';
 import 'package:uuid/uuid.dart';
 
-import '../record.dart';
+import '../ndef.dart';
 import 'wellknown.dart';
 
 class DataElement {

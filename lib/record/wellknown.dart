@@ -1,9 +1,8 @@
 import 'dart:typed_data';
 
-import '../record.dart';
-import '../byteStream.dart';
+import '../ndef.dart';
 
-class WellKnownRecord extends Record {
+class WellKnownRecord extends NDEFRecord {
   static const TypeNameFormat classTnf = TypeNameFormat.nfcWellKnown;
 
   TypeNameFormat get tnf {
@@ -19,10 +18,10 @@ class WellKnownRecord extends Record {
 
   @override
   String toString() {
-    var str = "MimeRecord: ";
+    var str = "WellKnownRecord: ";
     str += basicInfoString;
     str += "type=$decodedType ";
-    str += "payload=${ByteStream.list2hexString(payload)}";
+    str += "payload=${ByteUtils.list2hexString(payload)}";
     return str;
   }
 }
