@@ -86,14 +86,12 @@ class AlternativeCarrierRecord extends WellKnownRecord {
 
     carrierPowerStateIndex = stream.readByte() & 3;
     int carrierDataReferenceLength = stream.readByte();
-    carrierDataReference =
-        stream.readBytes(carrierDataReferenceLength);
+    carrierDataReference = stream.readBytes(carrierDataReferenceLength);
 
     int auxDataReferenceCount = stream.readByte();
     for (int i = 0; i < auxDataReferenceCount; i++) {
       int auxDataReferenceLength = stream.readByte();
-      auxDataReferenceList
-          .add(stream.readBytes(auxDataReferenceLength));
+      auxDataReferenceList.add(stream.readBytes(auxDataReferenceLength));
     }
 
     assert(stream.isEnd() == true,
@@ -223,22 +221,22 @@ class ErrorRecord extends WellKnownRecord {
   String get errorString {
     if (errorNum > 0 && errorNum <= 3) {
       var errorDataInt = ByteUtils.list2int(errorData);
-      return errorStringMap[errorNum-1].replaceFirst('X', '$errorDataInt');
+      return errorStringMap[errorNum - 1].replaceFirst('X', '$errorDataInt');
     } else {
       var errorDataString = ByteUtils.list2hexString(errorData);
       return "Reason $errorNum Data $errorDataString";
     }
   }
 
-  ErrorReason get errorReason{
-    if(errorNum>=1 && errorNum<=3){
-      return ErrorReason.values[errorNum-1];
-    }else{
+  ErrorReason get errorReason {
+    if (errorNum >= 1 && errorNum <= 3) {
+      return ErrorReason.values[errorNum - 1];
+    } else {
       return ErrorReason.other;
     }
   }
 
-  set errorReason(ErrorReason errorReason){
+  set errorReason(ErrorReason errorReason) {
     _errorNum = ErrorReason.values.indexOf(errorReason);
   }
 
@@ -529,7 +527,7 @@ class HandoverSelectRecord extends HandoverRecord {
             versionString: versionString,
             alternativeCarrierRecordList: alternativeCarrierRecordList) {
     errorRecordList = new List<ErrorRecord>();
-    if(error!=null){
+    if (error != null) {
       this.error = error;
     }
   }
@@ -688,7 +686,7 @@ class HandoverCarrierRecord extends WellKnownRecord {
       this.carrierTnf = carrierTnf;
     }
     this.carrierType = carrierType;
-    if(carrierData!=null){
+    if (carrierData != null) {
       this.carrierData = carrierData;
     }
     this.id = id;

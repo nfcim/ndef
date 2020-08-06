@@ -97,10 +97,10 @@ class ByteStream {
   }
 
   @override
-  String toString(){
-    var str="ByteStream: ";
-    str+="current=$_current ";
-    str+="data=$_data";
+  String toString() {
+    var str = "ByteStream: ";
+    str += "current=$_current ";
+    str += "data=$_data";
     return str;
   }
 

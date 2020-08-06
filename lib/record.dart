@@ -115,7 +115,7 @@ class NDEFRecord {
 
   Uint8List encodedType;
 
-  String get decodedType { 
+  String get decodedType {
     return utf8.decode(encodedType);
   }
 
@@ -179,7 +179,8 @@ class NDEFRecord {
   Uint8List payload;
   NDEFRecordFlags flags;
 
-  NDEFRecord({TypeNameFormat tnf, Uint8List type, Uint8List id, Uint8List payload}) {
+  NDEFRecord(
+      {TypeNameFormat tnf, Uint8List type, Uint8List id, Uint8List payload}) {
     flags = new NDEFRecordFlags();
     if (tnf == null) {
       flags.TNF = TypeNameFormat.values.indexOf(this.tnf);
@@ -234,7 +235,7 @@ class NDEFRecord {
     } else if (tnf == TypeNameFormat.absoluteURI) {
       record = AbsoluteUriRecord();
     } else {
-      record = NDEFRecord(tnf:tnf);
+      record = NDEFRecord(tnf: tnf);
     }
     return record;
   }
@@ -314,7 +315,7 @@ class NDEFRecord {
 
     if (payload.length < 256) {
       flags.SR = true;
-    }else{
+    } else {
       flags.SR = false;
     }
 

@@ -26,14 +26,14 @@ List<NDEFRecord> decodeRawNdefMessage(Uint8List data,
   while (!stream.isEnd()) {
     var record = NDEFRecord.decodeStream(stream, typeFactory);
     if (records.length == 0) {
-      assert(record.flags.MB == true,"MB flag is not set in first record");
+      assert(record.flags.MB == true, "MB flag is not set in first record");
     } else {
-      assert(record.flags.MB == false,"MB flag is set in middle record");
+      assert(record.flags.MB == false, "MB flag is set in middle record");
     }
     records.add(record);
   }
-  assert(records.last.flags.ME == true,"ME flag is not set in last record");
-  assert(records.last.flags.CF == false,"CF flag is set in last record");
+  assert(records.last.flags.ME == true, "ME flag is not set in last record");
+  assert(records.last.flags.CF == false, "CF flag is set in last record");
   return records;
 }
 
@@ -56,7 +56,7 @@ Uint8List encodeNdefMessage(List<NDEFRecord> records,
 
   records.forEach((r) {
     r.flags.resetPositionFlag();
-   });
+  });
 
   if (canonicalize) {
     records.first.flags.MB = true;
