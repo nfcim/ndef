@@ -26,12 +26,12 @@ import 'package:ndef/ndef.dart' as ndef;
 // encoding
 var uriRecord = new ndef.UriRecord.fromUriString("https://github.com/nfcim/ndef");
 var textRecord = new ndef.TextRecord(text: "Hello");
-var encodedUriRecord = ndef.ByteUtils.bytesToHexString(uriRecord.encode()); // encode a single record
-var encodedAllRecords = ndef.ByteUtils.bytesToHexString(ndef.encodeNdefMessage([uriRecord, textRecord])); // encode several records as a message
+var encodedUriRecord = uriRecord.encode().toHexString(); /// encode a single record, and use our extension method on [Uint8List]
+var encodedAllRecords = ndef.encodeNdefMessage([uriRecord, textRecord]).toHexString(); // encode several records as a message
 
 // decoding
 var encodedTextRecord = "d1010f5402656e48656c6c6f20576f726c6421";
-var decodedRecords = ndef.decodeRawNdefMessage(ndef.ByteUtils.hexStringToBytes(encodedTextRecord));
+var decodedRecords = ndef.decodeRawNdefMessage(encodedTextRecord.toBytes());
 assert(decodedRecords.length == 1);
 if (decodedRecords[0] is ndef.TextRecord) {
   assert(decodeRecords[0].text == "Hello");
@@ -41,9 +41,9 @@ if (decodedRecords[0] is ndef.TextRecord) {
 
 // data-binding (by implementing payload as dynamic getter / setter)
 var origPayload = uriRecord.payload;
-print(origPayload);
+print(origPayload.toHexString());
 uriRecord.uriData = "github.com/nfcim/flutter_nfc_kit";
-print(uriRecord.payload); // changed
+print(uriRecord.payload.toHexString()); // changed
 uriRecord.payload = origPayload;
 print(uriRecord.uriData); // changed back
 

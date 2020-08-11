@@ -104,11 +104,11 @@ class SizeRecord extends WellKnownRecord {
   }
 
   Uint8List get payload {
-    return size.toBytes(4);
+    return _size.toBytes(4);
   }
 
   set payload(Uint8List payload) {
-    size = payload.sublist(0, 4).toInt();
+    _size = payload.sublist(0, 4).toInt();
   }
 }
 

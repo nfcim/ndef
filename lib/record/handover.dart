@@ -141,7 +141,7 @@ class CollisionResolutionRecord extends WellKnownRecord {
 
   set randomNumber(var randomNumber) {
     if (randomNumber is Uint8List) {
-      randomNumber = randomNumber.toInt();
+      randomNumber = (randomNumber as Uint8List).toInt();
     } else if (!(randomNumber is int)) {
       throw "randomNumber expects an int or Uint8List";
     }
@@ -150,7 +150,7 @@ class CollisionResolutionRecord extends WellKnownRecord {
   }
 
   Uint8List get payload {
-    return randomNumber.toBytes(2);
+    return _randomNumber.toBytes(2);
   }
 
   set payload(Uint8List payload) {
