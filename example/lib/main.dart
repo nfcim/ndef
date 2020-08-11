@@ -35,7 +35,8 @@ void main() {
   print('===================');
   urlRecords[0].uriData =
       'github.com/nfcim/flutter_nfc_kit'; // thats also our awesome library, check it out!
-  print('payload after change uriData: ' + urlRecords[0].payload.toHexString()); // encoded when invoking
+  print('payload after change uriData: ' +
+      urlRecords[0].payload.toHexString()); // encoded when invoking
   print('uri after change uriData: ' + urlRecords[0].uri.toString());
 
   // change it back (by using payload)

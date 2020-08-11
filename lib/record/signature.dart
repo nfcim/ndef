@@ -158,14 +158,12 @@ class SignatureRecord extends WellKnownRecord {
         certificateStore.length;
     var certificateStoreBytes = new List<int>();
     for (int i = 0; i < certificateStore.length; i++) {
-      certificateStoreBytes
-          .addAll(certificateStore[i].length.toBytes(2));
+      certificateStoreBytes.addAll(certificateStore[i].length.toBytes(2));
       certificateStoreBytes.addAll(certificateStore[i]);
     }
     var certificateURIBytes = new List<int>();
     if (certificateURIPresent != 0) {
-      certificateURIBytes
-          .addAll(certificateURI.length.toBytes(2));
+      certificateURIBytes.addAll(certificateURI.length.toBytes(2));
       certificateURIBytes.addAll(utf8.encode(certificateURI));
     }
     var certificateBytes = new Uint8List.fromList(
