@@ -4,11 +4,13 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:ndef/ndef.dart';
+import 'package:ndef/record/bluetooth.dart';
 import 'package:ndef/utilities.dart';
 
 void testParse(List<String> hexStrings, List<List<NDEFRecord>> messages) {
   for (int i = 0; i < hexStrings.length; i++) {
-    var decoded = decodeRawNdefMessage(ByteUtils.hexStringToBytes(hexStrings[i]));
+    var decoded =
+        decodeRawNdefMessage(ByteUtils.hexStringToBytes(hexStrings[i]));
     assert(decoded.length == messages[i].length);
     for (int j = 0; j < decoded.length; j++) {
       assert(decoded[j].isEqual(messages[i][j]));
@@ -18,8 +20,10 @@ void testParse(List<String> hexStrings, List<List<NDEFRecord>> messages) {
 
 void testGenerate(List<String> hexStrings, List<List<NDEFRecord>> messages) {
   for (int i = 0; i < hexStrings.length; i++) {
-    assert(ByteUtils.bytesToHexString(encodeNdefMessage(messages[i])) ==
-        hexStrings[i]);
+    print('!!!!!!');
+    var genString = ByteUtils.bytesToHexString(encodeNdefMessage(messages[i]));
+    print(genString);
+    assert(genString == hexStrings[i]);
   }
 }
 
@@ -170,8 +174,8 @@ void main() {
       ],
       [
         new HandoverSelectRecord(
-            error:
-                ErrorRecord(errorNum: 1, errorData: ByteUtils.intToBytes(255, 1)),
+            error: ErrorRecord(
+                errorNum: 1, errorData: ByteUtils.intToBytes(255, 1)),
             alternativeCarrierRecordList: [
               AlternativeCarrierRecord(
                   carrierPowerState: CarrierPowerState.active,
@@ -234,25 +238,18 @@ void main() {
 
   test('ndef message with bluetooth type', () {
     List<String> hexStrings = [
-      "d10249537091011655046769746875622e636f6d2f6e6663696d2f6e6465661101075402656e6e64656611030161637400120909696d6167652f706e676120706963747572655101047300002710",
-      "d1020f5370d1010b55046769746875622e636f6d",
+      "d2200b6170706c69636174696f6e2f766e642e626c7565746f6f74682e65702e6f6f620b0006050403020102ff61",
     ];
 
     List<List<NDEFRecord>> messages = [
       [
-        new SmartPosterRecord(
-            title: "ndef",
-            uri: "https://github.com/nfcim/ndef",
-            action: Action.exec,
-            icon: {
-              "image/png": new Uint8List.fromList(utf8.encode("a picture"))
-            },
-            size: 10000,
-            typeInfo: null),
+        BluetoothEasyPairingRecord(
+            address: EPAddress(address: "06:05:04:03:02:01"),
+            attributes: {
+              EIRType.ManufacturerSpecificData: Uint8List.fromList([97])
+            })
       ],
-      [
-        new SmartPosterRecord(uri: "https://github.com"),
-      ]
+      
     ];
 
     // parse

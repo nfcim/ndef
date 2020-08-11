@@ -19,7 +19,7 @@ class _Address {
     }
   }
 
-  get address {
+  String get address {
     String address = "";
     for (int i = 0; i < 5; i++) {
       address += ByteUtils.byteToHexString(addr[i]) + ":";
@@ -561,7 +561,7 @@ class EIR {
 class BluetoothRecord extends MimeRecord {
   Map<EIRType, Uint8List> attributes;
 
-  BluetoothRecord({Map<int, Uint8List> attributes}) {
+  BluetoothRecord({Map<EIRType, Uint8List> attributes}) {
     this.attributes =
         attributes == null ? new Map<EIRType, Uint8List>() : attributes;
   }
@@ -577,7 +577,7 @@ class BluetoothRecord extends MimeRecord {
     attributes[type] = value;
   }
 
-  get deviceName {
+  String get deviceName {
     if (attributes.containsKey(EIRType.CompleteLocalName)) {
       return utf8.decode(attributes[EIRType.CompleteLocalName]);
     } else if (attributes.containsKey(EIRType.ShortenedLocalName)) {
@@ -612,7 +612,16 @@ class BluetoothEasyPairingRecord extends BluetoothRecord {
     return BluetoothEasyPairingRecord.classType;
   }
 
-  BluetoothEasyPairingRecord({Map<int, Uint8List> attributes})
+  @override
+  String toString() {
+    var str = "BluetoothEasyPairingRecord: ";
+    str += "address=${address.address} ";
+    str += "name=$deviceName ";
+    str += "attributes=$attributes";
+    return str;
+  }
+
+  BluetoothEasyPairingRecord({this.address,Map<EIRType, Uint8List> attributes})
       : super(attributes: attributes);
 
   EPAddress address;
@@ -665,7 +674,7 @@ class BluetoothEasyPairingRecord extends BluetoothRecord {
       data.addAll(e.value);
     }
     var payload =
-        ByteUtils.intToBytes(data.length, 2, endianness: Endianness.little) +
+        ByteUtils.intToBytes(data.length+address.bytes.length+2, 2, endianness: Endianness.little) +
             address.bytes +
             data;
     return new Uint8List.fromList(payload);
@@ -691,7 +700,16 @@ class BluetoothLowEnergyRecord extends BluetoothRecord {
     return BluetoothLowEnergyRecord.classType;
   }
 
-  BluetoothLowEnergyRecord({Map<int, Uint8List> attributes})
+  @override
+  String toString() {
+    var str = "BluetoothLowEnergyRecord: ";
+    str += "address=${address.address} ";
+    str += "name=$deviceName ";
+    str += "attributes=$attributes";
+    return str;
+  }
+
+  BluetoothLowEnergyRecord({Map<EIRType, Uint8List> attributes})
       : super(attributes: attributes);
 
   LEAddress get address {
