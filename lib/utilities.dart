@@ -1,8 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:ndef/ndef.dart';
-
-enum Endianness { big, little }
+/// Represent an endianness
+enum Endianness { Big, Little }
 
 /// Utility class to play with raw bytes
 class ByteUtils {
@@ -11,44 +10,44 @@ class ByteUtils {
   }
 
   static int bytesToInt(Uint8List bytes,
-      {Endianness endianness = Endianness.big}) {
+      {Endianness endianness = Endianness.Big}) {
     var stream = ByteStream(bytes);
     return stream.readInt(stream.length, endianness: endianness);
   }
 
   static Uint8List intToBytes(int value, int length,
-      {Endianness endianness = Endianness.big}) {
+      {Endianness endianness = Endianness.Big}) {
     assert(length <= 8);
     var list = new List<int>();
     for (int i = 0; i < length; i++) {
       list.add(value % 256);
       value ~/= 256;
     }
-    if (endianness == Endianness.big) {
+    if (endianness == Endianness.Big) {
       list = list.reversed.toList();
     }
     return new Uint8List.fromList(list);
   }
 
   static String intToHexString(int value, int length,
-      {Endianness endianness = Endianness.big}) {
+      {Endianness endianness = Endianness.Big}) {
     return bytesToHexString(intToBytes(value, length, endianness: endianness));
   }
 
   static BigInt bytesToBigInt(Uint8List bytes,
-      {Endianness endianness = Endianness.big}) {
+      {Endianness endianness = Endianness.Big}) {
     var stream = ByteStream(bytes);
     return stream.readBigInt(stream.length, endianness: endianness);
   }
 
   static Uint8List bigIntToBytes(BigInt value, int length,
-      {endianness = Endianness.big}) {
+      {endianness = Endianness.Big}) {
     Uint8List list = new List<int>(0);
     for (int i = 0; i < length; i++) {
       list.add((value % (new BigInt.from(256))).toInt());
       value ~/= (new BigInt.from(256));
     }
-    if (endianness == Endianness.big) {
+    if (endianness == Endianness.Big) {
       list = list.reversed;
     }
     return new Uint8List.fromList(list);
@@ -87,7 +86,7 @@ class ByteUtils {
   }
 }
 
-/// Extension to convert Uint8List (Bytes) to other types
+/// Extension to convert [Uint8List] (Bytes) to other types
 extension BytesConvert on Uint8List {
   int toInt() => ByteUtils.bytesToInt(this);
   String toHexString() => ByteUtils.bytesToHexString(this);
@@ -103,15 +102,15 @@ extension HexStringConvert on String {
 extension IntConvert on int {
   String toHexStringAsByte() => ByteUtils.byteToHexString(this);
   String toHexStringAsBytes(int length,
-          {Endianness endianness = Endianness.big}) =>
+          {Endianness endianness = Endianness.Big}) =>
       ByteUtils.intToHexString(this, length, endianness: endianness);
-  Uint8List toBytes(int length, {Endianness endianness = Endianness.big}) =>
+  Uint8List toBytes(int length, {Endianness endianness = Endianness.Big}) =>
       ByteUtils.intToBytes(this, length, endianness: endianness);
 }
 
 /// Extension to convert Hex String to other types
 extension BigIntConvert on BigInt {
-  Uint8List toBytes(int length, {Endianness endianness = Endianness.big}) =>
+  Uint8List toBytes(int length, {Endianness endianness = Endianness.Big}) =>
       ByteUtils.bigIntToBytes(this, length, endianness: endianness);
 }
 
@@ -165,18 +164,18 @@ class ByteStream {
     return d;
   }
 
-  int readInt(int number, {Endianness endianness = Endianness.big}) {
+  int readInt(int number, {Endianness endianness = Endianness.Big}) {
     if (number > 8) {
       throw "Number of bytes converted to a int must be in [0,8)";
     }
     Uint8List d = readBytes(number);
     int value = 0;
-    if (endianness == Endianness.big) {
+    if (endianness == Endianness.Big) {
       for (var n = 0; n < d.length; n++) {
         value <<= 8;
         value += d[n];
       }
-    } else if (endianness == Endianness.little) {
+    } else if (endianness == Endianness.Little) {
       for (var n = d.length - 1; n >= 0; n--) {
         value <<= 8;
         value += d[n];
@@ -185,15 +184,15 @@ class ByteStream {
     return value;
   }
 
-  BigInt readBigInt(int number, {Endianness endianness = Endianness.big}) {
+  BigInt readBigInt(int number, {Endianness endianness = Endianness.Big}) {
     Uint8List d = readBytes(number);
     BigInt value = new BigInt.from(0);
-    if (endianness == Endianness.big) {
+    if (endianness == Endianness.Big) {
       for (var n = 0; n < d.length; n++) {
         value <<= 256;
         value += new BigInt.from(d[d.length - n - 1]);
       }
-    } else if (endianness == Endianness.little) {
+    } else if (endianness == Endianness.Little) {
       for (var n = d.length - 1; n >= 0; n--) {
         value <<= 256;
         value += new BigInt.from(d[d.length - n - 1]);

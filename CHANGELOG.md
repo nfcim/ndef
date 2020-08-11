@@ -12,3 +12,8 @@
     * Bluetooth easy pairing / Bluetooth low energy
     * other MIME data
   * Absolute URI
+
+## 0.2.0
+
+* Fix some bugs on Connection handover records
+* Utilize extension methods to simplify usage
