@@ -16,5 +16,5 @@
 ## 0.2.0
 
 * Fix some bugs on Connection handover records
-* Fix encoding / decoding of text records in UTF-16
+* Fix encoding / decoding of text records in UTF-16 (remove dependency of discontinued `utf` library)
 * Use extension methods to simplify usage
