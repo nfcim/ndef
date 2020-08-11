@@ -47,11 +47,11 @@ class NDEFRecordFlags {
 
   int encode() {
     assert(0 <= TNF && TNF <= 7);
-    return (ByteUtils.bool2int(MB) << 7) |
-        (ByteUtils.bool2int(ME) << 6) |
-        (ByteUtils.bool2int(CF) << 5) |
-        (ByteUtils.bool2int(SR) << 4) |
-        (ByteUtils.bool2int(IL) << 3) |
+    return (MB.toInt() << 7) |
+        (ME.toInt() << 6) |
+        (CF.toInt() << 5) |
+        (SR.toInt() << 4) |
+        (IL.toInt() << 3) |
         (TNF & 7);
   }
 
@@ -142,7 +142,7 @@ class NDEFRecord {
 
   /// Hex String of id, return "(empty)" when the id bytes is null
   String get idString {
-    return id == null ? "(empty)" : ByteUtils.list2hexString(id);
+    return id == null ? "(empty)" : id.toHexString();
   }
 
   set idString(String value) {
@@ -171,7 +171,7 @@ class NDEFRecord {
   String toString() {
     var str = "Record: ";
     str += basicInfoString;
-    str += "payload=${ByteUtils.list2hexString(payload)}";
+    str += "payload=${payload.toHexString()}";
     return str;
   }
 

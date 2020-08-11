@@ -26,12 +26,12 @@ import 'package:ndef/ndef.dart' as ndef;
 // encoding
 var uriRecord = new ndef.UriRecord.fromUriString("https://github.com/nfcim/ndef");
 var textRecord = new ndef.TextRecord(text: "Hello");
-var encodedUriRecord = ndef.ByteUtils.list2hexString(uriRecord.encode()); // encode a single record
-var encodedAllRecords = ndef.ByteUtils.list2hexString(ndef.encodeNdefMessage([uriRecord, textRecord])); // encode several records as a message
+var encodedUriRecord = ndef.ByteUtils.bytesToHexString(uriRecord.encode()); // encode a single record
+var encodedAllRecords = ndef.ByteUtils.bytesToHexString(ndef.encodeNdefMessage([uriRecord, textRecord])); // encode several records as a message
 
 // decoding
 var encodedTextRecord = "d1010f5402656e48656c6c6f20576f726c6421";
-var decodedRecords = ndef.decodeRawNdefMessage(ndef.ByteUtils.hexString2list(encodedTextRecord));
+var decodedRecords = ndef.decodeRawNdefMessage(ndef.ByteUtils.hexStringToBytes(encodedTextRecord));
 assert(decodedRecords.length == 1);
 if (decodedRecords[0] is ndef.TextRecord) {
   assert(decodeRecords[0].text == "Hello");

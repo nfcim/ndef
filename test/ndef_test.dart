@@ -8,7 +8,7 @@ import 'package:ndef/utilities.dart';
 
 void testParse(List<String> hexStrings, List<List<NDEFRecord>> messages) {
   for (int i = 0; i < hexStrings.length; i++) {
-    var decoded = decodeRawNdefMessage(ByteUtils.hexString2list(hexStrings[i]));
+    var decoded = decodeRawNdefMessage(ByteUtils.hexStringToBytes(hexStrings[i]));
     assert(decoded.length == messages[i].length);
     for (int j = 0; j < decoded.length; j++) {
       assert(decoded[j].isEqual(messages[i][j]));
@@ -18,7 +18,7 @@ void testParse(List<String> hexStrings, List<List<NDEFRecord>> messages) {
 
 void testGenerate(List<String> hexStrings, List<List<NDEFRecord>> messages) {
   for (int i = 0; i < hexStrings.length; i++) {
-    assert(ByteUtils.list2hexString(encodeNdefMessage(messages[i])) ==
+    assert(ByteUtils.bytesToHexString(encodeNdefMessage(messages[i])) ==
         hexStrings[i]);
   }
 }
@@ -73,7 +73,7 @@ void main() {
       [
         new SignatureRecord(
             signatureType: 'ECDSA-P256',
-            signature: ByteUtils.hexString2list(
+            signature: ByteUtils.hexStringToBytes(
                 "3045022100a410c28fd9437fd24f6656f121e62bcc5f65e36257f5faadf68e3e83d40d481a0220335b1dff8d6fe722fcf7018be9684d2de5670b256fdfc02aa25bdae16f624b80"))
       ],
     ];
@@ -166,12 +166,12 @@ void main() {
         new MimeRecord(
             decodedType: 'a/b',
             id: latin1.encode('1'),
-            payload: ByteUtils.hexString2list('0001'))
+            payload: ByteUtils.hexStringToBytes('0001'))
       ],
       [
         new HandoverSelectRecord(
             error:
-                ErrorRecord(errorNum: 1, errorData: ByteUtils.int2list(255, 1)),
+                ErrorRecord(errorNum: 1, errorData: ByteUtils.intToBytes(255, 1)),
             alternativeCarrierRecordList: [
               AlternativeCarrierRecord(
                   carrierPowerState: CarrierPowerState.active,
@@ -180,7 +180,7 @@ void main() {
         new MimeRecord(
             decodedType: 'a/b',
             id: latin1.encode('1'),
-            payload: ByteUtils.hexString2list('0001'))
+            payload: ByteUtils.hexStringToBytes('0001'))
       ],
       [
         new HandoverMediationRecord(
@@ -193,7 +193,7 @@ void main() {
         new MimeRecord(
             decodedType: 'text/plain',
             id: latin1.encode('a'),
-            payload: ByteUtils.hexString2list('000102'))
+            payload: ByteUtils.hexStringToBytes('000102'))
       ],
       [
         new HandoverRequestRecord(
@@ -215,7 +215,7 @@ void main() {
     // parse
     for (int i = 0; i < hexStrings.length; i++) {
       var decoded =
-          decodeRawNdefMessage(ByteUtils.hexString2list(hexStrings[i]));
+          decodeRawNdefMessage(ByteUtils.hexStringToBytes(hexStrings[i]));
       assert(decoded.length == messages[i].length);
       for (int j = 0; j < decoded.length; j++) {
         assert(decoded[j].isEqual(messages[i][j]));
@@ -232,8 +232,39 @@ void main() {
     }
   });
 
+  test('ndef message with bluetooth type', () {
+    List<String> hexStrings = [
+      "d10249537091011655046769746875622e636f6d2f6e6663696d2f6e6465661101075402656e6e64656611030161637400120909696d6167652f706e676120706963747572655101047300002710",
+      "d1020f5370d1010b55046769746875622e636f6d",
+    ];
+
+    List<List<NDEFRecord>> messages = [
+      [
+        new SmartPosterRecord(
+            title: "ndef",
+            uri: "https://github.com/nfcim/ndef",
+            action: Action.exec,
+            icon: {
+              "image/png": new Uint8List.fromList(utf8.encode("a picture"))
+            },
+            size: 10000,
+            typeInfo: null),
+      ],
+      [
+        new SmartPosterRecord(uri: "https://github.com"),
+      ]
+    ];
+
+    // parse
+    testParse(hexStrings, messages);
+
+    // generate
+    testGenerate(hexStrings, messages);
+  });
+
   test('print test', () {
-    //print(decodeRawNdefMessage(ByteUtils.hexString2list("")));
+    //print(decodeRawNdefMessage(ByteUtils.hexStringToBytes(
+    //    "d2200b6170706c69636174696f6e2f766e642e626c7565746f6f74682e65702e6f6f620b0006050403020102ff61")));
   });
   // TODO: more tests
 }

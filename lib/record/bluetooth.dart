@@ -3,28 +3,28 @@ import 'dart:convert';
 
 import '../ndef.dart';
 
-class Address {
-  Uint8List bytes;
+class _Address {
+  Uint8List addr;
 
-  Address({String address}) {
+  _Address({String address}) {
     if (address != null) {
       this.address = address;
     }
   }
 
-  Address.fromBytes(Uint8List bytes) {
+  _Address.fromBytes(Uint8List bytes) {
     if (bytes != null) {
       assert(bytes.length == 6, "Bytes length of address data must be 6 bytes");
-      this.bytes = bytes;
+      this.addr = bytes;
     }
   }
 
   get address {
     String address = "";
     for (int i = 0; i < 5; i++) {
-      address += ByteUtils.int2hexString(bytes[i]) + ":";
+      address += ByteUtils.byteToHexString(addr[i]) + ":";
     }
-    address += ByteUtils.int2hexString(bytes[5]);
+    address += ByteUtils.byteToHexString(addr[5]);
     return address;
   }
 
@@ -37,15 +37,62 @@ class Address {
       for (var n in nums) {
         bts.add(int.parse(n, radix: 16));
       }
-      bytes = new Uint8List.fromList(bts);
+      addr = new Uint8List.fromList(bts);
     } else {
       throw "Pattern of adress string is wrong";
     }
   }
 }
 
+class EPAddress extends _Address {
+  EPAddress({String address}) : super(address: address);
+  EPAddress.fromBytes(Uint8List bytes) : super.fromBytes(bytes);
+
+  Uint8List get bytes {
+    return this.addr;
+  }
+
+  set bytes(Uint8List bytes) {
+    if (bytes.length != 6) {
+      throw "Bytes length of Bluetooth LE Address must be 6";
+    }
+    this.addr = bytes;
+  }
+}
+
+enum LEAddressType { public, random }
+
+class LEAddress extends _Address {
+  LEAddressType type;
+  LEAddress({LEAddressType type, String address}) : super(address: address) {
+    this.type = type;
+  }
+
+  LEAddress.fromTypeBytes(LEAddressType type, Uint8List bytes)
+      : super.fromBytes(bytes) {
+    this.type = type;
+  }
+
+  LEAddress.fromBytes(Uint8List bytes) {
+    if (bytes != null) {
+      this.bytes = bytes;
+    }
+  }
+
+  Uint8List get bytes {
+    return Uint8List.fromList(this.addr + [LEAddressType.values.indexOf(type)]);
+  }
+
+  set bytes(Uint8List bytes) {
+    if (bytes.length != 7) {
+      throw "Bytes length of Bluetooth LE Address must be 7";
+    }
+    this.addr = bytes.sublist(0, 6);
+    this.type = LEAddressType.values[bytes[6]];
+  }
+}
+
 class DeviceClass {
-  int value;
   static const List<String> serviceClassNameList = [
     "Limited Discoverable Mode",
     "Reserved (bit 14)",
@@ -233,7 +280,13 @@ class DeviceClass {
     31: ['Uncategorized', []],
   };
 
-  DeviceClass({Uint8List bytes}) {
+  int value;
+
+  DeviceClass({int value}) {
+    this.value = value;
+  }
+
+  DeviceClass.fromBytes(Uint8List bytes) {
     this.bytes = bytes;
   }
 
@@ -299,12 +352,12 @@ class DeviceClass {
   }
 
   get bytes {
-    return ByteUtils.int2list(value, 3, endianness: Endianness.little);
+    return ByteUtils.intToBytes(value, 3, endianness: Endianness.little);
   }
 
   set bytes(Uint8List bytes) {
     assert(bytes.length == 3, "Bytes length of Class of Device must be 3");
-    value = ByteUtils.list2int(bytes, endianness: Endianness.little);
+    value = ByteUtils.bytesToInt(bytes, endianness: Endianness.little);
   }
 }
 
@@ -542,13 +595,13 @@ class BluetoothRecord extends MimeRecord {
   }
 
   BigInt getIntValue(EIRType type) {
-    return ByteUtils.list2bigInt(attributes[type],
+    return ByteUtils.bytesToBigInt(attributes[type],
         endianness: Endianness.little);
   }
 
   void setIntValue(EIRType type, BigInt value) {
-    setAttribute(
-        type, ByteUtils.bigInt2list(value, 16, endianness: Endianness.little));
+    setAttribute(type,
+        ByteUtils.bigIntToBytes(value, 16, endianness: Endianness.little));
   }
 }
 
@@ -562,10 +615,10 @@ class BluetoothEasyPairingRecord extends BluetoothRecord {
   BluetoothEasyPairingRecord({Map<int, Uint8List> attributes})
       : super(attributes: attributes);
 
-  Address address;
+  EPAddress address;
 
   get deviceClass {
-    return new DeviceClass(bytes: attributes[EIRType.ClassOfDevice]);
+    return new DeviceClass.fromBytes(attributes[EIRType.ClassOfDevice]);
   }
 
   set deviceClass(DeviceClass dc) {
@@ -612,7 +665,7 @@ class BluetoothEasyPairingRecord extends BluetoothRecord {
       data.addAll(e.value);
     }
     var payload =
-        ByteUtils.int2list(data.length, 2, endianness: Endianness.little) +
+        ByteUtils.intToBytes(data.length, 2, endianness: Endianness.little) +
             address.bytes +
             data;
     return new Uint8List.fromList(payload);
@@ -621,7 +674,7 @@ class BluetoothEasyPairingRecord extends BluetoothRecord {
   set payload(Uint8List payload) {
     var stream = new ByteStream(payload);
     var oobLength = stream.readInt(2, endianness: Endianness.little);
-    address = new Address.fromBytes(stream.readBytes(6));
+    address = new EPAddress.fromBytes(stream.readBytes(6));
     while (stream.readLength < oobLength) {
       var length = stream.readByte();
       var data = stream.readBytes(length);
@@ -641,17 +694,17 @@ class BluetoothLowEnergyRecord extends BluetoothRecord {
   BluetoothLowEnergyRecord({Map<int, Uint8List> attributes})
       : super(attributes: attributes);
 
-  get address {
+  LEAddress get address {
     if (attributes.containsKey(EIRType.LEBluetoothDeviceAddress)) {
-      return new Address.fromBytes(
+      return new LEAddress.fromBytes(
           attributes[EIRType.LEBluetoothDeviceAddress]);
     } else {
       return null;
     }
   }
 
-  set address(Uint8List value) {
-    //TODO: LE version device address
+  set address(LEAddress address) {
+    attributes[EIRType.LEBluetoothDeviceAddress] = address.bytes;
   }
 
   static const List<String> leRoleList = [
@@ -743,7 +796,7 @@ class BluetoothLowEnergyRecord extends BluetoothRecord {
     if (attributes.containsKey(EIRType.Appearance)) {
       assert(attributes[EIRType.Appearance].length == 4,
           "Bytes length of appearance must be 4");
-      int value = ByteUtils.list2int(attributes[EIRType.Appearance],
+      int value = ByteUtils.bytesToInt(attributes[EIRType.Appearance],
           endianness: Endianness.little);
       if (appearanceMap.containsKey(value)) {
         return appearanceMap[value];
@@ -767,7 +820,7 @@ class BluetoothLowEnergyRecord extends BluetoothRecord {
       throw "Appearance $appearance is not correct";
     }
     attributes[EIRType.Appearance] =
-        ByteUtils.int2list(index, 4, endianness: Endianness.little);
+        ByteUtils.intToBytes(index, 4, endianness: Endianness.little);
   }
 
   static const flagsList = [
