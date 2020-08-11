@@ -8,7 +8,7 @@ import 'package:ndef/utilities.dart';
 
 void testParse(List<String> hexStrings, List<List<NDEFRecord>> messages) {
   for (int i = 0; i < hexStrings.length; i++) {
-    var decoded = decodeRawNdefMessage(ByteUtils.hexStringToBytes(hexStrings[i]));
+    var decoded = decodeRawNdefMessage(hexStrings[i].toBytes());
     assert(decoded.length == messages[i].length);
     for (int j = 0; j < decoded.length; j++) {
       assert(decoded[j].isEqual(messages[i][j]));
@@ -18,8 +18,7 @@ void testParse(List<String> hexStrings, List<List<NDEFRecord>> messages) {
 
 void testGenerate(List<String> hexStrings, List<List<NDEFRecord>> messages) {
   for (int i = 0; i < hexStrings.length; i++) {
-    assert(ByteUtils.bytesToHexString(encodeNdefMessage(messages[i])) ==
-        hexStrings[i]);
+    assert(encodeNdefMessage(messages[i]).toHexString() == hexStrings[i]);
   }
 }
 
@@ -47,12 +46,15 @@ void main() {
   test('ndef message with text type', () {
     List<String> hexStrings = [
       "d1010f5402656e48656c6c6f20576f726c6421",
-      //"d101145485656d6f6a69fffe3dd801de3dd802de3ed828dd"  // can only decode emoji correctly, but can not encode
+      "d101145485656d6f6a69fffe3dd801de3dd802de3ed828dd"
     ];
 
     List<List<NDEFRecord>> messages = [
       [new TextRecord(language: 'en', text: 'Hello World!')],
-      //[new TextRecord(language:'emoji',text:'😁😂🤨',encoding:TextEncoding.UTF16)],
+      [
+        new TextRecord(
+            language: 'emoji', text: '😁😂🤨', encoding: TextEncoding.UTF16)
+      ],
     ];
 
     // parse
@@ -170,8 +172,8 @@ void main() {
       ],
       [
         new HandoverSelectRecord(
-            error:
-                ErrorRecord(errorNum: 1, errorData: ByteUtils.intToBytes(255, 1)),
+            error: ErrorRecord(
+                errorNum: 1, errorData: ByteUtils.intToBytes(255, 1)),
             alternativeCarrierRecordList: [
               AlternativeCarrierRecord(
                   carrierPowerState: CarrierPowerState.active,

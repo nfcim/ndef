@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:utf/utf.dart' as utf;
-
 import '../ndef.dart';
 import 'wellknown.dart';
 
@@ -73,7 +71,10 @@ class TextRecord extends WellKnownRecord {
       textPayload = utf8.encode(text);
       encodingFlag = 0;
     } else if (encoding == TextEncoding.UTF16) {
-      textPayload = utf.encodeUtf16(text);
+      // use UTF-16 LE only in encoding
+      List<int> encodedChar = [0xFEFF];
+      encodedChar.addAll(text.codeUnits);
+      textPayload = Uint16List.fromList(encodedChar).buffer.asUint8List();
       encodingFlag = 1;
     }
     int flag = (encodingFlag << 7) | languagePayload.length;
@@ -101,7 +102,30 @@ class TextRecord extends WellKnownRecord {
     if (encoding == TextEncoding.UTF8) {
       text = utf8.decode(textPayload);
     } else if (encoding == TextEncoding.UTF16) {
-      text = utf.decodeUtf16(textPayload);
+      // decode UTF-16 manually
+      var bytes = textPayload;
+      Endianness end;
+      if (bytes[0] == 0xFF) {
+        end = Endianness.Little;
+      } else if (bytes[1] == 0xFE) {
+        end = Endianness.Big;
+      } else {
+        throw "Unknown BOM in UTF-16 encoded string.";
+      }
+      StringBuffer buffer = new StringBuffer();
+      for (int i = 2; i < bytes.length;) {
+        int firstWord = end == Endianness.Little ? (bytes[i + 1] << 8) + bytes[i] : (bytes[i] << 8) + bytes[i + 1];
+        if (0xD800 <= firstWord && firstWord <= 0xDBFF) {
+          int secondWord = end == Endianness.Little ? (bytes[i + 3] << 8) + bytes[i + 2] : (bytes[i + 2] << 8) + bytes[i + 3];
+          int charCode = ((firstWord - 0xD800) << 10) + (secondWord - 0xDC00) + 0x10000;
+          buffer.writeCharCode(charCode);
+          i += 4;
+        } else {
+          buffer.writeCharCode(firstWord);
+          i += 2;
+        }
+      }
+      this.text = buffer.toString();
     }
   }
 }
