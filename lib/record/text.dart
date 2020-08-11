@@ -114,10 +114,15 @@ class TextRecord extends WellKnownRecord {
       }
       StringBuffer buffer = new StringBuffer();
       for (int i = 2; i < bytes.length;) {
-        int firstWord = end == Endianness.Little ? (bytes[i + 1] << 8) + bytes[i] : (bytes[i] << 8) + bytes[i + 1];
+        int firstWord = end == Endianness.Little
+            ? (bytes[i + 1] << 8) + bytes[i]
+            : (bytes[i] << 8) + bytes[i + 1];
         if (0xD800 <= firstWord && firstWord <= 0xDBFF) {
-          int secondWord = end == Endianness.Little ? (bytes[i + 3] << 8) + bytes[i + 2] : (bytes[i + 2] << 8) + bytes[i + 3];
-          int charCode = ((firstWord - 0xD800) << 10) + (secondWord - 0xDC00) + 0x10000;
+          int secondWord = end == Endianness.Little
+              ? (bytes[i + 3] << 8) + bytes[i + 2]
+              : (bytes[i + 2] << 8) + bytes[i + 3];
+          int charCode =
+              ((firstWord - 0xD800) << 10) + (secondWord - 0xDC00) + 0x10000;
           buffer.writeCharCode(charCode);
           i += 4;
         } else {
