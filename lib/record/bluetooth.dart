@@ -1,6 +1,8 @@
 import 'dart:typed_data';
 import 'dart:convert';
 
+import 'package:uuid/uuid.dart';
+
 import '../ndef.dart';
 
 class _Address {
@@ -356,17 +358,138 @@ class DeviceClass {
   }
 
   set bytes(Uint8List bytes) {
-    assert(bytes.length == 3, "Bytes length of Class of Device must be 3");
+    if (bytes.length != 3) {
+      throw "Bytes length of Class of Device must be 3, got ${bytes.length}";
+    }
     value = ByteUtils.bytesToInt(bytes, endianness: Endianness.Little);
   }
 }
 
 class ServiceClass {
-  //TODO: UUID
+  static const String baseUuid = "-0000-1000-8000-00805F9B34FB";
 
-  get bytes {}
+  static const Map<int, String> uuidNameMap = {
+    0x00001000: "Service Discovery Server",
+    0x00001001: "Browse Group Descriptor",
+    0x00001101: "Serial Port",
+    0x00001102: "LAN Access Using PPP",
+    0x00001103: "Dialup Networking",
+    0x00001104: "IrMC Sync",
+    0x00001105: "OBEX Object Push",
+    0x00001106: "OBEX File Transfer",
+    0x00001107: "IrMC Sync Command",
+    0x00001108: "Headset",
+    0x00001109: "Cordless Telephony",
+    0x0000110a: "Audio Source",
+    0x0000110b: "Audio Sink",
+    0x0000110c: "A/V Remote Control Target",
+    0x0000110d: "Advanced Audio Distribution",
+    0x0000110e: "A/V Remote Control",
+    0x0000110f: "A/V Remote Control Controller",
+    0x00001110: "Intercom",
+    0x00001111: "Fax",
+    0x00001112: "Headset - Audio Gateway (AG)",
+    0x00001113: "WAP",
+    0x00001114: "WAP Client",
+    0x00001115: "PANU",
+    0x00001116: "NAP",
+    0x00001117: "GN",
+    0x00001118: "Direct Printing",
+    0x00001119: "Reference Printing",
+    0x0000111a: "Basic Imaging Profile",
+    0x0000111b: "Imaging Responder",
+    0x0000111c: "Imaging Automatic Archive",
+    0x0000111d: "Imaging Referenced Objects",
+    0x0000111e: "Handsfree",
+    0x0000111f: "Handsfree Audio Gateway",
+    0x00001120: "Direct Printing Reference",
+    0x00001121: "Reflected UI",
+    0x00001122: "Basic Printing",
+    0x00001123: "Printing Status",
+    0x00001124: "Human Interface Device",
+    0x00001125: "Hardcopy Cable Replacement",
+    0x00001126: "HCR Print",
+    0x00001127: "HCR Scan",
+    0x00001128: "Common ISDN Access",
+    0x0000112d: "SIM Access",
+    0x0000112e: "Phonebook Access - PCE",
+    0x0000112f: "Phonebook Access - PSE",
+    0x00001130: "Phonebook Access",
+    0x00001131: "Headset - HS",
+    0x00001132: "Message Access Server",
+    0x00001133: "Message Notification Server",
+    0x00001134: "Message Access Profile",
+    0x00001135: "GNSS",
+    0x00001136: "GNSS Server",
+    0x00001200: "PnP Information",
+    0x00001201: "Generic Networking",
+    0x00001202: "Generic File Transfer",
+    0x00001203: "Generic Audio",
+    0x00001204: "Generic Telephony",
+    0x00001205: "UPNP Service",
+    0x00001206: "UPNP IP Service",
+    0x00001300: "ESDP UPNP IP PAN",
+    0x00001301: "ESDP UPNP IP LAP",
+    0x00001302: "ESDP UPNP L2CAP",
+    0x00001303: "Video Source",
+    0x00001304: "Video Sink",
+    0x00001305: "Video Distribution",
+    0x00001400: "HDP",
+    0x00001401: "HDP Source",
+    0x00001402: "HDP Sink",
+  };
 
-  set bytes(Uint8List bytes) {}
+  Uint8List _uuidData;
+
+  ServiceClass({Uint8List uuidData}) {
+    this.uuidData = uuidData;
+  }
+
+  String get uuid {
+    if (bytes.length == 2) {
+      return "0000" + bytes.toReverse().toHexString() + baseUuid;
+    } else if (bytes.length == 4) {
+      return bytes.toReverse().toHexString() + baseUuid;
+    } else {
+      var u = new Uuid();
+      return u.unparse(uuidData);
+    }
+  }
+
+  /// UUID name if supported or UUID
+  String get name {
+    if (bytes.length <= 4 || uuid.substring(8) == baseUuid) {
+      var v = _uuidValue;
+      if (uuidNameMap.containsKey(v)) {
+        return uuidNameMap[v];
+      }
+    }
+    return uuid;
+  }
+
+  Uint8List get uuidData {
+    return _uuidData;
+  }
+
+  int get _uuidValue {
+    return _uuidData.toInt(endianness: Endianness.Little);
+  }
+
+  set uuidData(Uint8List uuidData) {
+    if (bytes.length == 2 || bytes.length == 4 || bytes.length == 16) {
+      _uuidData = bytes;
+    } else {
+      throw "Bytes length of uuidData must be 2, 4, or 16, got ${bytes.length}";
+    }
+  }
+
+  Uint8List get bytes {
+    return _uuidData;
+  }
+
+  set bytes(Uint8List bytes) {
+    uuidData = bytes;
+  }
 }
 
 enum EIRType {
@@ -608,7 +731,7 @@ class BluetoothRecord extends MimeRecord {
 class BluetoothEasyPairingRecord extends BluetoothRecord {
   static const String classType = "application/vnd.bluetooth.ep.oob";
 
-  get decodedType {
+  String get decodedType {
     return BluetoothEasyPairingRecord.classType;
   }
 
@@ -621,17 +744,77 @@ class BluetoothEasyPairingRecord extends BluetoothRecord {
     return str;
   }
 
-  BluetoothEasyPairingRecord({this.address,Map<EIRType, Uint8List> attributes})
+  BluetoothEasyPairingRecord({this.address, Map<EIRType, Uint8List> attributes})
       : super(attributes: attributes);
 
   EPAddress address;
 
-  get deviceClass {
+  DeviceClass get deviceClass {
     return new DeviceClass.fromBytes(attributes[EIRType.ClassOfDevice]);
   }
 
   set deviceClass(DeviceClass dc) {
     attributes[EIRType.ClassOfDevice] = dc.bytes;
+  }
+
+  void _addServiceClassList(
+      EIRType eirType, int unitSize, List<ServiceClass> list) {
+    if (attributes.containsKey(eirType)) {
+      var bytes = attributes[eirType];
+      for (var i = 0; i < bytes.length; i += unitSize) {
+        list.add(ServiceClass(uuidData: bytes.sublist(i, i + unitSize)));
+      }
+    }
+  }
+
+  List<ServiceClass> get serviceClassList {
+    var list = new List<ServiceClass>();
+    _addServiceClassList(EIRType.Inc16BitUUID, 2, list);
+    _addServiceClassList(EIRType.Com16BitUUID, 2, list);
+    _addServiceClassList(EIRType.Inc32BitUUID, 4, list);
+    _addServiceClassList(EIRType.Com32BitUUID, 4, list);
+    _addServiceClassList(EIRType.Inc128BitUUID, 16, list);
+    _addServiceClassList(EIRType.Com128BitUUID, 16, list);
+    return list;
+  }
+
+  /// Add a service class,  according to [complete]
+  void addServiceClass(ServiceClass serviceClass, {bool complete = false}) {
+    var bytes = serviceClass.bytes;
+    EIRType remain, remove;
+    if (bytes.length == 2) {
+      if (complete == false) {
+        remain = EIRType.Inc16BitUUID;
+        remove = EIRType.Com16BitUUID;
+      } else {
+        remain = EIRType.Com16BitUUID;
+        remove = EIRType.Inc16BitUUID;
+      }
+    } else if (bytes.length == 4) {
+      if (complete == false) {
+        remain = EIRType.Inc32BitUUID;
+        remove = EIRType.Com32BitUUID;
+      } else {
+        remain = EIRType.Com32BitUUID;
+        remove = EIRType.Inc32BitUUID;
+      }
+    } else if (bytes.length == 16) {
+      if (complete == false) {
+        remain = EIRType.Inc128BitUUID;
+        remove = EIRType.Com128BitUUID;
+      } else {
+        remain = EIRType.Com128BitUUID;
+        remove = EIRType.Inc128BitUUID;
+      }
+    }
+
+    attributes[remain] = Uint8List.fromList(
+        (attributes.containsKey(remain) ? attributes[remain] : []) +
+            (attributes.containsKey(remove) ? attributes[remove] : []) +
+            bytes);
+    if (attributes.containsKey(remove)) {
+      attributes.remove(remove);
+    }
   }
 
   BigInt get simplePairingHash192 {
@@ -673,10 +856,11 @@ class BluetoothEasyPairingRecord extends BluetoothRecord {
       data.add(EIR.typeNumMap[e.key]);
       data.addAll(e.value);
     }
-    var payload =
-        ByteUtils.intToBytes(data.length+address.bytes.length+2, 2, endianness: Endianness.Little) +
-            address.bytes +
-            data;
+    var payload = ByteUtils.intToBytes(
+            data.length + address.bytes.length + 2, 2,
+            endianness: Endianness.Little) +
+        address.bytes +
+        data;
     return new Uint8List.fromList(payload);
   }
 
@@ -687,7 +871,6 @@ class BluetoothEasyPairingRecord extends BluetoothRecord {
     while (stream.readLength < oobLength) {
       var length = stream.readByte();
       var data = stream.readBytes(length);
-      //eir.add(new EIR.fromBytes(data));
       attributes[EIR.numTypeMap[data[0]]] = data.sublist(1);
     }
   }
@@ -696,7 +879,7 @@ class BluetoothEasyPairingRecord extends BluetoothRecord {
 class BluetoothLowEnergyRecord extends BluetoothRecord {
   static const String classType = "application/vnd.bluetooth.le.oob";
 
-  get decodedType {
+  String get decodedType {
     return BluetoothLowEnergyRecord.classType;
   }
 

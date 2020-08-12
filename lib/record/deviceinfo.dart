@@ -72,7 +72,7 @@ class DeviceInformationRecord extends WellKnownRecord {
         undefinedData == null ? new List<DataElement>() : undefinedData;
   }
 
-  get uuid {
+  String get uuid {
     var u = new Uuid();
     return u.unparse(uuidData);
   }

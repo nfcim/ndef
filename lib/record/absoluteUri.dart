@@ -15,7 +15,7 @@ class AbsoluteUriRecord extends NDEFRecord {
     }
   }
 
-  get uri {
+  String get uri {
     return decodedType;
   }
 
@@ -23,7 +23,7 @@ class AbsoluteUriRecord extends NDEFRecord {
     decodedType = uri;
   }
 
-  get decodedType {
+  String get decodedType {
     return uri;
   }
 
