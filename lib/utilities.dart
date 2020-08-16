@@ -88,7 +88,8 @@ class ByteUtils {
 
 /// Extension to convert [Uint8List] (Bytes) to other types
 extension BytesConvert on Uint8List {
-  int toInt({Endianness endianness = Endianness.Big}) => ByteUtils.bytesToInt(this,endianness: endianness);
+  int toInt({Endianness endianness = Endianness.Big}) =>
+      ByteUtils.bytesToInt(this, endianness: endianness);
   String toHexString() => ByteUtils.bytesToHexString(this);
   BigInt toBigInt() => ByteUtils.bytesToBigInt(this);
   Uint8List toReverse() {

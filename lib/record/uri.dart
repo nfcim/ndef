@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'wellknown.dart';
 
 class UriRecord extends WellKnownRecord {
-  static List<String> uriPrefixMap = [
+  static List<String> prefixMap = [
     "",
     "http://www.",
     "https://www.",
@@ -64,13 +64,13 @@ class UriRecord extends WellKnownRecord {
     return str;
   }
 
-  String _uriPrefix, uriData;
+  String _prefix, content;
 
-  UriRecord({String uriPrefix, String uriData}) {
-    if (uriPrefix != null) {
-      this.uriPrefix = uriPrefix;
+  UriRecord({String prefix, String content}) {
+    if (prefix != null) {
+      this.prefix = prefix;
     }
-    this.uriData = uriData;
+    this.content = content;
   }
 
   UriRecord.fromUriString(String uriString) {
@@ -81,54 +81,66 @@ class UriRecord extends WellKnownRecord {
     this.uriString = uri.toString();
   }
 
-  String get uriPrefix {
-    return _uriPrefix;
+  String get prefix {
+    return _prefix;
   }
 
-  set uriPrefix(String uriPrefix) {
-    if (!uriPrefixMap.contains(uriPrefix)) {
-      throw "URI Prefix $uriPrefix is not supported";
+  set prefix(String prefix) {
+    if (!prefixMap.contains(prefix)) {
+      throw "URI Prefix $prefix is not supported";
     }
-    _uriPrefix = uriPrefix;
+    _prefix = prefix;
   }
 
-  get uriString {
-    return this.uriPrefix + this.uriData;
+  String get iriString {
+    return this.prefix + this.content;
   }
 
-  set uriString(String uriString) {
-    for (int i = 1; i < uriPrefixMap.length; i++) {
-      if (uriString.startsWith(uriPrefixMap[i])) {
-        this._uriPrefix = uriPrefixMap[i];
-        this.uriData = uriString.substring(uriPrefix.length);
+  set iriString(String uriString) {
+    for (int i = 1; i < prefixMap.length; i++) {
+      if (uriString.startsWith(prefixMap[i])) {
+        this._prefix = prefixMap[i];
+        this.content = uriString.substring(prefix.length);
         return;
       }
     }
-    this._uriPrefix = "";
-    this.uriData = uriString;
+    this._prefix = "";
+    this.content = uriString;
+  }
+
+  String get uriString {
+    return Uri.parse(this.prefix + this.content).toString();
+  }
+
+  set uriString(String uriString) {
+    this.iriString = uriString;
   }
 
   Uri get uri {
-    return Uri.parse(uriString);
+    return Uri.parse(iriString);
+  }
+
+  set uri(Uri uri) {
+    this.iriString = uri.toString();
   }
 
   Uint8List get payload {
-    for (int i = 0; i < uriPrefixMap.length; i++) {
-      if (uriPrefixMap[i] == uriPrefix) {
-        return new Uint8List.fromList([i] + utf8.encode(uriData));
+    for (int i = 0; i < prefixMap.length; i++) {
+      if (prefixMap[i] == prefix) {
+        return new Uint8List.fromList([i] + utf8.encode(content));
       }
     }
-    throw "uri prefix not recognized";
+    throw "Uri prefix not recognized";
   }
 
   set payload(Uint8List payload) {
-    int uriIdentifier = payload[0];
-    if (uriIdentifier < uriPrefixMap.length) {
-      uriPrefix = uriPrefixMap[uriIdentifier];
+    int prefixIndex = payload[0];
+    if (prefixIndex < prefixMap.length) {
+      prefix = prefixMap[prefixIndex];
     } else {
       //More identifier codes are reserved for future use
-      uriPrefix = "";
+      prefix = "";
     }
-    uriData = utf8.decode(payload.sublist(1));
+    content = utf8.decode(payload.sublist(1));
   }
 }
