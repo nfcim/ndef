@@ -80,7 +80,7 @@ class SignatureRecord extends WellKnownRecord {
     this.certificateURI = certificateURI;
   }
 
-  get signatureType {
+  String get signatureType {
     return signatureTypeMap[signatureTypeIndex];
   }
 
@@ -94,7 +94,7 @@ class SignatureRecord extends WellKnownRecord {
     throw "No signature type called $signatureType";
   }
 
-  get hashType {
+  String get hashType {
     return hashTypeMap[hashTypeIndex];
   }
 
@@ -108,7 +108,7 @@ class SignatureRecord extends WellKnownRecord {
     throw "No hash type called $hashType";
   }
 
-  get certificateFormat {
+  String get certificateFormat {
     return certificateFormatMap[certificateFormatIndex];
   }
 
@@ -122,7 +122,7 @@ class SignatureRecord extends WellKnownRecord {
     throw "No certificate format called $certificateFormat";
   }
 
-  get certificateStore {
+  List<Uint8List> get certificateStore {
     return new List<Uint8List>.from(_certificateStore, growable: false);
   }
 

@@ -51,7 +51,7 @@ class AlternativeCarrierRecord extends WellKnownRecord {
         : auxDataReferenceList;
   }
 
-  get carrierPowerStateIndex {
+  int get carrierPowerStateIndex {
     return CarrierPowerState.values.indexOf(carrierPowerState);
   }
 
@@ -135,7 +135,7 @@ class CollisionResolutionRecord extends WellKnownRecord {
     }
   }
 
-  get randomNumber {
+  int get randomNumber {
     return _randomNumber;
   }
 
@@ -590,7 +590,7 @@ class HandoverSelectRecord extends HandoverRecord {
   }
 
   @override
-  get allRecordList {
+  List<NDEFRecord> get allRecordList {
     return super.allRecordList + errorRecordList;
   }
 

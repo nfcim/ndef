@@ -44,7 +44,7 @@ class TextRecord extends WellKnownRecord {
     this.text = text;
   }
 
-  get language {
+  String get language {
     return _language;
   }
 
@@ -55,7 +55,7 @@ class TextRecord extends WellKnownRecord {
     this._language = language;
   }
 
-  get encodingString {
+  String get encodingString {
     if (encoding == TextEncoding.UTF8) {
       return "UTF-8";
     } else if (encoding == TextEncoding.UTF16) {

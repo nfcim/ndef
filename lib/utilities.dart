@@ -128,15 +128,15 @@ class ByteStream {
   Uint8List _data;
   int _current = 0;
 
-  get readLength {
+  int get readLength {
     return _current;
   }
 
-  get unreadLength {
+  int get unreadLength {
     return _data.length - _current;
   }
 
-  get length {
+  int get length {
     return _data.length;
   }
 

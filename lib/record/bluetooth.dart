@@ -298,7 +298,7 @@ class DeviceClass {
     return serviceClassNameList[index - 13];
   }
 
-  get majorServiceClass {
+  List<String> get majorServiceClass {
     if (value & 3 == 0) {
       return null;
     }
@@ -311,7 +311,7 @@ class DeviceClass {
     return classes;
   }
 
-  get majorDeviceClass {
+  String get majorDeviceClass {
     if (value & 3 == 0) {
       return null;
     }
@@ -323,7 +323,7 @@ class DeviceClass {
     }
   }
 
-  get minorDeviceClass {
+  String get minorDeviceClass {
     if (value & 3 == 0) {
       return null;
     }
@@ -353,7 +353,7 @@ class DeviceClass {
     }
   }
 
-  get bytes {
+  Uint8List get bytes {
     return ByteUtils.intToBytes(value, 3, endianness: Endianness.Little);
   }
 
@@ -640,7 +640,7 @@ class EIR {
     this.bytes = bytes;
   }
 
-  get bytes {
+  Uint8List get bytes {
     return [typeNum] + data;
   }
 
@@ -649,7 +649,7 @@ class EIR {
     data = bytes.sublist(1);
   }
 
-  get typeNum {
+  int get typeNum {
     return _typeNum;
   }
 
@@ -660,11 +660,11 @@ class EIR {
     this._typeNum = typeNum;
   }
 
-  get typeString {
+  String get typeString {
     return typeNum == null ? null : typeNameMap[typeNum];
   }
 
-  get type {
+  EIRType get type {
     return typeNum == null ? null : numTypeMap[typeNum];
   }
 
@@ -915,7 +915,7 @@ class BluetoothLowEnergyRecord extends BluetoothRecord {
     "Central/Peripheral",
   ];
 
-  get roleCapabilities {
+  String get roleCapabilities {
     if (attributes.containsKey(EIRType.LERole)) {
       assert(attributes[EIRType.LERole].length == 1,
           "Bytes length of LE Role must be 1");
@@ -993,7 +993,7 @@ class BluetoothLowEnergyRecord extends BluetoothRecord {
     0x1444: "Outdoor Sports: Location and Navigation Pod",
   };
 
-  get appearance {
+  String get appearance {
     if (attributes.containsKey(EIRType.Appearance)) {
       assert(attributes[EIRType.Appearance].length == 4,
           "Bytes length of appearance must be 4");
@@ -1032,7 +1032,7 @@ class BluetoothLowEnergyRecord extends BluetoothRecord {
     "Simultaneous LE and BR/EDR to Same Device Capable (Host)",
   ];
 
-  get flagsEIR {
+  String get flagsEIR {
     if (attributes.containsKey(EIRType.Flags)) {
       var names = new List<String>();
       var value = attributes[EIRType.Flags][0];

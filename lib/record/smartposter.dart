@@ -86,7 +86,7 @@ class SizeRecord extends WellKnownRecord {
 
   int _size;
 
-  get size {
+  int get size {
     return _size;
   }
 
@@ -277,7 +277,7 @@ class SmartPosterRecord extends WellKnownRecord {
     return record;
   }
 
-  get allRecords {
+  List<NDEFRecord> get allRecords {
     return uriRecords +
         titleRecords +
         actionRecords +
@@ -286,11 +286,11 @@ class SmartPosterRecord extends WellKnownRecord {
         typeRecords;
   }
 
-  get uriRecords {
+  List<NDEFRecord> get uriRecords {
     return new List<NDEFRecord>.from(_uriRecords, growable: false);
   }
 
-  get uriRecord {
+  UriRecord get uriRecord {
     if (uriRecords.length == 1) {
       return _uriRecords[0];
     } else {
@@ -298,7 +298,7 @@ class SmartPosterRecord extends WellKnownRecord {
     }
   }
 
-  get uri {
+  Uri get uri {
     if (_uriRecords.length == 1) {
       return _uriRecords[0].uri;
     } else {
@@ -329,12 +329,12 @@ class SmartPosterRecord extends WellKnownRecord {
     }
   }
 
-  get titleRecords {
+  List<NDEFRecord> get titleRecords {
     return new List<NDEFRecord>.from(_titleRecords, growable: false);
   }
 
   /// get the English title; if not existing, get the first title
-  get title {
+  String get title {
     if (_titleLanguages.contains('en')) {
       return titles['en'];
     } else if (_titleLanguages.length >= 1) {
@@ -344,11 +344,12 @@ class SmartPosterRecord extends WellKnownRecord {
     }
   }
 
-  get titles {
+  Map<String,String> get titles {
     var titles = Map<String, String>();
     for (var r in _titleRecords) {
       titles[r.language] = r.text;
     }
+    return titles;
   }
 
   set title(var title) {
@@ -389,12 +390,12 @@ class SmartPosterRecord extends WellKnownRecord {
     _titleLanguages.add(record.language);
   }
 
-  get actionRecords {
+  List<NDEFRecord> get actionRecords {
     return new List<NDEFRecord>.from(_actionRecords, growable: false);
   }
 
   /// get the first action if it exists
-  get action {
+  Action get action {
     if (_actionRecords.length >= 1) {
       return _actionRecords[0].action;
     } else {
@@ -414,11 +415,11 @@ class SmartPosterRecord extends WellKnownRecord {
     _actionRecords.add(record);
   }
 
-  get sizeRecords {
+  List<NDEFRecord> get sizeRecords {
     return new List<NDEFRecord>.from(_sizeRecords, growable: false);
   }
 
-  get size {
+  int get size {
     if (_sizeRecords.length >= 1) {
       return _sizeRecords[0].size;
     } else {
@@ -438,11 +439,11 @@ class SmartPosterRecord extends WellKnownRecord {
     _sizeRecords.add(record);
   }
 
-  get typeRecords {
+  List<NDEFRecord> get typeRecords {
     return new List<NDEFRecord>.from(_typeRecords, growable: false);
   }
 
-  get typeInfo {
+  String get typeInfo {
     if (_typeRecords.length >= 1) {
       return _typeRecords[0].typeInfo;
     } else {
@@ -462,13 +463,13 @@ class SmartPosterRecord extends WellKnownRecord {
     _typeRecords.add(record);
   }
 
-  get iconRecords {
+  List<NDEFRecord> get iconRecords {
     return new List<NDEFRecord>.from(_iconRecords, growable: false);
   }
 
-  get iconRecord {
-    if (_actionRecords.length >= 1) {
-      return _actionRecords[0];
+  MimeRecord get iconRecord {
+    if (_iconRecords.length >= 1) {
+      return _iconRecords[0];
     } else {
       return null;
     }
