@@ -64,7 +64,8 @@ class UriRecord extends WellKnownRecord {
     return str;
   }
 
-  String _prefix, content;
+  int _prefixIndex;
+  String content;
 
   UriRecord({String prefix, String content}) {
     if (prefix != null) {
@@ -84,14 +85,16 @@ class UriRecord extends WellKnownRecord {
   }
 
   String get prefix {
-    return _prefix;
+    return prefixMap[_prefixIndex];
   }
 
   set prefix(String prefix) {
-    if (!prefixMap.contains(prefix)) {
+    int prefixIndex=prefixMap.indexOf(prefix);
+    if(prefixIndex==-1){
       throw "URI Prefix $prefix is not supported";
+    }else{
+      _prefixIndex = prefixIndex;
     }
-    _prefix = prefix;
   }
 
   String get iriString {
@@ -101,12 +104,12 @@ class UriRecord extends WellKnownRecord {
   set iriString(String iriString) {
     for (int i = 1; i < prefixMap.length; i++) {
       if (iriString.startsWith(prefixMap[i])) {
-        this._prefix = prefixMap[i];
+        this._prefixIndex = i;
         this.content = iriString.substring(prefix.length);
         return;
       }
     }
-    this._prefix = "";
+    this._prefixIndex = 0;
     this.content = iriString;
   }
 
@@ -137,11 +140,10 @@ class UriRecord extends WellKnownRecord {
 
   set payload(Uint8List payload) {
     int prefixIndex = payload[0];
-    if (prefixIndex < prefixMap.length) {
-      prefix = prefixMap[prefixIndex];
-    } else {
-      //More identifier codes are reserved for future use
-      prefix = "";
+    if(prefixIndex<prefixMap.length){
+      _prefixIndex=prefixIndex;
+    }else{
+      _prefixIndex=0;
     }
     content = utf8.decode(payload.sublist(1));
   }
