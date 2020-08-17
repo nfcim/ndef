@@ -54,6 +54,13 @@ class EPAddress extends _Address {
     return this.addr;
   }
 
+  @override
+  String toString() {
+    var str = "EPAddress: ";
+    str += "address=$address";
+    return str;
+  }
+
   set bytes(Uint8List bytes) {
     if (bytes.length != 6) {
       throw "Bytes length of Bluetooth LE Address must be 6";
@@ -79,6 +86,13 @@ class LEAddress extends _Address {
     if (bytes != null) {
       this.bytes = bytes;
     }
+  }
+
+  @override
+  String toString() {
+    var str = "LEAddress: ";
+    str += "address=$address";
+    return str;
   }
 
   Uint8List get bytes {
@@ -292,6 +306,15 @@ class DeviceClass {
     this.bytes = bytes;
   }
 
+  @override
+  String toString() {
+    var str = "DeviceClass: ";
+    str += "majorServiceClass=$majorServiceClass ";
+    str += "majorDeviceClass=$majorDeviceClass ";
+    str += "minorDeviceClass=$minorDeviceClass";
+    return str;
+  }
+
   static String getServiceClassName(int index) {
     assert(index >= 13 && index < 24,
         "Index of Service Class Name must be in [13,24)");
@@ -443,6 +466,13 @@ class ServiceClass {
 
   ServiceClass({Uint8List uuidData}) {
     this.uuidData = uuidData;
+  }
+
+  @override
+  String toString() {
+    var str = "ServiceClass: ";
+    str += "uuid=$uuid";
+    return str;
   }
 
   String get uuid {
