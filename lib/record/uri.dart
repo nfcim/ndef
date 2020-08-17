@@ -73,10 +73,12 @@ class UriRecord extends WellKnownRecord {
     this.content = content;
   }
 
-  UriRecord.fromUriString(String uriString) {
-    this.uriString = uriString;
+  /// Construct with a [UriString] or an [IriString]
+  UriRecord.fromString(String string) {
+    this.iriString = string;
   }
 
+  /// Construct with an instance of Uri
   UriRecord.fromUri(Uri uri) {
     this.uriString = uri.toString();
   }
@@ -96,16 +98,16 @@ class UriRecord extends WellKnownRecord {
     return this.prefix + this.content;
   }
 
-  set iriString(String uriString) {
+  set iriString(String iriString) {
     for (int i = 1; i < prefixMap.length; i++) {
-      if (uriString.startsWith(prefixMap[i])) {
+      if (iriString.startsWith(prefixMap[i])) {
         this._prefix = prefixMap[i];
-        this.content = uriString.substring(prefix.length);
+        this.content = iriString.substring(prefix.length);
         return;
       }
     }
     this._prefix = "";
-    this.content = uriString;
+    this.content = iriString;
   }
 
   String get uriString {

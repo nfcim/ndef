@@ -7,8 +7,8 @@ void main() {
   var encodedUrlRecord =
       "91011655046769746875622e636f6d2f6e6663696d2f6e64656651010b55046769746875622e636f6d";
   var urlRecords = [
-    new ndef.UriRecord.fromUriString("https://github.com/nfcim/ndef"),
-    new ndef.UriRecord.fromUriString("https://github.com")
+    new ndef.UriRecord.fromString("https://github.com/nfcim/ndef"),
+    new ndef.UriRecord.fromString("https://github.com")
   ];
 
   /// decode full ndef message (concatenation of records)

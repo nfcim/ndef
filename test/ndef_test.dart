@@ -32,8 +32,8 @@ void main() {
 
     List<List<NDEFRecord>> messages = [
       [
-        new UriRecord.fromUriString("https://github.com/nfcim/ndef"),
-        new UriRecord.fromUriString("https://github.com")
+        new UriRecord.fromString("https://github.com/nfcim/ndef"),
+        new UriRecord.fromString("https://github.com")
       ],
     ];
 

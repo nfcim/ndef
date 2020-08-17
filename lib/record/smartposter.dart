@@ -316,15 +316,15 @@ class SmartPosterRecord extends WellKnownRecord {
   set uri(var uri) {
     if (uri is String) {
       if (_uriRecords.length == 1) {
-        _uriRecords[0] = new UriRecord.fromUriString(uri);
+        _uriRecords[0] = new UriRecord.fromString(uri);
       } else {
-        _uriRecords.add(new UriRecord.fromUriString(uri));
+        _uriRecords.add(new UriRecord.fromString(uri));
       }
     } else if (uri is Uri) {
       if (_uriRecords.length == 1) {
-        _uriRecords[0] = new UriRecord.fromUriString(uri.toString());
+        _uriRecords[0] = new UriRecord.fromString(uri.toString());
       } else {
-        _uriRecords.add(new UriRecord.fromUriString(uri.toString()));
+        _uriRecords.add(new UriRecord.fromString(uri.toString()));
       }
     }
   }

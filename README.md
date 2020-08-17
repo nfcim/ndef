@@ -24,7 +24,7 @@
 import 'package:ndef/ndef.dart' as ndef;
 
 // encoding
-var uriRecord = new ndef.UriRecord.fromUriString("https://github.com/nfcim/ndef");
+var uriRecord = new ndef.UriRecord.fromString("https://github.com/nfcim/ndef");
 var textRecord = new ndef.TextRecord(text: "Hello");
 var encodedUriRecord = uriRecord.encode().toHexString(); /// encode a single record, and use our extension method on [Uint8List]
 var encodedAllRecords = ndef.encodeNdefMessage([uriRecord, textRecord]).toHexString(); // encode several records as a message
@@ -42,10 +42,10 @@ if (decodedRecords[0] is ndef.TextRecord) {
 // data-binding (by implementing payload as dynamic getter / setter)
 var origPayload = uriRecord.payload;
 print(origPayload.toHexString());
-uriRecord.uriData = "github.com/nfcim/flutter_nfc_kit";
+uriRecord.content = "github.com/nfcim/flutter_nfc_kit";
 print(uriRecord.payload.toHexString()); // changed
 uriRecord.payload = origPayload;
-print(uriRecord.uriData); // changed back
+print(uriRecord.content); // changed back
 
 // decoding by providing parts of a record
 var partiallyDecodedUrlRecord = ndef.decodePartialNdefMessage(ndef.TypeNameFormat.nfcWellKnown, utf8.encode("U"), origPayload, id: Uint8List.fromList([0x1, 0x2]));
@@ -58,6 +58,5 @@ Refer to the [documentation](https://pub.dev/documentation/ndef/) for more infor
 ## TODO
 
 1. handle exceptions
-2. add return types
-3. add class types
-4. add test
+2. add class types
+3. add test
