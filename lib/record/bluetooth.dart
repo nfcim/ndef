@@ -1032,7 +1032,7 @@ class BluetoothLowEnergyRecord extends BluetoothRecord {
     "Simultaneous LE and BR/EDR to Same Device Capable (Host)",
   ];
 
-  String get flagsEIR {
+  List<String> get flagsEIR {
     if (attributes.containsKey(EIRType.Flags)) {
       var names = new List<String>();
       var value = attributes[EIRType.Flags][0];
