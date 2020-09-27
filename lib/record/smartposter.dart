@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:collection/collection.dart';
-
 import '../ndef.dart';
 import 'text.dart';
 import 'uri.dart';
@@ -344,7 +342,7 @@ class SmartPosterRecord extends WellKnownRecord {
     }
   }
 
-  Map<String,String> get titles {
+  Map<String, String> get titles {
     var titles = Map<String, String>();
     for (var r in _titleRecords) {
       titles[r.language] = r.text;
@@ -529,13 +527,12 @@ class SmartPosterRecord extends WellKnownRecord {
 
   @override
   bool isEqual(NDEFRecord other) {
-    Function eq = const ListEquality().equals;
     if (!(other is NDEFRecord)) {
       return false;
     }
     var o = other as SmartPosterRecord;
     return (tnf == other.tnf) &&
-        eq(type, other.type) &&
+        ByteUtils.bytesEqual(type, other.type) &&
         (id == other.id) &&
         (titleRecords.length == o.titleRecords.length) &&
         (uriRecords.length == o.uriRecords.length) &&

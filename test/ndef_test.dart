@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:ndef/ndef.dart';
 import 'package:ndef/record/bluetooth.dart';
+import 'package:ndef/record/wellknown.dart';
 import 'package:ndef/utilities.dart';
 
 void testParse(List<String> hexStrings, List<List<NDEFRecord>> messages) {
@@ -37,10 +38,7 @@ void main() {
       ],
     ];
 
-    // parse
     testParse(hexStrings, messages);
-
-    // generate
     testGenerate(hexStrings, messages);
   });
 
@@ -58,10 +56,7 @@ void main() {
       ],
     ];
 
-    // parse
     testParse(hexStrings, messages);
-
-    // generate
     testGenerate(hexStrings, messages);
   });
 
@@ -81,10 +76,7 @@ void main() {
       ],
     ];
 
-    // parse
     testParse(hexStrings, messages);
-
-    // generate
     testGenerate(hexStrings, messages);
   });
 
@@ -107,10 +99,7 @@ void main() {
       ],
     ];
 
-    // parse
     testParse(hexStrings, messages);
-
-    // generate
     testGenerate(hexStrings, messages);
   });
 
@@ -137,10 +126,7 @@ void main() {
       ]
     ];
 
-    // parse
     testParse(hexStrings, messages);
-
-    // generate
     testGenerate(hexStrings, messages);
   });
 
@@ -215,7 +201,6 @@ void main() {
       ]
     ];
 
-    // parse
     for (int i = 0; i < hexStrings.length; i++) {
       var decoded =
           decodeRawNdefMessage(ByteUtils.hexStringToBytes(hexStrings[i]));
@@ -224,8 +209,6 @@ void main() {
         assert(decoded[j].isEqual(messages[i][j]));
       }
     }
-
-    // generate
     for (int i = 0; i < hexStrings.length; i++) {
       var decoded = decodeRawNdefMessage(encodeNdefMessage(messages[i]));
       assert(decoded.length == messages[i].length);
@@ -248,17 +231,52 @@ void main() {
               EIRType.ManufacturerSpecificData: Uint8List.fromList([97])
             })
       ],
-
     ];
 
-    // parse
     testParse(hexStrings, messages);
-
-    // generate
     testGenerate(hexStrings, messages);
   });
 
-  test('print test', () {
+  test('utils', () {
+    assert(ByteUtils.bytesEqual(null, null) == true);
+  });
+
+  test('blank record construction', () {
+    var record = NDEFRecord();
+    assert(record.tnf == TypeNameFormat.empty);
+    assert(record.decodedType == null);
+    assert(record.type == null);
+    assert(record.fullType == null);
+    assert(record.minPayloadLength == 0);
+    assert(record.maxPayloadLength == null);
+    assert(record.payload == null);
+
+    var uriRecord = UriRecord();
+    assert(uriRecord.tnf == TypeNameFormat.nfcWellKnown);
+    assert(uriRecord.decodedType == 'U');
+    assert(ByteUtils.bytesEqual(uriRecord.type, Uint8List.fromList([85])));
+    assert(uriRecord.fullType == "urn:nfc:wkt:U");
+    assert(uriRecord.minPayloadLength == 1);
+    assert(uriRecord.maxPayloadLength == null);
+    assert(uriRecord.prefix == null);
+    assert(uriRecord.iriString == null);
+    assert(uriRecord.uriString == null);
+    assert(uriRecord.uri == null);
+    assert(uriRecord.payload == null);
+
+    var textRecord = TextRecord();
+    assert(textRecord.encoding == TextEncoding.UTF8);
+    assert(textRecord.encodingString == "UTF-8");
+    assert(textRecord.language == null);
+    assert(textRecord.text == null);
+
+    var wellKnownRecord = WellKnownRecord();
+    assert(wellKnownRecord.tnf == TypeNameFormat.nfcWellKnown);
+    assert(wellKnownRecord.payload == null);
+    assert(wellKnownRecord.id == null);
+  });
+
+  test('manual test', () {
     //print(decodeRawNdefMessage(ByteUtils.hexStringToBytes(
     //    "d2200b6170706c69636174696f6e2f766e642e626c7565746f6f74682e65702e6f6f620b0006050403020102ff61")));
   });

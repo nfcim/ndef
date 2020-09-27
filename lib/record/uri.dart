@@ -64,7 +64,7 @@ class UriRecord extends WellKnownRecord {
     return str;
   }
 
-  int _prefixIndex;
+  int _prefixIndex = -1;
   String content;
 
   UriRecord({String prefix, String content}) {
@@ -85,19 +85,25 @@ class UriRecord extends WellKnownRecord {
   }
 
   String get prefix {
+    if (_prefixIndex == -1) {
+      return null;
+    }
     return prefixMap[_prefixIndex];
   }
 
   set prefix(String prefix) {
-    int prefixIndex=prefixMap.indexOf(prefix);
-    if(prefixIndex==-1){
+    int prefixIndex = prefixMap.indexOf(prefix);
+    if (prefixIndex == -1) {
       throw "URI Prefix $prefix is not supported";
-    }else{
+    } else {
       _prefixIndex = prefixIndex;
     }
   }
 
   String get iriString {
+    if (this.prefix == null || this.content == null) {
+      return null;
+    }
     return this.prefix + this.content;
   }
 
@@ -114,6 +120,9 @@ class UriRecord extends WellKnownRecord {
   }
 
   String get uriString {
+    if (this.prefix == null || this.content == null) {
+      return null;
+    }
     return Uri.parse(this.prefix + this.content).toString();
   }
 
@@ -122,6 +131,9 @@ class UriRecord extends WellKnownRecord {
   }
 
   Uri get uri {
+    if (this.prefix == null || this.content == null) {
+      return null;
+    }
     return Uri.parse(iriString);
   }
 
@@ -129,21 +141,20 @@ class UriRecord extends WellKnownRecord {
     this.iriString = uri.toString();
   }
 
+  /// Encode and Get payload, return null when the prefix or content is null
   Uint8List get payload {
-    for (int i = 0; i < prefixMap.length; i++) {
-      if (prefixMap[i] == prefix) {
-        return new Uint8List.fromList([i] + utf8.encode(content));
-      }
+    if (content == null || prefix == null) {
+      return null;
     }
-    throw "Uri prefix not recognized";
+    return new Uint8List.fromList([_prefixIndex] + utf8.encode(content));
   }
 
   set payload(Uint8List payload) {
     int prefixIndex = payload[0];
-    if(prefixIndex<prefixMap.length){
-      _prefixIndex=prefixIndex;
-    }else{
-      _prefixIndex=0;
+    if (prefixIndex < prefixMap.length) {
+      _prefixIndex = prefixIndex;
+    } else {
+      _prefixIndex = 0;
     }
     content = utf8.decode(payload.sublist(1));
   }

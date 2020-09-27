@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:collection/collection.dart';
 
 /// Represent an endianness
 enum Endianness { Big, Little }
@@ -78,11 +79,19 @@ class ByteUtils {
   }
 
   static String bytesToHexString(Uint8List bytes) {
+    if (bytes == null) {
+      return null;
+    }
     String hex = "";
     for (var n = 0; n < bytes.length; n++) {
       hex += byteToHexString(bytes[n]);
     }
     return hex;
+  }
+
+  static bool bytesEqual(Uint8List one, Uint8List another) {
+    Function eq = const ListEquality().equals;
+    return eq(one, another);
   }
 }
 

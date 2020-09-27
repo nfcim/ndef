@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:ndef/ndef.dart';
-import 'package:collection/collection.dart';
 
 import 'utilities.dart';
 import 'record/wellknown.dart';
@@ -116,6 +115,9 @@ class NDEFRecord {
   Uint8List encodedType;
 
   String get decodedType {
+    if (encodedType == null) {
+      return null;
+    }
     return utf8.decode(encodedType);
   }
 
@@ -132,11 +134,18 @@ class NDEFRecord {
       return encodedType;
     } else {
       // no encodedType set, might be a directly initialized subclass
-      return utf8.encode(decodedType);
+      if (decodedType == null) {
+        return null;
+      } else {
+        return utf8.encode(decodedType);
+      }
     }
   }
 
   String get fullType {
+    if (decodedType == null) {
+      return null;
+    }
     return tnfString[flags.TNF] + decodedType;
   }
 
@@ -304,6 +313,14 @@ class NDEFRecord {
 
   /// Encode this [NDEFRecord] to raw byte data.
   Uint8List encode() {
+    if (type == null) {
+      throw "Type is null, please set type before encode";
+    }
+
+    if (payload == null) {
+      throw "Payload is null, please set parameters or set payload directly before encode";
+    }
+
     var encoded = new List<int>();
 
     // check and canonicalize
@@ -367,11 +384,10 @@ class NDEFRecord {
   }
 
   bool isEqual(NDEFRecord other) {
-    Function eq = const ListEquality().equals;
     return (other is NDEFRecord) &&
         (tnf == other.tnf) &&
-        eq(type, other.type) &&
-        eq(id, other.id) &&
-        eq(payload, other.payload);
+        ByteUtils.bytesEqual(type, other.type) &&
+        ByteUtils.bytesEqual(id, other.id) &&
+        ByteUtils.bytesEqual(payload, other.payload);
   }
 }
