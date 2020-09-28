@@ -58,7 +58,8 @@ class TextRecord extends WellKnownRecord {
   String get encodingString {
     if (encoding == TextEncoding.UTF8) {
       return "UTF-8";
-    } else if (encoding == TextEncoding.UTF16) {
+    } else {
+      // encoding == TextEncoding.UTF16
       return "UTF-16";
     }
   }
