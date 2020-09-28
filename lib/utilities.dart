@@ -79,7 +79,7 @@ class ByteUtils {
 
   static String bytesToHexString(Uint8List bytes) {
     if (bytes == null) {
-      return null;
+      return "";
     }
     String hex = "";
     for (var n = 0; n < bytes.length; n++) {
