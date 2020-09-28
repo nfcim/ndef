@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-import 'package:collection/collection.dart';
 
 /// Represent an endianness
 enum Endianness { Big, Little }
@@ -89,9 +88,15 @@ class ByteUtils {
     return hex;
   }
 
-  static bool bytesEqual(Uint8List one, Uint8List another) {
-    Function eq = const ListEquality().equals;
-    return eq(one, another);
+  static bool bytesEqual(Uint8List bytes1, Uint8List bytes2) {
+    if (identical(bytes1, bytes2)) return true;
+    if (bytes1 == null || bytes2 == null) return false;
+    int length = bytes1.length;
+    if (length != bytes2.length) return false;
+    for (int i = 0; i < length; i++) {
+      if (bytes1[i] != bytes2[i]) return false;
+    }
+    return true;
   }
 }
 
