@@ -24,3 +24,8 @@
 
 * Fix some bugs caused by `null` when use blank records
 * Simplify method to compare bytes (remove dependency of `collection` library)
+
+## 0.2.2
+
+* Adjust exception information
+* Move Version class from HandoverRecord to utilities
