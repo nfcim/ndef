@@ -262,7 +262,7 @@ class ErrorRecord extends WellKnownRecord {
 }
 
 class HandoverRecord extends WellKnownRecord {
-  int _version;
+  Version version = Version();
   List<AlternativeCarrierRecord> alternativeCarrierRecordList;
   List<NDEFRecord> unknownRecordList;
 
@@ -276,7 +276,7 @@ class HandoverRecord extends WellKnownRecord {
   String toString() {
     var str = "HandoverRecord: ";
     str += basicInfoString;
-    str += "version=$versionString ";
+    str += "version=${version.string} ";
     str += "alternativeCarrierRecords=$alternativeCarrierRecordList ";
     str += "unknownRecords=$unknownRecordList";
     return str;
@@ -289,36 +289,7 @@ class HandoverRecord extends WellKnownRecord {
         ? new List<AlternativeCarrierRecord>()
         : alternativeCarrierRecordList;
     this.unknownRecordList = new List<NDEFRecord>();
-    this.versionString = versionString;
-  }
-
-  int get versionMajor {
-    return _version >> 4;
-  }
-
-  int get versionMinor {
-    return _version & 0xf;
-  }
-
-  String get versionString {
-    return "$versionMajor.$versionMinor";
-  }
-
-  set versionMajor(int versionMajor) {
-    _version = versionMajor << 4 + versionMinor;
-  }
-
-  set versionMinor(int versionMinor) {
-    _version = versionMajor << 4 + versionMinor;
-  }
-
-  set versionString(String versionString) {
-    var versions = versionString.split('.');
-    _version = (int.parse(versions[0]) << 4) + int.parse(versions[1]);
-  }
-
-  void setVersion(int versionMajor, int versionMinor) {
-    _version = versionMajor << 4 + versionMinor;
+    if (versionString != null) this.version.string = versionString;
   }
 
   List<NDEFRecord> get allRecordList {
@@ -364,12 +335,12 @@ class HandoverRecord extends WellKnownRecord {
 
   Uint8List get payload {
     var data = encodeNdefMessage(allRecordList);
-    var payload = [_version] + data;
+    var payload = [version.value] + data;
     return Uint8List.fromList(payload);
   }
 
   set payload(Uint8List payload) {
-    _version = payload[0];
+    version = Version(value: payload[0]);
     if (payload.length > 1) {
       var records =
           decodeRawNdefMessage(payload.sublist(1), typeFactory: _typeFactory);
@@ -392,7 +363,7 @@ class HandoverRequestRecord extends HandoverRecord {
   String toString() {
     var str = "HandoverRequestRecord: ";
     str += basicInfoString;
-    str += "version=$versionString ";
+    str += "version=${version.string} ";
     str += "alternativeCarrierRecords=$alternativeCarrierRecordList ";
     str += "collisionResolutionRecords=$collisionResolutionRecordList ";
     str += "unknownRecords=$unknownRecordList";
@@ -480,7 +451,7 @@ class HandoverRequestRecord extends HandoverRecord {
   }
 
   Uint8List get payload {
-    if (_version > 0x11) {
+    if (version.value > 0x11) {
       if (collisionResolutionNumber == null) {
         throw "Handover Request Record must have a Collision Resolution Record";
       }
@@ -490,7 +461,7 @@ class HandoverRequestRecord extends HandoverRecord {
 
   set payload(Uint8List payload) {
     super.payload = payload;
-    if (_version > 0x11) {
+    if (version.value > 0x11) {
       if (collisionResolutionNumber == null) {
         throw "Handover Request Record must have a Collision Resolution Record";
       }
@@ -510,7 +481,7 @@ class HandoverSelectRecord extends HandoverRecord {
   String toString() {
     var str = "HandoverSelectRecord: ";
     str += basicInfoString;
-    str += "version=$versionString ";
+    str += "version=${version.value} ";
     str += "alternativeCarrierRecords=$alternativeCarrierRecordList ";
     str += "errorRecords=$errorRecordList ";
     str += "unknownRecords=$unknownRecordList";
@@ -595,8 +566,8 @@ class HandoverSelectRecord extends HandoverRecord {
   }
 
   Uint8List get payload {
-    if (_version < 0x12 && errorRecordList.length >= 1) {
-      throw "Encoding error record version $versionString is not supported";
+    if (version.value < 0x12 && errorRecordList.length >= 1) {
+      throw "Encoding error record version ${version.value} is not supported";
     }
     return super.payload;
   }
@@ -614,7 +585,7 @@ class HandoverMediationRecord extends HandoverRecord {
   String toString() {
     var str = "HandoverMediationRecord: ";
     str += basicInfoString;
-    str += "version=$versionString ";
+    str += "version=${version.value} ";
     str += "alternativeCarrierRecords=$alternativeCarrierRecordList ";
     str += "unknownRecords=$unknownRecordList";
     return str;
@@ -640,7 +611,7 @@ class HandoverInitiateRecord extends HandoverRecord {
   String toString() {
     var str = "HandoverInitiateRecord: ";
     str += basicInfoString;
-    str += "version=$versionString ";
+    str += "version=${version.value} ";
     str += "alternativeCarrierRecords=$alternativeCarrierRecordList ";
     str += "unknownRecords=$unknownRecordList";
     return str;

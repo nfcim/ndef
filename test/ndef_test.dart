@@ -237,7 +237,7 @@ void main() {
     testGenerate(hexStrings, messages);
   });
 
-  test('utils', () {
+  test('utilities test', () {
     assert(ByteUtils.bytesEqual(null, null) == true);
     assert(ByteUtils.bytesEqual(
             Uint8List.fromList([1, 2, 3]), Uint8List.fromList([1, 2])) ==

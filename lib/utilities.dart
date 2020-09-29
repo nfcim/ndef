@@ -21,7 +21,7 @@ class ByteUtils {
     var list = new List<int>();
     var v = value;
     for (int i = 0; i < length; i++) {
-      list.add(value % 256);
+      list.add(v % 256);
       v ~/= 256;
     }
     if (v != 0) {
@@ -47,9 +47,13 @@ class ByteUtils {
   static Uint8List bigIntToBytes(BigInt value, int length,
       {endianness = Endianness.Big}) {
     Uint8List list = new List<int>(0);
+    var v = value;
     for (int i = 0; i < length; i++) {
-      list.add((value % (new BigInt.from(256))).toInt());
-      value ~/= (new BigInt.from(256));
+      list.add((v % (new BigInt.from(256))).toInt());
+      v ~/= (new BigInt.from(256));
+    }
+    if (v != 0) {
+      throw "Value $value is overflow from range of $length bytes";
     }
     if (endianness == Endianness.Big) {
       list = list.reversed;
@@ -244,5 +248,63 @@ class ByteStream {
     if (unreadLength != 0) {
       throw "Stream has $unreadLength bytes after decode";
     }
+  }
+}
+
+/// utility class to present protocal version in the records
+class Version {
+  int value;
+
+  static String formattedString(int value) {
+    var version = Version(value: value);
+    return version.string;
+  }
+
+  Version({int value}) {
+    if (value != null) {
+      this.value = value;
+    } else {
+      value = 0;
+    }
+  }
+
+  Version.fromDetail(int major, int minor) {
+    this.setDetail(major, minor);
+  }
+
+  Version.fromString(String string) {
+    this.string = string;
+  }
+
+  int get major {
+    return value >> 4;
+  }
+
+  set major(int major) {
+    value = major << 4 + minor;
+  }
+
+  int get minor {
+    return value & 0xf;
+  }
+
+  set minor(int minor) {
+    value = major << 4 + minor;
+  }
+
+  String get string {
+    return "$major.$minor";
+  }
+
+  set string(String string) {
+    var versions = string.split('.');
+    if (versions.length != 2) {
+      throw "Format of version string must be major.minor, got $string";
+    }
+    value = (int.parse(versions[0]) << 4) + int.parse(versions[1]);
+  }
+
+  void setDetail(int major, int minor) {
+    value = major << 4 + minor;
   }
 }

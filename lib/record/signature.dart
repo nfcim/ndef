@@ -91,7 +91,7 @@ class SignatureRecord extends WellKnownRecord {
         return;
       }
     }
-    throw "No signature type called $signatureType";
+    throw "Signature type $signatureType is not supported, please select one from $signatureTypeMap";
   }
 
   String get hashType {
@@ -105,7 +105,7 @@ class SignatureRecord extends WellKnownRecord {
         return;
       }
     }
-    throw "No hash type called $hashType";
+    throw "Hash type $hashType is not supported, please select one from [, SHA-256]";
   }
 
   String get certificateFormat {
@@ -119,7 +119,7 @@ class SignatureRecord extends WellKnownRecord {
         return;
       }
     }
-    throw "No certificate format called $certificateFormat";
+    throw "Certificate format $certificateFormat is not supported, please select one from $certificateFormatMap";
   }
 
   List<Uint8List> get certificateStore {
@@ -183,7 +183,7 @@ class SignatureRecord extends WellKnownRecord {
     //Version Field
     if (version != classVersion) {
       //TODO:find the document of smartposter 2.0
-      throw "Signature Record is only implemented for smartposter 2.0";
+      throw "Signature Record is only implemented for smartposter 2.0, got ${Version.formattedString(version)}";
     }
 
     //Signature Field
