@@ -19,9 +19,13 @@ class ByteUtils {
       {Endianness endianness = Endianness.Big}) {
     assert(length <= 8);
     var list = new List<int>();
+    var v = value;
     for (int i = 0; i < length; i++) {
       list.add(value % 256);
-      value ~/= 256;
+      v ~/= 256;
+    }
+    if (v != 0) {
+      throw "Value $value is overflow from range of $length bytes";
     }
     if (endianness == Endianness.Big) {
       list = list.reversed.toList();
@@ -55,7 +59,7 @@ class ByteUtils {
 
   static String byteToHexString(int value) {
     assert(value >= 0 && value < 256,
-        "the number to decode into Hex String must be in the range of [0,256)");
+        "Value to decode into Hex String must be in the range of [0,256)");
     var str = value.toRadixString(16);
     if (str.length == 1) {
       str = '0' + str;
@@ -64,6 +68,7 @@ class ByteUtils {
   }
 
   static Uint8List hexStringToBytes(String hex) {
+    // Delete blank space
     hex = hex.splitMapJoin(" ", onMatch: (Match match) {
       return "";
     });
@@ -77,6 +82,7 @@ class ByteUtils {
     return new Uint8List.fromList(result);
   }
 
+  /// Convert bytes to HexString, return a string of length 0 when bytes is null/of length 0
   static String bytesToHexString(Uint8List bytes) {
     if (bytes == null) {
       return "";

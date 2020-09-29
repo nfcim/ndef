@@ -239,6 +239,20 @@ void main() {
 
   test('utils', () {
     assert(ByteUtils.bytesEqual(null, null) == true);
+    assert(ByteUtils.bytesEqual(
+            Uint8List.fromList([1, 2, 3]), Uint8List.fromList([1, 2])) ==
+        false);
+    assert(ByteUtils.bytesEqual(
+            Uint8List.fromList([1, 2, 3]), Uint8List.fromList([1, 2, 4])) ==
+        false);
+    assert(ByteUtils.bytesEqual(
+            Uint8List.fromList([1, 2, 3]), Uint8List.fromList([1, 2, 3])) ==
+        true);
+    assert(ByteUtils.bytesEqual(Uint8List.fromList([1, 2, 3]), null) == false);
+
+    Uint8List bytes;
+    assert(bytes.toHexString() == "");
+    assert(Uint8List.fromList([]).toHexString() == "");
   });
 
   test('blank record construction', () {
