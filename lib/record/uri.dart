@@ -94,7 +94,7 @@ class UriRecord extends WellKnownRecord {
   set prefix(String prefix) {
     int prefixIndex = prefixMap.indexOf(prefix);
     if (prefixIndex == -1) {
-      throw "URI Prefix $prefix is not supported";
+      throw "URI Prefix $prefix is not supported, please select one from $prefixMap";
     } else {
       _prefixIndex = prefixIndex;
     }

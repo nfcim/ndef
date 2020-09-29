@@ -40,6 +40,6 @@ class AbsoluteUriRecord extends NDEFRecord {
   }
 
   set payload(Uint8List payload) {
-    throw "AbsoluteURI record has no payload";
+    throw "AbsoluteURI record has no payload, don't set it";
   }
 }

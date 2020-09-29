@@ -50,7 +50,7 @@ class TextRecord extends WellKnownRecord {
 
   set language(String language) {
     if (language.length >= 64 || language.length <= 0) {
-      throw "the length of language code must be in [1,64), got ${language.length}";
+      throw "Length of language code must be in [1,64), got ${language.length}";
     }
     this._language = language;
   }

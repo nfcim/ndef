@@ -128,10 +128,10 @@ class SignatureRecord extends WellKnownRecord {
 
   void addCertificateStore(Uint8List certificate) {
     if (certificate.length >= 1 << 16) {
-      throw "Bytes length of certificate must be < 2^16";
+      throw "Bytes length of certificate must be < 2^16, got ${certificate.length}";
     }
     if (_certificateStore.length >= 1 << 4) {
-      throw "Number of certificates in certificate store must be < 2^4";
+      throw "Number of certificates in certificate store must be < 2^4, got ${_certificateStore.length}";
     }
     _certificateStore.add(certificate);
   }

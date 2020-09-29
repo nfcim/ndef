@@ -190,7 +190,7 @@ class ByteStream {
 
   int readInt(int number, {Endianness endianness = Endianness.Big}) {
     if (number > 8) {
-      throw "Number of bytes converted to a int must be in [0,8)";
+      throw "Number of bytes converted to a int must be in [0,8), got $number";
     }
     Uint8List d = readBytes(number);
     int value = 0;
@@ -236,13 +236,13 @@ class ByteStream {
 
   void checkBytesAvailable(int number) {
     if (number > unreadLength) {
-      throw "there is not enough $number bytes in stream";
+      throw "There is not enough $number bytes in stream";
     }
   }
 
   void checkEmpty() {
     if (unreadLength != 0) {
-      throw "stream has $unreadLength bytes after decode";
+      throw "Stream has $unreadLength bytes after decode";
     }
   }
 }

@@ -49,7 +49,7 @@ class ActionRecord extends WellKnownRecord {
   set payload(Uint8List payload) {
     int actionIndex = payload[0];
     if (actionIndex >= Action.values.length && actionIndex < 0) {
-      throw 'Action code must be in [0,${Action.values.length})';
+      throw 'Action code must be in [0,${Action.values.length}), got $actionIndex';
     }
     action = Action.values[actionIndex];
   }
@@ -306,7 +306,7 @@ class SmartPosterRecord extends WellKnownRecord {
 
   void addUriRecord(UriRecord record) {
     if (_uriRecords.length == 1) {
-      throw "Number of URI Record in Smart Poster Record must be 1";
+      throw "Number of URI Record in Smart Poster Record must be 1, got ${_uriRecords.length}";
     }
     _uriRecords.add(record);
   }
@@ -360,7 +360,7 @@ class SmartPosterRecord extends WellKnownRecord {
       language = t.key;
       text = t.value;
     } else {
-      throw "Title must be String or Map<String,String>";
+      throw "Title expects String or Map<String,String>, got ${title.runtimeType}";
     }
     if (_titleLanguages.contains(language)) {
       _titleRecords[_titleLanguages.indexOf(language)] =
@@ -550,7 +550,7 @@ class SmartPosterRecord extends WellKnownRecord {
 
   Uint8List get payload {
     if (_uriRecords.length != 1) {
-      throw "Number of URI Record in Smart Poster Record must be 1";
+      throw "Number of URI Record in Smart Poster Record must be 1, got ${_uriRecords.length}";
     }
     return encodeNdefMessage(allRecords);
   }
@@ -573,7 +573,7 @@ class SmartPosterRecord extends WellKnownRecord {
       }
     });
     if (uriRecords.length != 1) {
-      throw "Number of URI Record in Smart Poster Record must be 1";
+      throw "Number of URI Record in Smart Poster Record must be 1, got ${uriRecords.length}";
     }
   }
 }

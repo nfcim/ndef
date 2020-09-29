@@ -143,7 +143,7 @@ class CollisionResolutionRecord extends WellKnownRecord {
     if (randomNumber is Uint8List) {
       randomNumber = (randomNumber as Uint8List).toInt();
     } else if (!(randomNumber is int)) {
-      throw "randomNumber expects an int or Uint8List";
+      throw "RandomNumber expects int or Uint8List, got ${randomNumber.runtimeType}";
     }
     assert(randomNumber >= 0 && randomNumber <= 0xffff);
     _randomNumber = randomNumber;
@@ -212,7 +212,7 @@ class ErrorRecord extends WellKnownRecord {
 
   set errorNum(int errorNum) {
     if (errorNum == 0) {
-      throw "error reason must not be 0";
+      throw "Error reason must not be 0";
     }
     _errorNum = errorNum;
   }
@@ -596,7 +596,7 @@ class HandoverSelectRecord extends HandoverRecord {
 
   Uint8List get payload {
     if (_version < 0x12 && errorRecordList.length >= 1) {
-      throw "can not encode error record for version " + versionString;
+      throw "Encoding error record version $versionString is not supported";
     }
     return super.payload;
   }
