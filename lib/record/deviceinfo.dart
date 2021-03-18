@@ -68,18 +68,15 @@ class DeviceInformationRecord extends WellKnownRecord {
       this.uuid = uuid;
     }
     this.versionString = versionString;
-    this.undefinedData =
-        undefinedData == null ? new List<DataElement>() : undefinedData;
+    this.undefinedData = undefinedData == null ? [] : undefinedData;
   }
 
   String get uuid {
-    var u = new Uuid();
-    return u.unparse(uuidData);
+    return Uuid.unparse(uuidData);
   }
 
   set uuid(String uuid) {
-    var u = new Uuid();
-    uuidData = new Uint8List.fromList(u.parse(uuid));
+    uuidData = new Uint8List.fromList(Uuid.parse(uuid));
   }
 
   void _addEncodedData(String value, int type, List<int> payload) {
@@ -95,7 +92,7 @@ class DeviceInformationRecord extends WellKnownRecord {
     if (!(vendorName != null && modelName != null)) {
       throw "Decoding requires the manufacturer and model name TLVs";
     }
-    var payload = new List<int>();
+    List<int> payload = [];
 
     // known data
     _addEncodedData(vendorName, 0, payload);
