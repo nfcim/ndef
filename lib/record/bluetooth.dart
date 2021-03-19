@@ -481,8 +481,7 @@ class ServiceClass {
     } else if (bytes.length == 4) {
       return bytes.toReverse().toHexString() + baseUuid;
     } else {
-      var u = new Uuid();
-      return u.unparse(uuidData);
+      return Uuid.unparse(uuidData);
     }
   }
 
