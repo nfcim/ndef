@@ -29,3 +29,9 @@
 
 * Adjust exception information
 * Move Version class from HandoverRecord to utilities
+
+## 0.2.3
+
+* Bump dependencies including `uuid` and `version`
+* Minor bug fixes
+
