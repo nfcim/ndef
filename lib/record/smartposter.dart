@@ -36,18 +36,18 @@ class ActionRecord extends WellKnownRecord {
     return str;
   }
 
-  Action action;
+  Action? action;
 
   ActionRecord({this.action});
 
   Uint8List get payload {
-    var payload = new List<int>();
-    payload.add(Action.values.indexOf(action));
+    var payload = <int>[];
+    payload.add(Action.values.indexOf(action!));
     return new Uint8List.fromList(payload);
   }
 
-  set payload(Uint8List payload) {
-    int actionIndex = payload[0];
+  set payload(Uint8List? payload) {
+    int actionIndex = payload![0];
     if (actionIndex >= Action.values.length && actionIndex < 0) {
       throw 'Action code must be in [0,${Action.values.length}), got $actionIndex';
     }
@@ -82,7 +82,7 @@ class SizeRecord extends WellKnownRecord {
     return str;
   }
 
-  int _size;
+  late int _size;
 
   int get size {
     return _size;
@@ -95,18 +95,18 @@ class SizeRecord extends WellKnownRecord {
     _size = size;
   }
 
-  SizeRecord({int size}) {
+  SizeRecord({int? size}) {
     if (size != null) {
       this.size = size;
     }
   }
 
-  Uint8List get payload {
+  Uint8List? get payload {
     return _size.toBytes(4);
   }
 
-  set payload(Uint8List payload) {
-    _size = payload.sublist(0, 4).toInt();
+  set payload(Uint8List? payload) {
+    _size = payload!.sublist(0, 4).toInt();
   }
 }
 
@@ -126,16 +126,16 @@ class TypeRecord extends WellKnownRecord {
     return str;
   }
 
-  String typeInfo;
+  String? typeInfo;
 
   TypeRecord({this.typeInfo});
 
   Uint8List get payload {
-    return utf8.encode(typeInfo);
+    return utf8.encode(typeInfo!) as Uint8List;
   }
 
-  set payload(Uint8List payload) {
-    typeInfo = utf8.decode(payload);
+  set payload(Uint8List? payload) {
+    typeInfo = utf8.decode(payload!);
   }
 }
 
@@ -160,32 +160,32 @@ class SmartPosterRecord extends WellKnownRecord {
     return str;
   }
 
-  List<TextRecord> _titleRecords;
-  List<UriRecord> _uriRecords;
-  List<ActionRecord> _actionRecords;
-  List<MimeRecord> _iconRecords;
-  List<SizeRecord> _sizeRecords;
-  List<TypeRecord> _typeRecords;
+  late List<TextRecord> _titleRecords;
+  late List<UriRecord> _uriRecords;
+  late List<ActionRecord> _actionRecords;
+  late List<MimeRecord> _iconRecords;
+  late List<SizeRecord> _sizeRecords;
+  late List<TypeRecord> _typeRecords;
 
-  List<String> _titleLanguages;
+  late List<String?> _titleLanguages;
 
   void _init() {
-    _titleRecords = new List<TextRecord>();
-    _titleLanguages = new List<String>();
-    _uriRecords = new List<UriRecord>();
-    _actionRecords = new List<ActionRecord>();
-    _iconRecords = new List<MimeRecord>();
-    _sizeRecords = new List<SizeRecord>();
-    _typeRecords = new List<TypeRecord>();
+    _titleRecords = <TextRecord>[];
+    _titleLanguages = <String>[];
+    _uriRecords = <UriRecord>[];
+    _actionRecords = <ActionRecord>[];
+    _iconRecords = <MimeRecord>[];
+    _sizeRecords = <SizeRecord>[];
+    _typeRecords = <TypeRecord>[];
   }
 
   SmartPosterRecord({
     var title,
     var uri,
-    Action action,
-    Map<String, Uint8List> icon,
-    int size,
-    String typeInfo,
+    Action? action,
+    Map<String, Uint8List>? icon,
+    int? size,
+    String? typeInfo,
   }) {
     _init();
     if (title != null) {
@@ -209,12 +209,12 @@ class SmartPosterRecord extends WellKnownRecord {
   }
 
   SmartPosterRecord.fromList({
-    List<TextRecord> titleRecords,
-    List<UriRecord> uriRecords,
-    List<ActionRecord> actionRecords,
-    List<MimeRecord> iconRecords,
-    List<SizeRecord> sizeRecords,
-    List<TypeRecord> typeRecords,
+    List<TextRecord>? titleRecords,
+    List<UriRecord>? uriRecords,
+    List<ActionRecord>? actionRecords,
+    List<MimeRecord>? iconRecords,
+    List<SizeRecord>? sizeRecords,
+    List<TypeRecord>? typeRecords,
   }) {
     _init();
     if (titleRecords != null) {
@@ -288,7 +288,7 @@ class SmartPosterRecord extends WellKnownRecord {
     return new List<NDEFRecord>.from(_uriRecords, growable: false);
   }
 
-  UriRecord get uriRecord {
+  UriRecord? get uriRecord {
     if (uriRecords.length == 1) {
       return _uriRecords[0];
     } else {
@@ -296,7 +296,7 @@ class SmartPosterRecord extends WellKnownRecord {
     }
   }
 
-  Uri get uri {
+  Uri? get uri {
     if (_uriRecords.length == 1) {
       return _uriRecords[0].uri;
     } else {
@@ -332,7 +332,7 @@ class SmartPosterRecord extends WellKnownRecord {
   }
 
   /// get the English title; if not existing, get the first title
-  String get title {
+  String? get title {
     if (_titleLanguages.contains('en')) {
       return titles['en'];
     } else if (_titleLanguages.length >= 1) {
@@ -342,8 +342,8 @@ class SmartPosterRecord extends WellKnownRecord {
     }
   }
 
-  Map<String, String> get titles {
-    var titles = Map<String, String>();
+  Map<String?, String?> get titles {
+    var titles = Map<String?, String?>();
     for (var r in _titleRecords) {
       titles[r.language] = r.text;
     }
@@ -393,7 +393,7 @@ class SmartPosterRecord extends WellKnownRecord {
   }
 
   /// get the first action if it exists
-  Action get action {
+  Action? get action {
     if (_actionRecords.length >= 1) {
       return _actionRecords[0].action;
     } else {
@@ -401,7 +401,7 @@ class SmartPosterRecord extends WellKnownRecord {
     }
   }
 
-  set action(Action action) {
+  set action(Action? action) {
     if (_actionRecords.length >= 1) {
       _actionRecords[0] = new ActionRecord(action: action);
     } else {
@@ -417,7 +417,7 @@ class SmartPosterRecord extends WellKnownRecord {
     return new List<NDEFRecord>.from(_sizeRecords, growable: false);
   }
 
-  int get size {
+  int? get size {
     if (_sizeRecords.length >= 1) {
       return _sizeRecords[0].size;
     } else {
@@ -425,7 +425,7 @@ class SmartPosterRecord extends WellKnownRecord {
     }
   }
 
-  set size(int size) {
+  set size(int? size) {
     if (_sizeRecords.length >= 1) {
       _sizeRecords[0] = new SizeRecord(size: size);
     } else {
@@ -441,7 +441,7 @@ class SmartPosterRecord extends WellKnownRecord {
     return new List<NDEFRecord>.from(_typeRecords, growable: false);
   }
 
-  String get typeInfo {
+  String? get typeInfo {
     if (_typeRecords.length >= 1) {
       return _typeRecords[0].typeInfo;
     } else {
@@ -449,7 +449,7 @@ class SmartPosterRecord extends WellKnownRecord {
     }
   }
 
-  set typeInfo(String typeInfo) {
+  set typeInfo(String? typeInfo) {
     if (_typeRecords.length >= 1) {
       _typeRecords[0] = new TypeRecord(typeInfo: typeInfo);
     } else {
@@ -465,7 +465,7 @@ class SmartPosterRecord extends WellKnownRecord {
     return new List<NDEFRecord>.from(_iconRecords, growable: false);
   }
 
-  MimeRecord get iconRecord {
+  MimeRecord? get iconRecord {
     if (_iconRecords.length >= 1) {
       return _iconRecords[0];
     } else {
@@ -473,24 +473,24 @@ class SmartPosterRecord extends WellKnownRecord {
     }
   }
 
-  Map<String, Uint8List> get icon {
+  Map<String?, Uint8List?>? get icon {
     if (iconRecord != null) {
-      return {iconRecord.decodedType: iconRecord.payload};
+      return {iconRecord!.decodedType: iconRecord!.payload};
     } else {
       return null;
     }
   }
 
-  static void _checkValidIconType(String decodedType) {
-    if (!(decodedType.startsWith('image/') ||
+  static void _checkValidIconType(String? decodedType) {
+    if (!(decodedType!.startsWith('image/') ||
         decodedType.startsWith('video'))) {
       throw "Type of Icon Records must be image or video, not $decodedType";
     }
   }
 
-  set icon(Map<String, Uint8List> icon) {
-    String decodedType = icon.keys.toList()[0];
-    _checkValidIconType(decodedType);
+  set icon(Map<String?, Uint8List?>? icon) {
+    String? decodedType = icon!.keys.toList()[0];
+    _checkValidIconType(decodedType!);
     iconRecord = new MimeRecord(
         decodedType: decodedType, payload: icon.values.toList()[0]);
   }
@@ -502,8 +502,8 @@ class SmartPosterRecord extends WellKnownRecord {
         decodedType: decodedType, payload: icon.values.toList()[0]));
   }
 
-  set iconRecord(MimeRecord record) {
-    _checkValidIconType(record.decodedType);
+  set iconRecord(MimeRecord? record) {
+    _checkValidIconType(record!.decodedType);
     if (_iconRecords.length >= 1) {
       _iconRecords[0] = record;
     } else {
@@ -555,8 +555,8 @@ class SmartPosterRecord extends WellKnownRecord {
     return encodeNdefMessage(allRecords);
   }
 
-  set payload(Uint8List payload) {
-    decodeRawNdefMessage(payload, typeFactory: SmartPosterRecord.typeFactory)
+  set payload(Uint8List? payload) {
+    decodeRawNdefMessage(payload!, typeFactory: SmartPosterRecord.typeFactory)
         .forEach((e) {
       if (e is TextRecord) {
         addTitleRecord(e);

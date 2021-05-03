@@ -35,3 +35,7 @@
 * Bump dependencies including `uuid` and `version`
 * Minor bug fixes
 
+## 0.2.4
+
+* First update to flutter2.0(support null-safety)
+
