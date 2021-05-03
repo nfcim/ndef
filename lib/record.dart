@@ -80,7 +80,7 @@ enum TypeNameFormat {
   nfcWellKnown,
   media,
   absoluteURI,
-  nfcExternel,
+  nfcExternal,
   unknown,
   unchanged
 }
