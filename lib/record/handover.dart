@@ -32,23 +32,22 @@ class AlternativeCarrierRecord extends WellKnownRecord {
     return str;
   }
 
-  CarrierPowerState carrierPowerState;
-  Uint8List carrierDataReference;
-  List<Uint8List> auxDataReferenceList;
+  late CarrierPowerState carrierPowerState;
+  late Uint8List carrierDataReference;
+  late List<Uint8List> auxDataReferenceList;
 
   AlternativeCarrierRecord(
-      {CarrierPowerState carrierPowerState,
-      Uint8List carrierDataReference,
-      List<Uint8List> auxDataReferenceList}) {
+      {CarrierPowerState? carrierPowerState,
+      Uint8List? carrierDataReference,
+      List<Uint8List>? auxDataReferenceList}) {
     if (carrierPowerState != null) {
       this.carrierPowerState = carrierPowerState;
     }
     if (carrierDataReference != null) {
       this.carrierDataReference = carrierDataReference;
     }
-    this.auxDataReferenceList = auxDataReferenceList == null
-        ? new List<Uint8List>()
-        : auxDataReferenceList;
+    this.auxDataReferenceList =
+        auxDataReferenceList == null ? <Uint8List>[] : auxDataReferenceList;
   }
 
   int get carrierPowerStateIndex {
@@ -62,7 +61,8 @@ class AlternativeCarrierRecord extends WellKnownRecord {
   }
 
   Uint8List get payload {
-    var payload = new List<int>();
+    // var payload = new List<int>();
+    var payload = <int>[];
     payload.add(carrierPowerStateIndex);
 
     // latin1 String and its corresponding Uint8List have the same length
@@ -81,8 +81,8 @@ class AlternativeCarrierRecord extends WellKnownRecord {
     return new Uint8List.fromList(payload);
   }
 
-  set payload(Uint8List payload) {
-    var stream = new ByteStream(payload);
+  set payload(Uint8List? payload) {
+    var stream = new ByteStream(payload!);
 
     carrierPowerStateIndex = stream.readByte() & 3;
     int carrierDataReferenceLength = stream.readByte();
@@ -127,21 +127,21 @@ class CollisionResolutionRecord extends WellKnownRecord {
     return str;
   }
 
-  int _randomNumber;
+  late int? _randomNumber;
 
-  CollisionResolutionRecord({int randomNumber}) {
+  CollisionResolutionRecord({int? randomNumber}) {
     if (randomNumber != null) {
       this.randomNumber = randomNumber;
     }
   }
 
-  int get randomNumber {
+  int? get randomNumber {
     return _randomNumber;
   }
 
   set randomNumber(var randomNumber) {
     if (randomNumber is Uint8List) {
-      randomNumber = (randomNumber as Uint8List).toInt();
+      randomNumber = (randomNumber).toInt();
     } else if (!(randomNumber is int)) {
       throw "RandomNumber expects int or Uint8List, got ${randomNumber.runtimeType}";
     }
@@ -150,10 +150,10 @@ class CollisionResolutionRecord extends WellKnownRecord {
   }
 
   Uint8List get payload {
-    return _randomNumber.toBytes(2);
+    return _randomNumber!.toBytes(2);
   }
 
-  set payload(Uint8List payload) {
+  set payload(Uint8List? payload) {
     this.randomNumber = payload;
   }
 }
@@ -188,10 +188,10 @@ class ErrorRecord extends WellKnownRecord {
     return str;
   }
 
-  int _errorNum;
-  Uint8List errorData;
+  late int _errorNum;
+  late Uint8List errorData;
 
-  ErrorRecord({int errorNum, Uint8List errorData}) {
+  ErrorRecord({int? errorNum, Uint8List? errorData}) {
     if (errorNum != null) {
       this.errorNum = errorNum;
     }
@@ -240,13 +240,13 @@ class ErrorRecord extends WellKnownRecord {
     _errorNum = ErrorReason.values.indexOf(errorReason);
   }
 
-  Uint8List get payload {
+  Uint8List? get payload {
     var payload = [errorNum] + errorData;
     return new Uint8List.fromList(payload);
   }
 
-  set payload(Uint8List payload) {
-    ByteStream stream = new ByteStream(payload);
+  set payload(Uint8List? payload) {
+    ByteStream stream = new ByteStream(payload!);
     errorNum = stream.readByte();
 
     if (errorNum == 1) {
@@ -263,8 +263,8 @@ class ErrorRecord extends WellKnownRecord {
 
 class HandoverRecord extends WellKnownRecord {
   Version version = Version();
-  List<AlternativeCarrierRecord> alternativeCarrierRecordList;
-  List<NDEFRecord> unknownRecordList;
+  late List<AlternativeCarrierRecord> alternativeCarrierRecordList;
+  late List<NDEFRecord> unknownRecordList;
 
   static const int classMinPayloadLength = 1;
 
@@ -283,12 +283,12 @@ class HandoverRecord extends WellKnownRecord {
   }
 
   HandoverRecord(
-      {String versionString,
-      List<AlternativeCarrierRecord> alternativeCarrierRecordList}) {
+      {String? versionString,
+      List<AlternativeCarrierRecord>? alternativeCarrierRecordList}) {
     this.alternativeCarrierRecordList = alternativeCarrierRecordList == null
-        ? new List<AlternativeCarrierRecord>()
+        ? <AlternativeCarrierRecord>[]
         : alternativeCarrierRecordList;
-    this.unknownRecordList = new List<NDEFRecord>();
+    this.unknownRecordList = <NDEFRecord>[];
     if (versionString != null) this.version.string = versionString;
   }
 
@@ -333,14 +333,15 @@ class HandoverRecord extends WellKnownRecord {
     }
   }
 
-  Uint8List get payload {
+  Uint8List? get payload {
     var data = encodeNdefMessage(allRecordList);
-    var payload = [version.value] + data;
+    /// 直接在后边进行了cast的强制转换
+    List<int>? payload = ([version.value] + data).cast();
     return Uint8List.fromList(payload);
   }
 
-  set payload(Uint8List payload) {
-    version = Version(value: payload[0]);
+  set payload(Uint8List? payload) {
+    version = Version(value: payload![0]);
     if (payload.length > 1) {
       var records =
           decodeRawNdefMessage(payload.sublist(1), typeFactory: _typeFactory);
@@ -370,16 +371,16 @@ class HandoverRequestRecord extends HandoverRecord {
     return str;
   }
 
-  List<CollisionResolutionRecord> collisionResolutionRecordList;
+  late List<CollisionResolutionRecord> collisionResolutionRecordList;
 
   HandoverRequestRecord(
       {String versionString = "1.3",
-      int collisionResolutionNumber,
-      List<AlternativeCarrierRecord> alternativeCarrierRecordList})
+      int? collisionResolutionNumber,
+      List<AlternativeCarrierRecord>? alternativeCarrierRecordList})
       : super(
             versionString: versionString,
             alternativeCarrierRecordList: alternativeCarrierRecordList) {
-    collisionResolutionRecordList = new List<CollisionResolutionRecord>();
+    collisionResolutionRecordList = <CollisionResolutionRecord>[];
     if (collisionResolutionNumber != null) {
       this.collisionResolutionNumber = collisionResolutionNumber;
     }
@@ -428,7 +429,7 @@ class HandoverRequestRecord extends HandoverRecord {
     return HandoverRequestRecord.typeFactory;
   }
 
-  int get collisionResolutionNumber {
+  int? get collisionResolutionNumber {
     if (collisionResolutionRecordList.length >= 1) {
       return collisionResolutionRecordList[0].randomNumber;
     } else {
@@ -436,7 +437,7 @@ class HandoverRequestRecord extends HandoverRecord {
     }
   }
 
-  set collisionResolutionNumber(int collisionResolutionNumber) {
+  set collisionResolutionNumber(int? collisionResolutionNumber) {
     if (collisionResolutionRecordList.length == 0) {
       collisionResolutionRecordList.add(new CollisionResolutionRecord(
           randomNumber: collisionResolutionNumber));
@@ -450,8 +451,8 @@ class HandoverRequestRecord extends HandoverRecord {
     return super.allRecordList + collisionResolutionRecordList;
   }
 
-  Uint8List get payload {
-    if (version.value > 0x11) {
+  Uint8List? get payload {
+    if (version.value! > 0x11) {
       if (collisionResolutionNumber == null) {
         throw "Handover Request Record must have a Collision Resolution Record";
       }
@@ -459,9 +460,9 @@ class HandoverRequestRecord extends HandoverRecord {
     return super.payload;
   }
 
-  set payload(Uint8List payload) {
+  set payload(Uint8List? payload) {
     super.payload = payload;
-    if (version.value > 0x11) {
+    if (version.value! > 0x11) {
       if (collisionResolutionNumber == null) {
         throw "Handover Request Record must have a Collision Resolution Record";
       }
@@ -488,16 +489,16 @@ class HandoverSelectRecord extends HandoverRecord {
     return str;
   }
 
-  List<ErrorRecord> errorRecordList;
+  late List<ErrorRecord> errorRecordList;
 
   HandoverSelectRecord(
       {String versionString = "1.3",
-      ErrorRecord error,
-      List<AlternativeCarrierRecord> alternativeCarrierRecordList})
+      ErrorRecord? error,
+      List<AlternativeCarrierRecord>? alternativeCarrierRecordList})
       : super(
             versionString: versionString,
             alternativeCarrierRecordList: alternativeCarrierRecordList) {
-    errorRecordList = new List<ErrorRecord>();
+    errorRecordList = <ErrorRecord>[];
     if (error != null) {
       this.error = error;
     }
@@ -544,7 +545,7 @@ class HandoverSelectRecord extends HandoverRecord {
     return HandoverSelectRecord.typeFactory;
   }
 
-  ErrorRecord get error {
+  ErrorRecord? get error {
     if (errorRecordList.length >= 1) {
       return errorRecordList[0];
     } else {
@@ -552,11 +553,11 @@ class HandoverSelectRecord extends HandoverRecord {
     }
   }
 
-  set error(ErrorRecord error) {
+  set error(ErrorRecord? error) {
     if (errorRecordList.length == 0) {
-      errorRecordList.add(error);
+      errorRecordList.add(error!);
     } else {
-      errorRecordList[0] = error;
+      errorRecordList[0] = error!;
     }
   }
 
@@ -565,8 +566,8 @@ class HandoverSelectRecord extends HandoverRecord {
     return super.allRecordList + errorRecordList;
   }
 
-  Uint8List get payload {
-    if (version.value < 0x12 && errorRecordList.length >= 1) {
+  Uint8List? get payload {
+    if (version.value! < 0x12 && errorRecordList.length >= 1) {
       throw "Encoding error record version ${version.value} is not supported";
     }
     return super.payload;
@@ -593,7 +594,7 @@ class HandoverMediationRecord extends HandoverRecord {
 
   HandoverMediationRecord(
       {String versionString = "1.3",
-      List<AlternativeCarrierRecord> alternativeCarrierRecordList})
+      List<AlternativeCarrierRecord>? alternativeCarrierRecordList})
       : super(
             versionString: versionString,
             alternativeCarrierRecordList: alternativeCarrierRecordList);
@@ -619,7 +620,7 @@ class HandoverInitiateRecord extends HandoverRecord {
 
   HandoverInitiateRecord(
       {String versionString = "1.3",
-      List<AlternativeCarrierRecord> alternativeCarrierRecordList})
+      List<AlternativeCarrierRecord>? alternativeCarrierRecordList})
       : super(
             versionString: versionString,
             alternativeCarrierRecordList: alternativeCarrierRecordList);
@@ -649,10 +650,10 @@ class HandoverCarrierRecord extends WellKnownRecord {
   }
 
   HandoverCarrierRecord(
-      {TypeNameFormat carrierTnf,
-      String carrierType,
-      Uint8List carrierData,
-      Uint8List id}) {
+      {TypeNameFormat? carrierTnf,
+      String? carrierType,
+      Uint8List? carrierData,
+      Uint8List? id}) {
     if (carrierTnf != null) {
       this.carrierTnf = carrierTnf;
     }
@@ -663,12 +664,12 @@ class HandoverCarrierRecord extends WellKnownRecord {
     this.id = id;
   }
 
-  int _carrierTnf;
-  String carrierType;
-  Uint8List carrierData;
+  int? _carrierTnf;
+  String? carrierType;
+  late Uint8List carrierData;
 
   TypeNameFormat get carrierTnf {
-    return TypeNameFormat.values[_carrierTnf];
+    return TypeNameFormat.values[_carrierTnf!];
   }
 
   set carrierTnf(TypeNameFormat carrierTnf) {
@@ -676,18 +677,18 @@ class HandoverCarrierRecord extends WellKnownRecord {
   }
 
   String get carrierFullType {
-    return NDEFRecord.tnfString[_carrierTnf] + carrierType;
+    return NDEFRecord.tnfString[_carrierTnf!] + carrierType!;
   }
 
-  Uint8List get payload {
-    var carrierTypeBytes = utf8.encode(carrierType);
-    var payload =
-        [_carrierTnf, carrierTypeBytes.length] + carrierTypeBytes + carrierData;
+  Uint8List? get payload {
+    var carrierTypeBytes = utf8.encode(carrierType!);
+    List<int>? payload =
+        ([_carrierTnf, carrierTypeBytes.length] + carrierTypeBytes + carrierData).cast();
     return Uint8List.fromList(payload);
   }
 
-  set payload(Uint8List payload) {
-    ByteStream stream = new ByteStream(payload);
+  set payload(Uint8List? payload) {
+    ByteStream stream = new ByteStream(payload!);
     _carrierTnf = stream.readByte() & 7;
     int carrierTypeLength = stream.readByte();
     carrierType = utf8.decode(stream.readBytes(carrierTypeLength));
