@@ -24,8 +24,8 @@
 import 'package:ndef/ndef.dart' as ndef;
 
 // encoding
-var uriRecord = new ndef.UriRecord.fromString("https://github.com/nfcim/ndef");
-var textRecord = new ndef.TextRecord(text: "Hello");
+var uriRecord = ndef.UriRecord.fromString("https://github.com/nfcim/ndef");
+var textRecord = ndef.TextRecord(text: "Hello");
 var encodedUriRecord = uriRecord.encode().toHexString(); /// encode a single record, and use our extension method on [Uint8List]
 var encodedAllRecords = ndef.encodeNdefMessage([uriRecord, textRecord]).toHexString(); // encode several records as a message
 

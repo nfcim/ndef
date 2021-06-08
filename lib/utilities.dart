@@ -18,7 +18,7 @@ class ByteUtils {
   static Uint8List intToBytes(int value, int length,
       {Endianness endianness = Endianness.Big}) {
     assert(length <= 8);
-    var list = new List<int>();
+    var list = List<int>.empty(growable: true);
     var v = value;
     for (int i = 0; i < length; i++) {
       list.add(v % 256);
@@ -30,7 +30,7 @@ class ByteUtils {
     if (endianness == Endianness.Big) {
       list = list.reversed.toList();
     }
-    return new Uint8List.fromList(list);
+    return Uint8List.fromList(list);
   }
 
   static String intToHexString(int value, int length,
@@ -46,19 +46,19 @@ class ByteUtils {
 
   static Uint8List bigIntToBytes(BigInt value, int length,
       {endianness = Endianness.Big}) {
-    Uint8List list = new List<int>(0);
+    Uint8List list = Uint8List(0);
     var v = value;
     for (int i = 0; i < length; i++) {
-      list.add((v % (new BigInt.from(256))).toInt());
-      v ~/= (new BigInt.from(256));
+      list.add((v % (BigInt.from(256))).toInt());
+      v ~/= (BigInt.from(256));
     }
-    if (v != 0) {
+    if (v != BigInt.zero) {
       throw "Value $value is overflow from range of $length bytes";
     }
     if (endianness == Endianness.Big) {
-      list = list.reversed;
+      list = list.reversed as Uint8List;
     }
-    return new Uint8List.fromList(list);
+    return list;
   }
 
   static String byteToHexString(int value) {
@@ -83,14 +83,11 @@ class ByteUtils {
     for (int i = 0; i < hex.length; i += 2) {
       result.add(int.parse(hex.substring(i, i + 2), radix: 16));
     }
-    return new Uint8List.fromList(result);
+    return Uint8List.fromList(result);
   }
 
   /// Convert bytes to HexString, return a string of length 0 when bytes is null/of length 0
   static String bytesToHexString(Uint8List bytes) {
-    if (bytes == null) {
-      return "";
-    }
     String hex = "";
     for (var n = 0; n < bytes.length; n++) {
       hex += byteToHexString(bytes[n]);
@@ -98,7 +95,7 @@ class ByteUtils {
     return hex;
   }
 
-  static bool bytesEqual(Uint8List bytes1, Uint8List bytes2) {
+  static bool bytesEqual(Uint8List? bytes1, Uint8List? bytes2) {
     if (identical(bytes1, bytes2)) return true;
     if (bytes1 == null || bytes2 == null) return false;
     int length = bytes1.length;
@@ -149,7 +146,7 @@ extension BoolConvert on bool {
 
 /// byte stream utility class for decoding
 class ByteStream {
-  Uint8List _data;
+  late Uint8List _data;
   int _current = 0;
 
   int get readLength {
@@ -214,16 +211,16 @@ class ByteStream {
 
   BigInt readBigInt(int number, {Endianness endianness = Endianness.Big}) {
     Uint8List d = readBytes(number);
-    BigInt value = new BigInt.from(0);
+    BigInt value = BigInt.from(0);
     if (endianness == Endianness.Big) {
       for (var n = 0; n < d.length; n++) {
         value <<= 256;
-        value += new BigInt.from(d[d.length - n - 1]);
+        value += BigInt.from(d[d.length - n - 1]);
       }
     } else if (endianness == Endianness.Little) {
       for (var n = d.length - 1; n >= 0; n--) {
         value <<= 256;
-        value += new BigInt.from(d[d.length - n - 1]);
+        value += BigInt.from(d[d.length - n - 1]);
       }
     }
     return value;
@@ -251,16 +248,16 @@ class ByteStream {
   }
 }
 
-/// utility class to present protocal version in the records
+/// utility class to present protocol version in the records
 class Version {
-  int value;
+  late int value;
 
   static String formattedString(int value) {
     var version = Version(value: value);
     return version.string;
   }
 
-  Version({int value}) {
+  Version({int? value}) {
     if (value != null) {
       this.value = value;
     } else {

@@ -40,7 +40,7 @@ class NDEFRecordFlags {
   // ignore: non_constant_identifier_names
   int TNF = 0;
 
-  NDEFRecordFlags({int data}) {
+  NDEFRecordFlags({int? data}) {
     decode(data);
   }
 
@@ -54,7 +54,7 @@ class NDEFRecordFlags {
         (TNF & 7);
   }
 
-  void decode(int data) {
+  void decode(int? data) {
     if (data != null) {
       if (data < 0 || data >= 256) {
         throw "Data to decode in flags must be in [0, 256), got $data";
@@ -89,7 +89,7 @@ enum TypeNameFormat {
 typedef NDEFRecord TypeFactory(TypeNameFormat tnf, String classType);
 
 /// The base class of all types of records.
-/// Also reprents an record of unknown type.
+/// Also represents an record of unknown type.
 class NDEFRecord {
   static const List<String> tnfString = [
     "",
@@ -102,7 +102,7 @@ class NDEFRecord {
   ];
 
   /// Predefined TNF of a specific record type.
-  static const TypeNameFormat classTnf = null;
+  static const TypeNameFormat? classTnf = null;
 
   TypeNameFormat get tnf {
     return TypeNameFormat.values[flags.TNF];
@@ -112,24 +112,24 @@ class NDEFRecord {
     flags.TNF = TypeNameFormat.values.indexOf(tnf);
   }
 
-  Uint8List encodedType;
+  Uint8List? encodedType;
 
-  String get decodedType {
+  String? get decodedType {
     if (encodedType == null) {
       return null;
     }
-    return utf8.decode(encodedType);
+    return utf8.decode(encodedType!);
   }
 
-  set decodedType(String decodedType) {
-    encodedType = utf8.encode(decodedType);
+  set decodedType(String? decodedType) {
+    encodedType = Uint8List.fromList(utf8.encode(decodedType!));
   }
 
-  set type(Uint8List type) {
+  set type(Uint8List? type) {
     encodedType = type;
   }
 
-  Uint8List get type {
+  Uint8List? get type {
     if (encodedType != null) {
       return encodedType;
     } else {
@@ -137,21 +137,21 @@ class NDEFRecord {
       if (decodedType == null) {
         return null;
       } else {
-        return utf8.encode(decodedType);
+        return Uint8List.fromList(utf8.encode(decodedType!));
       }
     }
   }
 
-  String get fullType {
+  String? get fullType {
     if (decodedType == null) {
       return null;
     }
-    return tnfString[flags.TNF] + decodedType;
+    return tnfString[flags.TNF] + decodedType!;
   }
 
   /// Hex String of id, return "(empty)" when the id bytes is null
   String get idString {
-    return id == null ? "(empty)" : id.toHexString();
+    return id == null ? "(empty)" : id!.toHexString();
   }
 
   set idString(String value) {
@@ -159,13 +159,13 @@ class NDEFRecord {
   }
 
   static const int classMinPayloadLength = 0;
-  static const int classMaxPayloadLength = null;
+  static const int? classMaxPayloadLength = null;
 
   int get minPayloadLength {
     return classMinPayloadLength;
   }
 
-  int get maxPayloadLength {
+  int? get maxPayloadLength {
     return classMaxPayloadLength;
   }
 
@@ -180,17 +180,17 @@ class NDEFRecord {
   String toString() {
     var str = "Record: ";
     str += basicInfoString;
-    str += "payload=${payload.toHexString()}";
+    str += "payload=${payload?.toHexString()}";
     return str;
   }
 
-  Uint8List id;
-  Uint8List payload;
-  NDEFRecordFlags flags;
+  Uint8List? id;
+  Uint8List? payload;
+  late NDEFRecordFlags flags;
 
   NDEFRecord(
-      {TypeNameFormat tnf, Uint8List type, Uint8List id, Uint8List payload}) {
-    flags = new NDEFRecordFlags();
+      {TypeNameFormat? tnf, Uint8List? type, Uint8List? id, Uint8List? payload}) {
+    flags = NDEFRecordFlags();
     if (tnf == null) {
       flags.TNF = TypeNameFormat.values.indexOf(this.tnf);
     } else {
@@ -252,13 +252,13 @@ class NDEFRecord {
   /// Decode a [NDEFRecord] record from raw data.
   static NDEFRecord doDecode(
       TypeNameFormat tnf, Uint8List type, Uint8List payload,
-      {Uint8List id, TypeFactory typeFactory = NDEFRecord.defaultTypeFactory}) {
+      {Uint8List? id, TypeFactory typeFactory = NDEFRecord.defaultTypeFactory}) {
     NDEFRecord record = typeFactory(tnf, utf8.decode(type));
     if (payload.length < record.minPayloadLength) {
       throw "Payload length must be >= ${record.minPayloadLength}";
     }
     if (record.maxPayloadLength != null &&
-        payload.length < record.maxPayloadLength) {
+        payload.length < record.maxPayloadLength!) {
       throw "Payload length must be <= ${record.maxPayloadLength}";
     }
     record.id = id;
@@ -270,7 +270,7 @@ class NDEFRecord {
 
   /// Decode a NDEF [NDEFRecord] from part of [ByteStream].
   static NDEFRecord decodeStream(ByteStream stream, TypeFactory typeFactory) {
-    var flags = new NDEFRecordFlags(data: stream.readByte());
+    var flags = NDEFRecordFlags(data: stream.readByte());
 
     num typeLength = stream.readByte();
     num payloadLength;
@@ -285,24 +285,24 @@ class NDEFRecord {
     }
 
     if ([0, 5, 6].contains(flags.TNF)) {
-      assert(typeLength == 0, "TYPE_LENTH must be 0 when TNF is 0,5,6");
+      assert(typeLength == 0, "TYPE_LENGTH must be 0 when TNF is 0,5,6");
     }
     if (flags.TNF == 0) {
-      assert(idLength == 0, "ID_LENTH must be 0 when TNF is 0");
-      assert(payloadLength == 0, "PAYLOAD_LENTH must be 0 when TNF is 0");
+      assert(idLength == 0, "ID_LENGTH must be 0 when TNF is 0");
+      assert(payloadLength == 0, "PAYLOAD_LENGTH must be 0 when TNF is 0");
     }
     if ([1, 2, 3, 4].contains(flags.TNF)) {
-      assert(typeLength > 0, "TYPE_LENTH must be > 0 when TNF is 1,2,3,4");
+      assert(typeLength > 0, "TYPE_LENGTH must be > 0 when TNF is 1,2,3,4");
     }
 
-    var type = stream.readBytes(typeLength);
+    var type = stream.readBytes(typeLength as int);
 
-    Uint8List id;
+    Uint8List? id;
     if (idLength != 0) {
-      id = stream.readBytes(idLength);
+      id = stream.readBytes(idLength as int);
     }
 
-    var payload = stream.readBytes(payloadLength);
+    var payload = stream.readBytes(payloadLength as int);
     var typeNameFormat = TypeNameFormat.values[flags.TNF];
 
     var decoded = doDecode(typeNameFormat, type, payload,
@@ -321,7 +321,7 @@ class NDEFRecord {
       throw "Payload is null, please set parameters or set payload directly before encode";
     }
 
-    var encoded = new List<int>();
+    var encoded = List<int>.empty(growable: true);
 
     // check and canonicalize
     if (this.id == null) {
@@ -330,7 +330,7 @@ class NDEFRecord {
       flags.IL = true;
     }
 
-    if (payload.length < 256) {
+    if (payload!.length < 256) {
       flags.SR = true;
     } else {
       flags.SR = false;
@@ -341,13 +341,13 @@ class NDEFRecord {
     encoded.add(encodedFlags);
 
     // type length
-    if (type.length >= 256) {
-      throw "Number of bytes of type must be in [0,256), got ${type.length}";
+    if (type!.length >= 256) {
+      throw "Number of bytes of type must be in [0,256), got ${type!.length}";
     }
-    encoded += [type.length];
+    encoded += [type!.length];
 
     // use gettter for implicit encoding
-    var encodedPayload = payload;
+    var encodedPayload = payload!;
 
     // payload length
     if (encodedPayload.length < 256) {
@@ -363,24 +363,24 @@ class NDEFRecord {
 
     // ID length
     if (id != null) {
-      if (id.length >= 256) {
-        throw "Number of bytes of identifier must be in [0,256), got ${id.length}";
+      if (id!.length >= 256) {
+        throw "Number of bytes of identifier must be in [0,256), got ${id!.length}";
       }
-      encoded += [id.length];
+      encoded += [id!.length];
     }
 
     // type
-    encoded += type;
+    encoded += type!;
 
     // ID
     if (id != null) {
-      encoded += id;
+      encoded += id!;
     }
 
     // payload
     encoded += encodedPayload;
 
-    return new Uint8List.fromList(encoded);
+    return Uint8List.fromList(encoded);
   }
 
   bool isEqual(NDEFRecord other) {
