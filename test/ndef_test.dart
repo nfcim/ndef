@@ -33,8 +33,8 @@ void main() {
 
     List<List<NDEFRecord>> messages = [
       [
-        new UriRecord.fromString("https://github.com/nfcim/ndef"),
-        new UriRecord.fromString("https://github.com")
+        UriRecord.fromString("https://github.com/nfcim/ndef"),
+        UriRecord.fromString("https://github.com")
       ],
     ];
 
@@ -49,9 +49,9 @@ void main() {
     ];
 
     List<List<NDEFRecord>> messages = [
-      [new TextRecord(language: 'en', text: 'Hello World!')],
+      [TextRecord(language: 'en', text: 'Hello World!')],
       [
-        new TextRecord(
+        TextRecord(
             language: 'emoji', text: '😁😂🤨', encoding: TextEncoding.UTF16)
       ],
     ];
@@ -67,9 +67,9 @@ void main() {
     ];
 
     List<List<NDEFRecord>> messages = [
-      [new SignatureRecord()],
+      [SignatureRecord()],
       [
-        new SignatureRecord(
+        SignatureRecord(
             signatureType: 'ECDSA-P256',
             signature: ByteUtils.hexStringToBytes(
                 "3045022100a410c28fd9437fd24f6656f121e62bcc5f65e36257f5faadf68e3e83d40d481a0220335b1dff8d6fe722fcf7018be9684d2de5670b256fdfc02aa25bdae16f624b80"))
@@ -87,14 +87,14 @@ void main() {
 
     List<List<NDEFRecord>> messages = [
       [
-        new DeviceInformationRecord(
+        DeviceInformationRecord(
             vendorName: "nfcim",
             modelName: "nfcDevice",
             uniqueName: "nfcName",
             uuid: "6361ae18-d5b0-11ea-9d08-40a3ccfd0957",
             versionString: "1.0.0",
             undefinedData: [
-              new DataElement.fromString(255, "NFCIM"),
+              DataElement.fromString(255, "NFCIM"),
             ])
       ],
     ];
@@ -111,18 +111,18 @@ void main() {
 
     List<List<NDEFRecord>> messages = [
       [
-        new SmartPosterRecord(
+        SmartPosterRecord(
             title: "ndef",
             uri: "https://github.com/nfcim/ndef",
             action: Action.exec,
             icon: {
-              "image/png": new Uint8List.fromList(utf8.encode("a picture"))
+              "image/png": Uint8List.fromList(utf8.encode("a picture"))
             },
             size: 10000,
             typeInfo: null),
       ],
       [
-        new SmartPosterRecord(uri: "https://github.com"),
+        SmartPosterRecord(uri: "https://github.com"),
       ]
     ];
 
@@ -141,10 +141,10 @@ void main() {
 
     List<List<NDEFRecord>> messages = [
       [
-        new HandoverRequestRecord(versionString: "1.1"),
+        HandoverRequestRecord(versionString: "1.1"),
       ],
       [
-        new HandoverRequestRecord(
+        HandoverRequestRecord(
             versionString: "1.2",
             collisionResolutionNumber: 0x1234,
             alternativeCarrierRecordList: [
@@ -152,13 +152,13 @@ void main() {
                   carrierPowerState: CarrierPowerState.active,
                   carrierDataReference: latin1.encode('1'))
             ]),
-        new MimeRecord(
+        MimeRecord(
             decodedType: 'a/b',
             id: latin1.encode('1'),
             payload: ByteUtils.hexStringToBytes('0001'))
       ],
       [
-        new HandoverSelectRecord(
+        HandoverSelectRecord(
             error: ErrorRecord(
                 errorNum: 1, errorData: ByteUtils.intToBytes(255, 1)),
             alternativeCarrierRecordList: [
@@ -166,26 +166,26 @@ void main() {
                   carrierPowerState: CarrierPowerState.active,
                   carrierDataReference: latin1.encode('1'))
             ]),
-        new MimeRecord(
+        MimeRecord(
             decodedType: 'a/b',
             id: latin1.encode('1'),
             payload: ByteUtils.hexStringToBytes('0001'))
       ],
       [
-        new HandoverMediationRecord(
+        HandoverMediationRecord(
             versionString: '1.3',
             alternativeCarrierRecordList: [
               AlternativeCarrierRecord(
                   carrierPowerState: CarrierPowerState.active,
                   carrierDataReference: latin1.encode('a'))
             ]),
-        new MimeRecord(
+        MimeRecord(
             decodedType: 'text/plain',
             id: latin1.encode('a'),
             payload: ByteUtils.hexStringToBytes('000102'))
       ],
       [
-        new HandoverRequestRecord(
+        HandoverRequestRecord(
             versionString: "1.2",
             collisionResolutionNumber: 0x1234,
             alternativeCarrierRecordList: [
@@ -193,7 +193,7 @@ void main() {
                   carrierPowerState: CarrierPowerState.active,
                   carrierDataReference: latin1.encode('1'))
             ]),
-        new HandoverCarrierRecord(
+        HandoverCarrierRecord(
             carrierTnf: TypeNameFormat.media,
             carrierType: 'a/b',
             carrierData: Uint8List(0),
@@ -250,7 +250,7 @@ void main() {
         true);
     assert(ByteUtils.bytesEqual(Uint8List.fromList([1, 2, 3]), null) == false);
 
-    Uint8List bytes;
+    var bytes = Uint8List(0);
     assert(bytes.toHexString() == "");
     assert(Uint8List.fromList([]).toHexString() == "");
   });

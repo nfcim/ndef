@@ -9,7 +9,7 @@ class AbsoluteUriRecord extends NDEFRecord {
     return classTnf;
   }
 
-  AbsoluteUriRecord({String uri, Uint8List id}) : super(id: id) {
+  AbsoluteUriRecord({String? uri, Uint8List? id}) : super(id: id) {
     if (uri != null) {
       this.uri = uri;
     }
@@ -35,11 +35,11 @@ class AbsoluteUriRecord extends NDEFRecord {
   }
 
   //absoluteURI record has no payload
-  Uint8List get payload {
+  Uint8List? get payload {
     return null;
   }
 
-  set payload(Uint8List payload) {
+  set payload(Uint8List? payload) {
     throw "AbsoluteURI record has no payload, don't set it";
   }
 }
