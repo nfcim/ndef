@@ -59,15 +59,15 @@ class UriRecord extends WellKnownRecord {
   @override
   String toString() {
     var str = "UriRecord: ";
-    str += basicInfoString;
+    str += basicInfoString!;
     str += "uri=$uriString";
     return str;
   }
 
   int _prefixIndex = -1;
-  String content;
+  String? content;
 
-  UriRecord({String prefix, String content}) {
+  UriRecord({String? prefix, String? content}) {
     if (prefix != null) {
       this.prefix = prefix;
     }
@@ -75,24 +75,24 @@ class UriRecord extends WellKnownRecord {
   }
 
   /// Construct with a [UriString] or an [IriString]
-  UriRecord.fromString(String string) {
-    this.iriString = string;
+  UriRecord.fromString(String? string) {
+    this.iriString = string!;
   }
 
   /// Construct with an instance of Uri
-  UriRecord.fromUri(Uri uri) {
+  UriRecord.fromUri(Uri? uri) {
     this.uriString = uri.toString();
   }
 
-  String get prefix {
+  String? get prefix {
     if (_prefixIndex == -1) {
       return null;
     }
     return prefixMap[_prefixIndex];
   }
 
-  set prefix(String prefix) {
-    int prefixIndex = prefixMap.indexOf(prefix);
+  set prefix(String? prefix) {
+    int prefixIndex = prefixMap.indexOf(prefix!);
     if (prefixIndex == -1) {
       throw "URI Prefix $prefix is not supported, please select one from $prefixMap";
     } else {
@@ -100,18 +100,18 @@ class UriRecord extends WellKnownRecord {
     }
   }
 
-  String get iriString {
+  String? get iriString {
     if (this.prefix == null || this.content == null) {
       return null;
     }
-    return this.prefix + this.content;
+    return this.prefix! + this.content!;
   }
 
-  set iriString(String iriString) {
+  set iriString(String? iriString) {
     for (int i = 1; i < prefixMap.length; i++) {
-      if (iriString.startsWith(prefixMap[i])) {
+      if (iriString!.startsWith(prefixMap[i])) {
         this._prefixIndex = i;
-        this.content = iriString.substring(prefix.length);
+        this.content = iriString.substring(prefix!.length);
         return;
       }
     }
@@ -119,38 +119,38 @@ class UriRecord extends WellKnownRecord {
     this.content = iriString;
   }
 
-  String get uriString {
+  String? get uriString {
     if (this.prefix == null || this.content == null) {
       return null;
     }
-    return Uri.parse(this.prefix + this.content).toString();
+    return Uri.parse(this.prefix! + this.content!).toString();
   }
 
-  set uriString(String uriString) {
+  set uriString(String? uriString) {
     this.iriString = uriString;
   }
 
-  Uri get uri {
+  Uri? get uri {
     if (this.prefix == null || this.content == null) {
       return null;
     }
-    return Uri.parse(iriString);
+    return Uri.parse(iriString!);
   }
 
-  set uri(Uri uri) {
+  set uri(Uri? uri) {
     this.iriString = uri.toString();
   }
 
   /// Encode and Get payload, return null when the prefix or content is null
-  Uint8List get payload {
+  Uint8List? get payload {
     if (content == null || prefix == null) {
       return null;
     }
-    return new Uint8List.fromList([_prefixIndex] + utf8.encode(content));
+    return new Uint8List.fromList([_prefixIndex] + utf8.encode(content!));
   }
 
-  set payload(Uint8List payload) {
-    int prefixIndex = payload[0];
+  set payload(Uint8List? payload) {
+    int prefixIndex = payload![0];
     if (prefixIndex < prefixMap.length) {
       _prefixIndex = prefixIndex;
     } else {

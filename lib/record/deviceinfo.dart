@@ -7,12 +7,12 @@ import '../ndef.dart';
 import 'wellknown.dart';
 
 class DataElement {
-  int type;
-  Uint8List value;
+  int? type;
+  Uint8List? value;
   DataElement(this.type, this.value);
   DataElement.fromString(int type, String valueString) {
     this.type = type;
-    value = utf8.encode(valueString);
+    value = utf8.encode(valueString) as Uint8List;
   }
 
   @override
@@ -50,17 +50,17 @@ class DeviceInformationRecord extends WellKnownRecord {
     return str;
   }
 
-  String vendorName, modelName, uniqueName, versionString;
-  Uint8List uuidData;
-  List<DataElement> undefinedData;
+  String? vendorName, modelName, uniqueName, versionString;
+  late Uint8List uuidData;
+  late List<DataElement> undefinedData;
 
   DeviceInformationRecord(
-      {String vendorName,
-      String modelName,
-      String uniqueName,
-      String uuid,
-      String versionString,
-      List<DataElement> undefinedData}) {
+      {String? vendorName,
+      String? modelName,
+      String? uniqueName,
+      String? uuid,
+      String? versionString,
+      List<DataElement>? undefinedData}) {
     this.vendorName = vendorName;
     this.modelName = modelName;
     this.uniqueName = uniqueName;
@@ -71,28 +71,28 @@ class DeviceInformationRecord extends WellKnownRecord {
     this.undefinedData = undefinedData == null ? [] : undefinedData;
   }
 
-  String get uuid {
+  String? get uuid {
     return Uuid.unparse(uuidData);
   }
 
-  set uuid(String uuid) {
-    uuidData = new Uint8List.fromList(Uuid.parse(uuid));
+  set uuid(String? uuid) {
+    uuidData = new Uint8List.fromList(Uuid.parse(uuid!));
   }
 
-  void _addEncodedData(String value, int type, List<int> payload) {
+  void _addEncodedData(String? value, int type, List<int?> payload) {
     if (value != null) {
       payload.add(type);
-      Uint8List valueBytes = utf8.encode(value);
+      Uint8List valueBytes = utf8.encode(value) as Uint8List;
       payload.add(valueBytes.length);
       payload.addAll(valueBytes);
     }
   }
 
-  Uint8List get payload {
+  Uint8List? get payload {
     if (!(vendorName != null && modelName != null)) {
       throw "Decoding requires the manufacturer and model name TLVs";
     }
-    List<int> payload = [];
+    List<int?> payload = [];
 
     // known data
     _addEncodedData(vendorName, 0, payload);
@@ -106,15 +106,15 @@ class DeviceInformationRecord extends WellKnownRecord {
     // undefined data
     for (int i = 0; i < undefinedData.length; i++) {
       payload.add(undefinedData[i].type);
-      Uint8List valueBytes = undefinedData[i].value;
+      Uint8List valueBytes = undefinedData[i].value!;
       payload.add(valueBytes.length);
       payload.addAll(valueBytes);
     }
-    return new Uint8List.fromList(payload);
+    return new Uint8List.fromList(payload as List<int>);
   }
 
-  set payload(Uint8List payload) {
-    ByteStream stream = new ByteStream(payload);
+  set payload(Uint8List? payload) {
+    ByteStream stream = new ByteStream(payload!);
     while (!stream.isEnd()) {
       int type = stream.readByte();
       int length = stream.readByte();

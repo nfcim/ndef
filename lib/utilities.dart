@@ -9,16 +9,18 @@ class ByteUtils {
     return value ? 1 : 0;
   }
 
-  static int bytesToInt(Uint8List bytes,
+  static int bytesToInt(Uint8List? bytes,
       {Endianness endianness = Endianness.Big}) {
-    var stream = ByteStream(bytes);
+    var stream = ByteStream(bytes!);
     return stream.readInt(stream.length, endianness: endianness);
   }
 
   static Uint8List intToBytes(int value, int length,
       {Endianness endianness = Endianness.Big}) {
     assert(length <= 8);
-    var list = new List<int>();
+    // var list = new List<int>();
+    var list = <int>[];
+
     var v = value;
     for (int i = 0; i < length; i++) {
       list.add(v % 256);
@@ -44,21 +46,23 @@ class ByteUtils {
     return stream.readBigInt(stream.length, endianness: endianness);
   }
 
-  static Uint8List bigIntToBytes(BigInt value, int length,
+  static Uint8List bigIntToBytes(BigInt? value, int length,
       {endianness = Endianness.Big}) {
-    Uint8List list = new List<int>(0);
-    var v = value;
+    // Uint8List list = new List<int>(0);
+    //TODO: MAYBE Dangerous!
+    Uint8List? list = new List<int?>.filled(0, null, growable: false) as Uint8List;
+    BigInt? v = value;
     for (int i = 0; i < length; i++) {
-      list.add((v % (new BigInt.from(256))).toInt());
+      list.add((v! % (new BigInt.from(256))).toInt());
       v ~/= (new BigInt.from(256));
     }
     if (v != 0) {
       throw "Value $value is overflow from range of $length bytes";
     }
     if (endianness == Endianness.Big) {
-      list = list.reversed;
+      list = list.reversed as Uint8List?;
     }
-    return new Uint8List.fromList(list);
+    return new Uint8List.fromList(list!);
   }
 
   static String byteToHexString(int value) {
@@ -98,7 +102,7 @@ class ByteUtils {
     return hex;
   }
 
-  static bool bytesEqual(Uint8List bytes1, Uint8List bytes2) {
+  static bool bytesEqual(Uint8List? bytes1, Uint8List? bytes2) {
     if (identical(bytes1, bytes2)) return true;
     if (bytes1 == null || bytes2 == null) return false;
     int length = bytes1.length;
@@ -149,7 +153,7 @@ extension BoolConvert on bool {
 
 /// byte stream utility class for decoding
 class ByteStream {
-  Uint8List _data;
+  late Uint8List _data;
   int _current = 0;
 
   int get readLength {
@@ -253,14 +257,14 @@ class ByteStream {
 
 /// utility class to present protocal version in the records
 class Version {
-  int value;
+  late int? value;
 
-  static String formattedString(int value) {
+  static String? formattedString(int? value) {
     var version = Version(value: value);
     return version.string;
   }
 
-  Version({int value}) {
+  Version({int? value}) {
     if (value != null) {
       this.value = value;
     } else {
@@ -268,24 +272,24 @@ class Version {
     }
   }
 
-  Version.fromDetail(int major, int minor) {
-    this.setDetail(major, minor);
+  Version.fromDetail(int? major, int? minor) {
+    this.setDetail(major!, minor!);
   }
 
-  Version.fromString(String string) {
-    this.string = string;
+  Version.fromString(String? string) {
+    this.string = string!;
   }
 
   int get major {
-    return value >> 4;
+    return value! >> 4;
   }
 
-  set major(int major) {
-    value = major << 4 + minor;
+  set major(int? major) {
+    value = major! << 4 + minor;
   }
 
   int get minor {
-    return value & 0xf;
+    return value! & 0xf;
   }
 
   set minor(int minor) {
