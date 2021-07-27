@@ -1,5 +1,7 @@
 library ndef;
+// 此处定义库的名字为ndef
 
+// export 引用关键字，暴露了lib目录下的诸多dart文件（record下的诸多文件）
 // base class
 export 'record.dart';
 // utility
@@ -19,6 +21,8 @@ import 'record.dart';
 import 'utilities.dart';
 
 /// Decode raw NDEF messages (containing at least one [NDEFRecord]) from byte array.
+/// 格式是Uint8List，这是一个在dart中用来高效处理二进制数据的数据类型。
+/// 对了，Message中应该至少包括一个Record(>=1)
 List<NDEFRecord> decodeRawNdefMessage(Uint8List data,
     {var typeFactory = NDEFRecord.defaultTypeFactory}) {
   // var records = new List<NDEFRecord>();
@@ -27,20 +31,20 @@ List<NDEFRecord> decodeRawNdefMessage(Uint8List data,
   while (!stream.isEnd()) {
     var record = NDEFRecord.decodeStream(stream, typeFactory);
     if (records.length == 0) {
-      assert(record.flags!.MB == true, "MB flag is not set in first record");
+      assert(record.flags.MB == true, "MB flag is not set in first record");
     } else {
-      assert(record.flags!.MB == false, "MB flag is set in middle record");
+      assert(record.flags.MB == false, "MB flag is set in middle record");
     }
     records.add(record);
   }
-  assert(records.last.flags!.ME == true, "ME flag is not set in last record");
-  assert(records.last.flags!.CF == false, "CF flag is set in last record");
+  assert(records.last.flags.ME == true, "ME flag is not set in last record");
+  assert(records.last.flags.CF == false, "CF flag is set in last record");
   return records;
 }
 
 /// Decode a NDEF record, providing its parts separately.
-/// This is most useful in mobile envrionment because the APIs will give you these information in a separate manner.
-NDEFRecord? decodePartialNdefMessage(
+/// This is most useful in mobile environment because the APIs will give you these information in a separate manner.
+NDEFRecord decodePartialNdefMessage(
     TypeNameFormat tnf, Uint8List type, Uint8List payload,
     {required Uint8List id}) {
   var decoded = NDEFRecord.doDecode(tnf, type, payload, id: id);
@@ -56,12 +60,12 @@ Uint8List encodeNdefMessage(List<NDEFRecord> records,
   }
 
   records.forEach((r) {
-    r.flags!.resetPositionFlag();
+    r.flags.resetPositionFlag();
   });
 
   if (canonicalize) {
-    records.first.flags!.MB = true;
-    records.last.flags!.ME = true;
+    records.first.flags.MB = true;
+    records.last.flags.ME = true;
   }
 
   // var encoded = new List<int>();

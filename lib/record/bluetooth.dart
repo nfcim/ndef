@@ -14,7 +14,7 @@ class _Address {
     }
   }
 
-  _Address.fromBytes(Uint8List bytes) {
+  _Address.fromBytes(Uint8List? bytes) {
     if (bytes != null) {
       assert(bytes.length == 6, "Bytes length of address data must be 6 bytes");
       this.addr = bytes;
@@ -299,8 +299,9 @@ class DeviceClass {
 
   late int value;
 
-  DeviceClass({int? value}) {
-    this.value = value!;
+  /// 此处尝试使用required关键字，表明value非可空
+  DeviceClass({required int value}) {
+    this.value = value;
   }
 
   DeviceClass.fromBytes(Uint8List bytes) {
@@ -359,7 +360,7 @@ class DeviceClass {
     String minorString0 = minorString;
     if (deviceClassList.containsKey(major)) {
       //var text = new List<String>();
-      var text = <String?>[];
+      var text = <String>[];
       for (var mapping in deviceClassList[major]![1] as Iterable) {// Strong cast, MAYBE have problems
         var bits = minorString.substring(0, mapping.keys.first.length);
         if (mapping.containsKey(bits)) {
@@ -371,9 +372,9 @@ class DeviceClass {
       }
       var res = "";
       for (var i = 0; i < text.length - 1; i++) {
-        res += (text[i]! + ' and ');
+        res += (text[i] + ' and ');
       }
-      res += text.last!;
+      res += text.last;
       return res;
     } else {
       return "Undefined " + minor.toRadixString(2) + "b";
@@ -467,9 +468,9 @@ class ServiceClass {
   };
 
   late Uint8List _uuidData;
-
-  ServiceClass({Uint8List? uuidData}) {
-    this.uuidData = uuidData!;
+  /// 这边确认uuidData为非空的，所以使用required关键字。
+  ServiceClass({required Uint8List uuidData}) {
+    this.uuidData = uuidData;
   }
 
   @override
@@ -566,7 +567,7 @@ enum EIRType {
 }
 
 class EIR {
-  static const Map<int, EIRType>? numTypeMap = {
+  static const Map<int, EIRType> numTypeMap = {
     0x00: EIRType.Zero,
     0x01: EIRType.Flags,
     0x02: EIRType.Inc16BitUUID,
@@ -594,7 +595,7 @@ class EIR {
     0xFF: EIRType.ManufacturerSpecificData
   };
 
-  static const Map<EIRType, int>? typeNumMap = {
+  static const Map<EIRType, int> typeNumMap = {
     EIRType.Zero: 0x00,
     EIRType.Flags: 0x01,
     EIRType.Inc16BitUUID: 0x02,
@@ -622,7 +623,7 @@ class EIR {
     EIRType.ManufacturerSpecificData: 0xFF
   };
 
-  static const Map<EIRType, String>? typeNameMap = {
+  static const Map<EIRType, String> typeNameMap = {
     EIRType.Zero: "Zero",
     EIRType.Flags: "Flags",
     EIRType.Inc16BitUUID: "Incomplete List of 16-bit Service UUIDs",
@@ -664,21 +665,21 @@ class EIR {
     }
   }
 
-  EIR.fromTypeNum(int? typeNum, Uint8List? data) {
-    this.typeNum = typeNum!;
-    this.data = data!;
+  EIR.fromTypeNum(int typeNum, Uint8List data) {
+    this.typeNum = typeNum;
+    this.data = data;
   }
 
-  EIR.fromBytes(Uint8List? bytes) {
+  EIR.fromBytes(Uint8List bytes) {
     this.bytes = bytes;
   }
 
-  Uint8List? get bytes {
+  Uint8List get bytes {
     return ([typeNum] + data) as Uint8List;// Strong cast, MAYBE have problems.
   }
 
-  set bytes(Uint8List? bytes) {
-    typeNum = bytes![0];
+  set bytes(Uint8List bytes) {
+    typeNum = bytes[0];
     data = bytes.sublist(1);
   }
 
@@ -686,23 +687,23 @@ class EIR {
     return _typeNum;
   }
 
-  set typeNum(int? typeNum) {
-    if (!numTypeMap!.containsKey(typeNum)) {
+  set typeNum(int typeNum) {
+    if (!numTypeMap.containsKey(typeNum)) {
       throw "EIR type Number $typeNum is not supported";
     }
-    this._typeNum = typeNum!;
+    this._typeNum = typeNum;
   }
 
   String? get typeString {
-    return typeNum == null ? null : typeNameMap![typeNum];
+    return typeNum == null ? null : typeNameMap[typeNum];
   }
 
   EIRType? get type {
-    return typeNum == null ? null : numTypeMap![typeNum];
+    return typeNum == null ? null : numTypeMap[typeNum];
   }
 
   set type(EIRType? type) {
-    for (var entry in numTypeMap!.entries) {
+    for (var entry in numTypeMap.entries) {
       if (type == entry.value) {
         typeNum = entry.key;
         break;
@@ -726,14 +727,14 @@ class BluetoothRecord extends MimeRecord {
     return attributes.containsKey(type) ? attributes[type] : null;
   }
 
-  void setAttribute(EIRType? type, Uint8List? value) {
-    if (!EIR.typeNumMap!.containsKey(type)) {
+  void setAttribute(EIRType? type, Uint8List value) {
+    if (!EIR.typeNumMap.containsKey(type)) {
       throw "EIR type $type is not supported, please select one from ${EIRType.values}";
     }
-    attributes[type!] = value!;
+    attributes[type!] = value;
   }
 
-  String? get deviceName {
+  String get deviceName {
     if (attributes.containsKey(EIRType.CompleteLocalName)) {
       return utf8.decode(attributes[EIRType.CompleteLocalName]!);
     } else if (attributes.containsKey(EIRType.ShortenedLocalName)) {
@@ -743,20 +744,20 @@ class BluetoothRecord extends MimeRecord {
     }
   }
 
-  set deviceName(String? deviceName) {
-    attributes[EIRType.CompleteLocalName] = utf8.encode(deviceName!) as Uint8List;
+  set deviceName(String deviceName) {
+    attributes[EIRType.CompleteLocalName] = utf8.encode(deviceName) as Uint8List;
     if (attributes.containsKey(EIRType.ShortenedLocalName)) {
       attributes.remove(EIRType.ShortenedLocalName);
     }
   }
 
-  BigInt? getIntValue(EIRType? type) {
+  BigInt getIntValue(EIRType type) {
     return ByteUtils.bytesToBigInt(attributes[type]!,
         endianness: Endianness.Little);
   }
 
-  void setIntValue(EIRType? type, BigInt? value) {
-    setAttribute(type!,
+  void setIntValue(EIRType type, BigInt value) {
+    setAttribute(type,
         ByteUtils.bigIntToBytes(value, 16, endianness: Endianness.Little));
   }
 }
@@ -782,12 +783,12 @@ class BluetoothEasyPairingRecord extends BluetoothRecord {
 
   EPAddress? address;
 
-  DeviceClass? get deviceClass {
+  DeviceClass get deviceClass {
     return new DeviceClass.fromBytes(attributes[EIRType.ClassOfDevice]!);
   }
 
-  set deviceClass(DeviceClass? dc) {
-    attributes[EIRType.ClassOfDevice] = dc!.bytes;
+  set deviceClass(DeviceClass dc) {
+    attributes[EIRType.ClassOfDevice] = dc.bytes;
   }
 
   void _addServiceClassList(
@@ -851,51 +852,52 @@ class BluetoothEasyPairingRecord extends BluetoothRecord {
     }
   }
 
-  BigInt? get simplePairingHash192 {
+  BigInt get simplePairingHash192 {
     return getIntValue(EIRType.SimplePairingHashC192);
   }
 
-  set simplePairingHash192(BigInt? value) {
+  set simplePairingHash192(BigInt value) {
     setIntValue(EIRType.SimplePairingHashC192, value);
   }
 
-  BigInt? get simplePairingRandomizer192 {
+  BigInt get simplePairingRandomizer192 {
     return getIntValue(EIRType.SimplePairingRandomizerR192);
   }
 
-  set simplePairingRandomizer192(BigInt? value) {
+  set simplePairingRandomizer192(BigInt value) {
     setIntValue(EIRType.SimplePairingRandomizerR192, value);
   }
 
-  BigInt? get simplePairingHash256 {
+  BigInt get simplePairingHash256 {
     return getIntValue(EIRType.SimplePairingHashC192);
   }
 
-  set simplePairingHash256(BigInt? value) {
+  set simplePairingHash256(BigInt value) {
     setIntValue(EIRType.SimplePairingHashC192, value);
   }
 
-  BigInt? get simplePairingRandomizer256 {
+  BigInt get simplePairingRandomizer256 {
     return getIntValue(EIRType.SimplePairingRandomizerR192);
   }
 
-  set simplePairingRandomizer256(BigInt? value) {
+  set simplePairingRandomizer256(BigInt value) {
     setIntValue(EIRType.SimplePairingRandomizerR192, value);
   }
 
-  Uint8List? get payload {
+  Uint8List get payload {
     // var data = new List<int>();
-    var data = <int?>[];
+    List<int?> data = <int?>[];
     for (var e in attributes.entries) {
       data.add(e.value.length + 1);
-      data.add(EIR.typeNumMap![e.key]);
+      data.add(EIR.typeNumMap[e.key]);
       data.addAll(e.value);
     }
-    var payload = ByteUtils.intToBytes(
+    List<int>? payload = ByteUtils.intToBytes(
             data.length + address!.bytes.length + 2, 2,
             endianness: Endianness.Little) +
-        address!.bytes +
-        (data as List<int>);
+        address!.bytes + data.cast();
+    /// 这边强制将data转换了一下原先的data内部的值可能为null，因为我看了逻辑后发现，
+    /// 应该不会在内部存在空的情况，所以，我这边还是选择data内部是非空的判定。
     return new Uint8List.fromList(payload);
   }
 
@@ -906,7 +908,7 @@ class BluetoothEasyPairingRecord extends BluetoothRecord {
     while (stream.readLength < oobLength) {
       var length = stream.readByte();
       var data = stream.readBytes(length);
-      attributes[EIR.numTypeMap![data[0]]] = data.sublist(1);
+      attributes[EIR.numTypeMap[data[0]]] = data.sublist(1);
     }
   }
 }
@@ -1095,27 +1097,27 @@ class BluetoothLowEnergyRecord extends BluetoothRecord {
     attributes[EIRType.Flags] = new Uint8List.fromList([value]);
   }
 
-  BigInt? get securityManagerTKValue {
+  BigInt get securityManagerTKValue {
     return getIntValue(EIRType.SecurityManagerTKValue);
   }
 
-  set securityManagerTKValue(BigInt? value) {
+  set securityManagerTKValue(BigInt value) {
     setIntValue(EIRType.SecurityManagerTKValue, value);
   }
 
-  BigInt? get leSecureConnectionsConfirmationValue {
+  BigInt get leSecureConnectionsConfirmationValue {
     return getIntValue(EIRType.LESecureConnectionsConfirmationValue);
   }
 
-  set leSecureConnectionsConfirmationValue(BigInt? value) {
+  set leSecureConnectionsConfirmationValue(BigInt value) {
     setIntValue(EIRType.LESecureConnectionsConfirmationValue, value);
   }
 
-  BigInt? get leSecureConnectionsRandomValue {
+  BigInt get leSecureConnectionsRandomValue {
     return getIntValue(EIRType.LESecureConnectionsRandomValue);
   }
 
-  set leSecureConnectionsRandomValue(BigInt? value) {
+  set leSecureConnectionsRandomValue(BigInt value) {
     setIntValue(EIRType.LESecureConnectionsRandomValue, value);
   }
 
@@ -1124,7 +1126,7 @@ class BluetoothLowEnergyRecord extends BluetoothRecord {
     Uint8List? payload = <int?>[] as Uint8List;
     for (var e in attributes.entries) {
       payload.add(e.value.length + 1);
-      payload.add(EIR.typeNumMap![e.key!]!);
+      payload.add(EIR.typeNumMap[e.key!]!);
       payload.addAll(e.value);
     }
     return new Uint8List.fromList(payload);
@@ -1135,7 +1137,7 @@ class BluetoothLowEnergyRecord extends BluetoothRecord {
     while (!stream.isEnd()) {
       var length = stream.readByte();
       var data = stream.readBytes(length);
-      attributes[EIR.numTypeMap![data[0]]] = data.sublist(1);
+      attributes[EIR.numTypeMap[data[0]]] = data.sublist(1);
     }
   }
 }

@@ -59,7 +59,7 @@ class UriRecord extends WellKnownRecord {
   @override
   String toString() {
     var str = "UriRecord: ";
-    str += basicInfoString!;
+    str += basicInfoString;
     str += "uri=$uriString";
     return str;
   }

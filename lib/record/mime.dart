@@ -19,7 +19,7 @@ class MimeRecord extends NDEFRecord {
   @override
   String toString() {
     var str = "MimeRecord: ";
-    str += basicInfoString!;
+    str += basicInfoString;
     str += "payload=${payload!.toHexString()}";
     return str;
   }

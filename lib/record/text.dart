@@ -23,14 +23,14 @@ class TextRecord extends WellKnownRecord {
   @override
   String toString() {
     var str = "TextRecord: ";
-    str += basicInfoString!;
+    str += basicInfoString;
     str += "encoding=$encodingString ";
     str += "language=$language ";
     str += "text=$text";
     return str;
   }
 
-  TextEncoding? encoding;
+  late TextEncoding encoding;
   String? _language, text;
 
   TextRecord(
@@ -44,12 +44,12 @@ class TextRecord extends WellKnownRecord {
     this.text = text;
   }
 
-  String get language {
-    return _language!;
+  String? get language {
+    return _language;
   }
 
-  set language(String language) {
-    if (language.length >= 64 || language.length <= 0) {
+  set language(String? language) {
+    if (language!.length >= 64 || language.length <= 0) {
       throw "Length of language code must be in [1,64), got ${language.length}";
     }
     this._language = language;
@@ -65,7 +65,7 @@ class TextRecord extends WellKnownRecord {
   }
 
   Uint8List get payload {
-    List<int> languagePayload = utf8.encode(language);
+    List<int> languagePayload = utf8.encode(language!);
     late List<int> textPayload;
     late int encodingFlag;
     if (encoding == TextEncoding.UTF8) {

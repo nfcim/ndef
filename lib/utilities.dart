@@ -56,7 +56,9 @@ class ByteUtils {
       list.add((v! % (new BigInt.from(256))).toInt());
       v ~/= (new BigInt.from(256));
     }
-    if (v != 0) {
+    /// unrelated_type_equality_check checked!
+    BigInt zero = 0 as BigInt;
+    if (v != zero) {
       throw "Value $value is overflow from range of $length bytes";
     }
     if (endianness == Endianness.Big) {
@@ -91,7 +93,7 @@ class ByteUtils {
   }
 
   /// Convert bytes to HexString, return a string of length 0 when bytes is null/of length 0
-  static String bytesToHexString(Uint8List bytes) {
+  static String bytesToHexString(Uint8List? bytes) {
     if (bytes == null) {
       return "";
     }
@@ -259,7 +261,7 @@ class ByteStream {
 class Version {
   late int? value;
 
-  static String? formattedString(int? value) {
+  static String formattedString(int? value) {
     var version = Version(value: value);
     return version.string;
   }
@@ -272,20 +274,20 @@ class Version {
     }
   }
 
-  Version.fromDetail(int? major, int? minor) {
-    this.setDetail(major!, minor!);
+  Version.fromDetail(int major, int minor) {
+    this.setDetail(major, minor);
   }
 
-  Version.fromString(String? string) {
-    this.string = string!;
+  Version.fromString(String string) {
+    this.string = string;
   }
 
   int get major {
     return value! >> 4;
   }
 
-  set major(int? major) {
-    value = major! << 4 + minor;
+  set major(int major) {
+    value = major << 4 + minor;
   }
 
   int get minor {

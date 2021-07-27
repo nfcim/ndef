@@ -16,17 +16,49 @@ import 'record/handover.dart';
 
 /// Represent the flags in the header of a NDEF record.
 class NDEFRecordFlags {
-  /// Message Begin */
+  /// Message Begin
+  /// The MB flag is a 1-bit field that when set indicates
+  /// the start of an NDEF message (see section 2.3.1).
+  ///
+  /// Section 2.3.1
+  /// An NDEF message is composed of one or more NDEF records.
+  /// 一条NDEF message是由一个或者多个NDEF records组成的。
+  /// The first record in a message is marked with the MB (Message Begin) flag
+  /// set and the last record in the message is marked with the ME (Message End) flag
+  /// set (see sections 3.2.1 and 3.2.2).
+  /// 最最基本的解释：在这么多个record中，第一个（the first record 就是MB（Message Begin））
+  /// 相同，the last record便是ME（Message End）
+  ///
+  /// The minimum message length is one record which is achieved
+  /// by setting both the MB and the ME flag in the same record.
+  /// 小知识：最最小的message长度就是一个record（由 MB 和 ME flag 同时标记在同一个record中）
+  ///
+  /// Attention!!!
+  ///   1.NDEF messages MUST NOT overlap; that is, the MB and the ME flags
+  ///   MUST NOT be used to nest NDEF messages
+  ///   在NDEF message中不允许出现重复（overlap）的情况，放到实际来看，MB 和 Me 只能在一个NDEF Message
+  ///   中出现一次。
+  ///   2.MB 和 ME 都是一位的字段值哦。
+  ///
   // ignore: non_constant_identifier_names
-  bool? MB = false;
+  bool MB = false;
 
-  /// Message End */
+  /// Message End
+  /// The ME flag is a 1-bit field that when set indicates the end of
+  /// an NDEF message (see section 2.3.1).
+  ///
+  /// Note, that in case of a chunked payload, the ME flag is set only
+  /// in the terminating record chunk of that chunked payload (see section 2.3.3).
+  /// */
   // ignore: non_constant_identifier_names
-  bool? ME = false;
+  bool ME = false;
 
-  /// Chunk Flag */
+  /// Chunk Flag
+  /// The CF flag is a 1-bit field indicating that this is either
+  /// the first record chunk or a middle record chunk of a chunked payload
+  /// */
   // ignore: non_constant_identifier_names
-  bool? CF = false;
+  bool CF = false;
 
   /// Short Record */
   // ignore: non_constant_identifier_names
@@ -40,15 +72,16 @@ class NDEFRecordFlags {
   // ignore: non_constant_identifier_names
   int TNF = 0;
 
-  NDEFRecordFlags({int? data}) {
+  NDEFRecordFlags({int?
+  data}) {
     decode(data);
   }
 
   int encode() {
     assert(0 <= TNF && TNF<= 7);
-    return (MB!.toInt() << 7) |
-        (ME!.toInt() << 6) |
-        (CF!.toInt() << 5) |
+    return (MB.toInt() << 7) |
+        (ME.toInt() << 6) |
+        (CF.toInt() << 5) |
         (SR.toInt() << 4) |
         (IL.toInt() << 3) |
         (TNF & 7);
@@ -86,12 +119,12 @@ enum TypeNameFormat {
 }
 
 /// Construct an instance of a specific type (subclass) of [NDEFRecord] according to [tnf] and [classType]
-typedef NDEFRecord? TypeFactory(TypeNameFormat? tnf, String? classType);
+typedef NDEFRecord? TypeFactory(TypeNameFormat tnf, String classType);
 
 /// The base class of all types of records.
 /// Also represents an record of unknown type.
 class NDEFRecord {
-  static const List<String?>? tnfString = [
+  static const List<String> tnfString = [
     "",
     "urn:nfc:wkt:",
     "",
@@ -105,24 +138,25 @@ class NDEFRecord {
   static const TypeNameFormat? classTnf = null;
 
   TypeNameFormat get tnf {
-    return TypeNameFormat.values[flags!.TNF];
+    return TypeNameFormat.values[flags.TNF];
   }
 
   set tnf(TypeNameFormat? tnf) {
-    flags!.TNF = TypeNameFormat.values.indexOf(tnf!);
+    flags.TNF = TypeNameFormat.values.indexOf(tnf!);
   }
 
+  /// 此处埋个小伏笔，encodeType这个参数到底是nullable嘛？
   Uint8List? encodedType;
+
+  set decodedType(String? decodedType) {
+    encodedType = utf8.encode(decodedType!) as Uint8List?;
+  }
 
   String? get decodedType {
     if (encodedType == null) {
       return null;
     }
     return utf8.decode(encodedType!);
-  }
-
-  set decodedType(String? decodedType) {
-    encodedType = utf8.encode(decodedType!) as Uint8List?;
   }
 
   set type(Uint8List? type) {
@@ -146,11 +180,11 @@ class NDEFRecord {
     if (decodedType == null) {
       return null;
     }
-    return tnfString![flags!.TNF]! + decodedType!;
+    return tnfString[flags.TNF] + decodedType!;
   }
 
   /// Hex String of id, return "(empty)" when the id bytes is null
-  String? get idString {
+  String get idString {
     return id == null ? "(empty)" : id!.toHexString();
   }
 
@@ -158,10 +192,10 @@ class NDEFRecord {
     id = latin1.encode(value!);
   }
 
-  static const int? classMinPayloadLength = 0;
+  static const int classMinPayloadLength = 0;
   static const int? classMaxPayloadLength = null;
 
-  int? get minPayloadLength {
+  int get minPayloadLength {
     return classMinPayloadLength;
   }
 
@@ -169,7 +203,7 @@ class NDEFRecord {
     return classMaxPayloadLength;
   }
 
-  String? get basicInfoString {
+  String get basicInfoString {
     var str = "id=$idString ";
     str += "typeNameFormat=$tnf ";
     str += "type=$decodedType ";
@@ -179,20 +213,20 @@ class NDEFRecord {
   @override
   String toString() {
     var str = "Record: ";
-    str += basicInfoString!;
+    str += basicInfoString;
     str += "payload=${payload!.toHexString()}";
     return str;
   }
 
   late Uint8List? id;
-  late Uint8List? payload;
-  late NDEFRecordFlags? flags;
+  Uint8List? payload;
+  late NDEFRecordFlags flags;
 
   NDEFRecord(
       { TypeNameFormat? tnf, Uint8List? type, Uint8List? id, Uint8List? payload}) {
     flags = new NDEFRecordFlags();
     if (tnf == null) {
-      flags!.TNF = TypeNameFormat.values.indexOf(this.tnf);
+      flags.TNF = TypeNameFormat.values.indexOf(this.tnf);
     } else {
       if (this.tnf != TypeNameFormat.empty) {
         throw "TNF has not been set in subclass of Record";
@@ -250,11 +284,11 @@ class NDEFRecord {
   }
 
   /// Decode a [NDEFRecord] record from raw data.
-  static NDEFRecord? doDecode(
+  static NDEFRecord doDecode(
       TypeNameFormat? tnf, Uint8List? type, Uint8List? payload,
       { Uint8List? id, TypeFactory? typeFactory = NDEFRecord.defaultTypeFactory}) {
-    NDEFRecord? record = typeFactory!(tnf, utf8.decode(type!));
-    if (payload!.length < record!.minPayloadLength!) {
+    NDEFRecord? record = typeFactory!(tnf!, utf8.decode(type!));
+    if (payload!.length < record!.minPayloadLength) {
       throw "Payload length must be >= ${record.minPayloadLength}";
     }
     if (record.maxPayloadLength != null &&
@@ -308,7 +342,7 @@ class NDEFRecord {
 
     var decoded = doDecode(typeNameFormat, type, payload,
         id: id, typeFactory: typeFactory);
-    decoded!.flags = flags;
+    decoded.flags = flags;
     return decoded;
   }
 
@@ -327,19 +361,19 @@ class NDEFRecord {
 
     // check and canonicalize
     if (this.id == null) {
-      flags!.IL = false;
+      flags.IL = false;
     } else {
-      flags!.IL = true;
+      flags.IL = true;
     }
 
     if (payload!.length < 256) {
-      flags!.SR = true;
+      flags.SR = true;
     } else {
-      flags!.SR = false;
+      flags.SR = false;
     }
 
     // flags
-    var encodedFlags = flags!.encode();
+    var encodedFlags = flags.encode();
     encoded.add(encodedFlags);
 
     // type length
@@ -389,7 +423,7 @@ class NDEFRecord {
     return (other is NDEFRecord) &&
         (tnf == other.tnf) &&
         ByteUtils.bytesEqual(type!, other.type) &&
-        ByteUtils.bytesEqual(id!, other.id) &&
+        ByteUtils.bytesEqual(id, other.id) &&
         ByteUtils.bytesEqual(payload, other.payload);
   }
 }

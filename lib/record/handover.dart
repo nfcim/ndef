@@ -25,7 +25,7 @@ class AlternativeCarrierRecord extends WellKnownRecord {
   @override
   String toString() {
     var str = "AlternativeCarrierRecord: ";
-    str += basicInfoString!;
+    str += basicInfoString;
     str += "carrierPowerState=$carrierPowerState ";
     str += "carrierDataReference=$carrierDataReference ";
     str += "auxDataReferences=$auxDataReferenceList";
@@ -46,9 +46,8 @@ class AlternativeCarrierRecord extends WellKnownRecord {
     if (carrierDataReference != null) {
       this.carrierDataReference = carrierDataReference;
     }
-    this.auxDataReferenceList = auxDataReferenceList == null
-        ? <Uint8List>[]
-        : auxDataReferenceList;
+    this.auxDataReferenceList =
+        auxDataReferenceList == null ? <Uint8List>[] : auxDataReferenceList;
   }
 
   int get carrierPowerStateIndex {
@@ -123,7 +122,7 @@ class CollisionResolutionRecord extends WellKnownRecord {
   @override
   String toString() {
     var str = "CollisionResolutionRecord: ";
-    str += basicInfoString!;
+    str += basicInfoString;
     str += "randomNumber=$randomNumber";
     return str;
   }
@@ -184,7 +183,7 @@ class ErrorRecord extends WellKnownRecord {
   @override
   String toString() {
     var str = "ErrorRecord: ";
-    str += basicInfoString!;
+    str += basicInfoString;
     str += "error=$errorString";
     return str;
   }
@@ -207,22 +206,22 @@ class ErrorRecord extends WellKnownRecord {
     return classMinPayloadLength;
   }
 
-  int? get errorNum {
+  int get errorNum {
     return _errorNum;
   }
 
-  set errorNum(int? errorNum) {
+  set errorNum(int errorNum) {
     if (errorNum == 0) {
       throw "Error reason must not be 0";
     }
-    _errorNum = errorNum!;
+    _errorNum = errorNum;
   }
 
   /// A read-only description of error reason and error data
   String get errorString {
-    if (errorNum! > 0 && errorNum! <= 3) {
+    if (errorNum > 0 && errorNum <= 3) {
       var errorDataInt = errorData.toInt();
-      return errorStringMap[errorNum! - 1].replaceFirst('X', '$errorDataInt');
+      return errorStringMap[errorNum - 1].replaceFirst('X', '$errorDataInt');
     } else {
       var errorDataString = errorData.toHexString();
       return "Reason $errorNum Data $errorDataString";
@@ -230,8 +229,8 @@ class ErrorRecord extends WellKnownRecord {
   }
 
   ErrorReason get errorReason {
-    if (errorNum! >= 1 && errorNum! <= 3) {
-      return ErrorReason.values[errorNum! - 1];
+    if (errorNum >= 1 && errorNum <= 3) {
+      return ErrorReason.values[errorNum - 1];
     } else {
       return ErrorReason.other;
     }
@@ -243,7 +242,7 @@ class ErrorRecord extends WellKnownRecord {
 
   Uint8List? get payload {
     var payload = [errorNum] + errorData;
-    return new Uint8List.fromList(payload as List<int>);
+    return new Uint8List.fromList(payload);
   }
 
   set payload(Uint8List? payload) {
@@ -276,7 +275,7 @@ class HandoverRecord extends WellKnownRecord {
   @override
   String toString() {
     var str = "HandoverRecord: ";
-    str += basicInfoString!;
+    str += basicInfoString;
     str += "version=${version.string} ";
     str += "alternativeCarrierRecords=$alternativeCarrierRecordList ";
     str += "unknownRecords=$unknownRecordList";
@@ -336,8 +335,9 @@ class HandoverRecord extends WellKnownRecord {
 
   Uint8List? get payload {
     var data = encodeNdefMessage(allRecordList);
-    var payload = [version.value] + data;
-    return Uint8List.fromList(payload as List<int>);
+    /// 直接在后边进行了cast的强制转换
+    List<int>? payload = ([version.value] + data).cast();
+    return Uint8List.fromList(payload);
   }
 
   set payload(Uint8List? payload) {
@@ -363,7 +363,7 @@ class HandoverRequestRecord extends HandoverRecord {
   @override
   String toString() {
     var str = "HandoverRequestRecord: ";
-    str += basicInfoString!;
+    str += basicInfoString;
     str += "version=${version.string} ";
     str += "alternativeCarrierRecords=$alternativeCarrierRecordList ";
     str += "collisionResolutionRecords=$collisionResolutionRecordList ";
@@ -481,7 +481,7 @@ class HandoverSelectRecord extends HandoverRecord {
   @override
   String toString() {
     var str = "HandoverSelectRecord: ";
-    str += basicInfoString!;
+    str += basicInfoString;
     str += "version=${version.value} ";
     str += "alternativeCarrierRecords=$alternativeCarrierRecordList ";
     str += "errorRecords=$errorRecordList ";
@@ -585,7 +585,7 @@ class HandoverMediationRecord extends HandoverRecord {
   @override
   String toString() {
     var str = "HandoverMediationRecord: ";
-    str += basicInfoString!;
+    str += basicInfoString;
     str += "version=${version.value} ";
     str += "alternativeCarrierRecords=$alternativeCarrierRecordList ";
     str += "unknownRecords=$unknownRecordList";
@@ -611,7 +611,7 @@ class HandoverInitiateRecord extends HandoverRecord {
   @override
   String toString() {
     var str = "HandoverInitiateRecord: ";
-    str += basicInfoString!;
+    str += basicInfoString;
     str += "version=${version.value} ";
     str += "alternativeCarrierRecords=$alternativeCarrierRecordList ";
     str += "unknownRecords=$unknownRecordList";
@@ -643,7 +643,7 @@ class HandoverCarrierRecord extends WellKnownRecord {
   @override
   String toString() {
     var str = "HandoverCarrierRecord: ";
-    str += basicInfoString!;
+    str += basicInfoString;
     str += "carrierType=$carrierType ";
     str += "carrierData=$carrierData";
     return str;
@@ -668,23 +668,23 @@ class HandoverCarrierRecord extends WellKnownRecord {
   String? carrierType;
   late Uint8List carrierData;
 
-  TypeNameFormat? get carrierTnf {
+  TypeNameFormat get carrierTnf {
     return TypeNameFormat.values[_carrierTnf!];
   }
 
-  set carrierTnf(TypeNameFormat? carrierTnf) {
-    _carrierTnf = TypeNameFormat.values.indexOf(carrierTnf!);
+  set carrierTnf(TypeNameFormat carrierTnf) {
+    _carrierTnf = TypeNameFormat.values.indexOf(carrierTnf);
   }
 
-  String? get carrierFullType {
-    return NDEFRecord.tnfString![_carrierTnf!]! + carrierType!;
+  String get carrierFullType {
+    return NDEFRecord.tnfString[_carrierTnf!] + carrierType!;
   }
 
   Uint8List? get payload {
     var carrierTypeBytes = utf8.encode(carrierType!);
-    var payload =
-        [_carrierTnf, carrierTypeBytes.length] + carrierTypeBytes + carrierData;
-    return Uint8List.fromList(payload as List<int>);
+    List<int>? payload =
+        ([_carrierTnf, carrierTypeBytes.length] + carrierTypeBytes + carrierData).cast();
+    return Uint8List.fromList(payload);
   }
 
   set payload(Uint8List? payload) {

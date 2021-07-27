@@ -7,8 +7,8 @@ import '../ndef.dart';
 import 'wellknown.dart';
 
 class DataElement {
-  int? type;
-  Uint8List? value;
+  late int type;
+  late Uint8List value;
   DataElement(this.type, this.value);
   DataElement.fromString(int type, String valueString) {
     this.type = type;
@@ -54,13 +54,14 @@ class DeviceInformationRecord extends WellKnownRecord {
   late Uint8List uuidData;
   late List<DataElement> undefinedData;
 
-  DeviceInformationRecord(
-      {String? vendorName,
-      String? modelName,
-      String? uniqueName,
-      String? uuid,
-      String? versionString,
-      List<DataElement>? undefinedData}) {
+  DeviceInformationRecord({
+        String? vendorName,
+        String? modelName,
+        String? uniqueName,
+        String? uuid,
+        String? versionString,
+        List<DataElement>? undefinedData
+      }) {
     this.vendorName = vendorName;
     this.modelName = modelName;
     this.uniqueName = uniqueName;
@@ -71,12 +72,12 @@ class DeviceInformationRecord extends WellKnownRecord {
     this.undefinedData = undefinedData == null ? [] : undefinedData;
   }
 
-  String? get uuid {
+  String get uuid {
     return Uuid.unparse(uuidData);
   }
 
-  set uuid(String? uuid) {
-    uuidData = new Uint8List.fromList(Uuid.parse(uuid!));
+  set uuid(String uuid) {
+    uuidData = new Uint8List.fromList(Uuid.parse(uuid));
   }
 
   void _addEncodedData(String? value, int type, List<int?> payload) {
@@ -92,7 +93,7 @@ class DeviceInformationRecord extends WellKnownRecord {
     if (!(vendorName != null && modelName != null)) {
       throw "Decoding requires the manufacturer and model name TLVs";
     }
-    List<int?> payload = [];
+    List<int>? payload = [];
 
     // known data
     _addEncodedData(vendorName, 0, payload);
@@ -106,11 +107,11 @@ class DeviceInformationRecord extends WellKnownRecord {
     // undefined data
     for (int i = 0; i < undefinedData.length; i++) {
       payload.add(undefinedData[i].type);
-      Uint8List valueBytes = undefinedData[i].value!;
+      Uint8List valueBytes = undefinedData[i].value;
       payload.add(valueBytes.length);
       payload.addAll(valueBytes);
     }
-    return new Uint8List.fromList(payload as List<int>);
+    return new Uint8List.fromList(payload);
   }
 
   set payload(Uint8List? payload) {

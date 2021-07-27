@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import '../ndef.dart';
 import 'wellknown.dart';
 
-/// Signature Record is uesd to protect the integrity and authenticity of NDEF Messages.
+/// Signature Record is used to protect the integrity and authenticity of NDEF Messages.
 class SignatureRecord extends WellKnownRecord {
   static const String classType = "Sig";
 
@@ -56,17 +56,17 @@ class SignatureRecord extends WellKnownRecord {
   String? signatureURI, certificateURI;
   late List<Uint8List> _certificateStore;
   late Uint8List signature;
-  int? signatureTypeIndex, hashTypeIndex, certificateFormatIndex;
+  late int signatureTypeIndex, hashTypeIndex, certificateFormatIndex;
 
-  SignatureRecord(
-      {String? signatureType,
-      String hashType = "SHA-256",
-      Uint8List? signature,
-      String signatureURI = "",
-      String certificateFormat = "X.509",
-      List<Uint8List>? certificateStore,
-      String certificateURI = ""}) {
-    this.signatureType = signatureType!;
+  SignatureRecord({
+    String? signatureType,
+    String hashType = "SHA-256",
+    Uint8List? signature,
+    String signatureURI = "",
+    String certificateFormat = "X.509",
+    List<Uint8List>? certificateStore,
+    String certificateURI = ""}) {
+    this.signatureType = signatureType;
     this.hashType = hashType;
     this.signature = signature != null ? signature : new Uint8List(0);
     this.signatureURI = signatureURI;
@@ -81,7 +81,7 @@ class SignatureRecord extends WellKnownRecord {
   }
 
   String? get signatureType {
-    return signatureTypeMap[signatureTypeIndex!];
+    return signatureTypeMap[signatureTypeIndex];
   }
 
   set signatureType(String? signatureType) {
@@ -94,11 +94,11 @@ class SignatureRecord extends WellKnownRecord {
     throw "Signature type $signatureType is not supported, please select one from $signatureTypeMap";
   }
 
-  String? get hashType {
-    return hashTypeMap[hashTypeIndex!];
+  String get hashType {
+    return hashTypeMap[hashTypeIndex];
   }
 
-  set hashType(String? hashType) {
+  set hashType(String hashType) {
     for (int i = 0; i < hashTypeMap.length; i++) {
       if (hashType != "" && hashType == hashTypeMap[i]) {
         hashTypeIndex = i;
@@ -108,11 +108,11 @@ class SignatureRecord extends WellKnownRecord {
     throw "Hash type $hashType is not supported, please select one from [, SHA-256]";
   }
 
-  String? get certificateFormat {
-    return certificateFormatMap[certificateFormatIndex!];
+  String get certificateFormat {
+    return certificateFormatMap[certificateFormatIndex];
   }
 
-  set certificateFormat(String? certificateFormat) {
+  set certificateFormat(String certificateFormat) {
     for (int i = 0; i < certificateFormatMap.length; i++) {
       if (certificateFormat == certificateFormatMap[i]) {
         certificateFormatIndex = i;
@@ -142,7 +142,7 @@ class SignatureRecord extends WellKnownRecord {
     //Version Field pass
     //Signature Field
     int signatureURIPresent = (signatureURI == "") ? 0 : 1;
-    int signatureFlag = (signatureURIPresent << 7) | signatureTypeIndex!;
+    int signatureFlag = (signatureURIPresent << 7) | signatureTypeIndex;
 
     var signatureURIBytes =
         signatureURIPresent == 0 ? signature : utf8.encode(signatureURI!);
@@ -154,7 +154,7 @@ class SignatureRecord extends WellKnownRecord {
     //Certificate Field
     int certificateURIPresent = (certificateURI == "") ? 0 : 1;
     int certificateFlag = (certificateURIPresent << 7) |
-        (certificateFormatIndex! << 4) |
+        (certificateFormatIndex << 4) |
         certificateStore.length;
     var certificateStoreBytes = <int>[];
     for (int i = 0; i < certificateStore.length; i++) {
@@ -169,7 +169,7 @@ class SignatureRecord extends WellKnownRecord {
     var certificateBytes = new Uint8List.fromList(
         [certificateFlag] + certificateStoreBytes + certificateURIBytes);
 
-    payload = [classVersion] + (signatureBytes as List<int>) + certificateBytes;
+    payload = [classVersion] + (signatureBytes) + certificateBytes;
     return new Uint8List.fromList(payload);
   }
 

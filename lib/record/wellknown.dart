@@ -19,7 +19,7 @@ class WellKnownRecord extends NDEFRecord {
   @override
   String toString() {
     var str = "WellKnownRecord: ";
-    str += basicInfoString!;
+    str += basicInfoString;
     str += "type=$decodedType ";
     str += "payload=${payload!.toHexString()}";
     return str;
