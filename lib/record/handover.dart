@@ -335,7 +335,7 @@ class HandoverRecord extends WellKnownRecord {
 
   Uint8List? get payload {
     var data = encodeNdefMessage(allRecordList);
-    /// 直接在后边进行了cast的强制转换
+    // cast() 's use
     List<int>? payload = ([version.value] + data).cast();
     return Uint8List.fromList(payload);
   }

@@ -299,7 +299,7 @@ class DeviceClass {
 
   late int value;
 
-  /// 此处尝试使用required关键字，表明value非可空
+  /// try to use required here indicating that value is non nullable.
   DeviceClass({required int value}) {
     this.value = value;
   }
@@ -468,7 +468,7 @@ class ServiceClass {
   };
 
   late Uint8List _uuidData;
-  /// 这边确认uuidData为非空的，所以使用required关键字。
+  /// uuidData is non nullable, so use required keyword here.
   ServiceClass({required Uint8List uuidData}) {
     this.uuidData = uuidData;
   }
@@ -896,8 +896,6 @@ class BluetoothEasyPairingRecord extends BluetoothRecord {
             data.length + address!.bytes.length + 2, 2,
             endianness: Endianness.Little) +
         address!.bytes + data.cast();
-    /// 这边强制将data转换了一下原先的data内部的值可能为null，因为我看了逻辑后发现，
-    /// 应该不会在内部存在空的情况，所以，我这边还是选择data内部是非空的判定。
     return new Uint8List.fromList(payload);
   }
 
@@ -970,7 +968,6 @@ class BluetoothLowEnergyRecord extends BluetoothRecord {
   set roleCapabilities(String? value) {
     if (leRoleList.contains(value)) {
       int index = leRoleList.indexOf(value!);
-      //var bytes = new List<int>(0);
       var bytes = <int>[0];
       bytes.add(index);
       attributes[EIRType.LERole] = new Uint8List.fromList(bytes);
@@ -1072,7 +1069,6 @@ class BluetoothLowEnergyRecord extends BluetoothRecord {
 
   List<String>? get flagsEIR {
     if (attributes.containsKey(EIRType.Flags)) {
-      //var names = new List<String>();
       var names = <String>[];
       var value = attributes[EIRType.Flags]![0];
       for (var i = 0; i < flagsList.length; i++) {
@@ -1122,7 +1118,6 @@ class BluetoothLowEnergyRecord extends BluetoothRecord {
   }
 
   Uint8List? get payload {
-    // Uint8List payload = new List<int>() as Uint8List;
     Uint8List? payload = <int?>[] as Uint8List;
     for (var e in attributes.entries) {
       payload.add(e.value.length + 1);
