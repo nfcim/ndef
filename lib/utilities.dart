@@ -18,7 +18,6 @@ class ByteUtils {
   static Uint8List intToBytes(int value, int length,
       {Endianness endianness = Endianness.Big}) {
     assert(length <= 8);
-    // var list = new List<int>();
     var list = <int>[];
 
     var v = value;
@@ -48,7 +47,6 @@ class ByteUtils {
 
   static Uint8List bigIntToBytes(BigInt? value, int length,
       {endianness = Endianness.Big}) {
-    // Uint8List list = new List<int>(0);
     //TODO: MAYBE Dangerous!
     Uint8List? list = new List<int?>.filled(0, null, growable: false) as Uint8List;
     BigInt? v = value;
@@ -259,7 +257,7 @@ class ByteStream {
 
 /// utility class to present protocal version in the records
 class Version {
-  late int? value;
+  late int value;
 
   static String formattedString(int? value) {
     var version = Version(value: value);
@@ -283,7 +281,7 @@ class Version {
   }
 
   int get major {
-    return value! >> 4;
+    return value >> 4;
   }
 
   set major(int major) {
@@ -291,7 +289,7 @@ class Version {
   }
 
   int get minor {
-    return value! & 0xf;
+    return value & 0xf;
   }
 
   set minor(int minor) {

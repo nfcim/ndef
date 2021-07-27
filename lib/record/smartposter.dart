@@ -364,7 +364,7 @@ class SmartPosterRecord extends WellKnownRecord {
     }
     if (_titleLanguages.contains(language)) {
       _titleRecords[_titleLanguages.indexOf(language)] =
-          new TextRecord(text: text);
+      new TextRecord(text: text);
     } else {
       addTitle(text, language: language);
     }
@@ -481,8 +481,8 @@ class SmartPosterRecord extends WellKnownRecord {
     }
   }
 
-  static void _checkValidIconType(String? decodedType) {
-    if (!(decodedType!.startsWith('image/') ||
+  static void _checkValidIconType(String decodedType) {
+    if (!(decodedType.startsWith('image/') ||
         decodedType.startsWith('video'))) {
       throw "Type of Icon Records must be image or video, not $decodedType";
     }
@@ -503,7 +503,7 @@ class SmartPosterRecord extends WellKnownRecord {
   }
 
   set iconRecord(MimeRecord? record) {
-    _checkValidIconType(record!.decodedType);
+    _checkValidIconType(record!.decodedType!);
     if (_iconRecords.length >= 1) {
       _iconRecords[0] = record;
     } else {
@@ -512,7 +512,7 @@ class SmartPosterRecord extends WellKnownRecord {
   }
 
   void addIconRecord(MimeRecord record) {
-    _checkValidIconType(record.decodedType);
+    _checkValidIconType(record.decodedType!);
     _iconRecords.add(record);
   }
 

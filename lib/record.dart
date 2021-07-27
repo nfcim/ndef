@@ -17,46 +17,14 @@ import 'record/handover.dart';
 /// Represent the flags in the header of a NDEF record.
 class NDEFRecordFlags {
   /// Message Begin
-  /// The MB flag is a 1-bit field that when set indicates
-  /// the start of an NDEF message (see section 2.3.1).
-  ///
-  /// Section 2.3.1
-  /// An NDEF message is composed of one or more NDEF records.
-  /// 一条NDEF message是由一个或者多个NDEF records组成的。
-  /// The first record in a message is marked with the MB (Message Begin) flag
-  /// set and the last record in the message is marked with the ME (Message End) flag
-  /// set (see sections 3.2.1 and 3.2.2).
-  /// 最最基本的解释：在这么多个record中，第一个（the first record 就是MB（Message Begin））
-  /// 相同，the last record便是ME（Message End）
-  ///
-  /// The minimum message length is one record which is achieved
-  /// by setting both the MB and the ME flag in the same record.
-  /// 小知识：最最小的message长度就是一个record（由 MB 和 ME flag 同时标记在同一个record中）
-  ///
-  /// Attention!!!
-  ///   1.NDEF messages MUST NOT overlap; that is, the MB and the ME flags
-  ///   MUST NOT be used to nest NDEF messages
-  ///   在NDEF message中不允许出现重复（overlap）的情况，放到实际来看，MB 和 Me 只能在一个NDEF Message
-  ///   中出现一次。
-  ///   2.MB 和 ME 都是一位的字段值哦。
-  ///
   // ignore: non_constant_identifier_names
   bool MB = false;
 
   /// Message End
-  /// The ME flag is a 1-bit field that when set indicates the end of
-  /// an NDEF message (see section 2.3.1).
-  ///
-  /// Note, that in case of a chunked payload, the ME flag is set only
-  /// in the terminating record chunk of that chunked payload (see section 2.3.3).
-  /// */
   // ignore: non_constant_identifier_names
   bool ME = false;
 
   /// Chunk Flag
-  /// The CF flag is a 1-bit field indicating that this is either
-  /// the first record chunk or a middle record chunk of a chunked payload
-  /// */
   // ignore: non_constant_identifier_names
   bool CF = false;
 
@@ -72,8 +40,7 @@ class NDEFRecordFlags {
   // ignore: non_constant_identifier_names
   int TNF = 0;
 
-  NDEFRecordFlags({int?
-  data}) {
+  NDEFRecordFlags({int? data}) {
     decode(data);
   }
 
@@ -141,11 +108,10 @@ class NDEFRecord {
     return TypeNameFormat.values[flags.TNF];
   }
 
-  set tnf(TypeNameFormat? tnf) {
-    flags.TNF = TypeNameFormat.values.indexOf(tnf!);
+  set tnf(TypeNameFormat tnf) {
+    flags.TNF = TypeNameFormat.values.indexOf(tnf);
   }
 
-  /// 此处埋个小伏笔，encodeType这个参数到底是nullable嘛？
   Uint8List? encodedType;
 
   set decodedType(String? decodedType) {
@@ -218,7 +184,7 @@ class NDEFRecord {
     return str;
   }
 
-  late Uint8List? id;
+  Uint8List? id;
   Uint8List? payload;
   late NDEFRecordFlags flags;
 
@@ -356,7 +322,6 @@ class NDEFRecord {
       throw "Payload is null, please set parameters or set payload directly before encode";
     }
 
-    // var encoded = new List<int>();
     var encoded = <int>[];
 
     // check and canonicalize
