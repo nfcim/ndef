@@ -18,7 +18,6 @@ class ByteUtils {
   static Uint8List intToBytes(int value, int length,
       {Endianness endianness = Endianness.Big}) {
     assert(length <= 8);
-    // var list = new List<int>();
     var list = <int>[];
 
     var v = value;
@@ -48,7 +47,6 @@ class ByteUtils {
 
   static Uint8List bigIntToBytes(BigInt? value, int length,
       {endianness = Endianness.Big}) {
-    // Uint8List list = new List<int>(0);
     //TODO: MAYBE Dangerous!
     Uint8List? list = new List<int?>.filled(0, null, growable: false) as Uint8List;
     BigInt? v = value;
