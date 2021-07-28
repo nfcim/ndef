@@ -40,8 +40,7 @@ class NDEFRecordFlags {
   // ignore: non_constant_identifier_names
   int TNF = 0;
 
-  NDEFRecordFlags({int?
-  data}) {
+  NDEFRecordFlags({int? data}) {
     decode(data);
   }
 
@@ -109,8 +108,8 @@ class NDEFRecord {
     return TypeNameFormat.values[flags.TNF];
   }
 
-  set tnf(TypeNameFormat? tnf) {
-    flags.TNF = TypeNameFormat.values.indexOf(tnf!);
+  set tnf(TypeNameFormat tnf) {
+    flags.TNF = TypeNameFormat.values.indexOf(tnf);
   }
 
   Uint8List? encodedType;
@@ -185,7 +184,7 @@ class NDEFRecord {
     return str;
   }
 
-  late Uint8List? id;
+  Uint8List? id;
   Uint8List? payload;
   late NDEFRecordFlags flags;
 
