@@ -257,7 +257,7 @@ class ByteStream {
 
 /// utility class to present protocal version in the records
 class Version {
-  late int? value;
+  late int value;
 
   static String formattedString(int? value) {
     var version = Version(value: value);
@@ -281,7 +281,7 @@ class Version {
   }
 
   int get major {
-    return value! >> 4;
+    return value >> 4;
   }
 
   set major(int major) {
@@ -289,7 +289,7 @@ class Version {
   }
 
   int get minor {
-    return value! & 0xf;
+    return value & 0xf;
   }
 
   set minor(int minor) {
