@@ -127,7 +127,7 @@ class CollisionResolutionRecord extends WellKnownRecord {
     return str;
   }
 
-  late int? _randomNumber;
+  late int _randomNumber;
 
   CollisionResolutionRecord({int? randomNumber}) {
     if (randomNumber != null) {
@@ -150,7 +150,7 @@ class CollisionResolutionRecord extends WellKnownRecord {
   }
 
   Uint8List get payload {
-    return _randomNumber!.toBytes(2);
+    return _randomNumber.toBytes(2);
   }
 
   set payload(Uint8List? payload) {
@@ -452,7 +452,7 @@ class HandoverRequestRecord extends HandoverRecord {
   }
 
   Uint8List? get payload {
-    if (version.value! > 0x11) {
+    if (version.value> 0x11) {
       if (collisionResolutionNumber == null) {
         throw "Handover Request Record must have a Collision Resolution Record";
       }
@@ -462,7 +462,7 @@ class HandoverRequestRecord extends HandoverRecord {
 
   set payload(Uint8List? payload) {
     super.payload = payload;
-    if (version.value! > 0x11) {
+    if (version.value > 0x11) {
       if (collisionResolutionNumber == null) {
         throw "Handover Request Record must have a Collision Resolution Record";
       }
@@ -567,7 +567,7 @@ class HandoverSelectRecord extends HandoverRecord {
   }
 
   Uint8List? get payload {
-    if (version.value! < 0x12 && errorRecordList.length >= 1) {
+    if (version.value < 0x12 && errorRecordList.length >= 1) {
       throw "Encoding error record version ${version.value} is not supported";
     }
     return super.payload;
