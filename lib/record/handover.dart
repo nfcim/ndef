@@ -61,6 +61,7 @@ class AlternativeCarrierRecord extends WellKnownRecord {
   }
 
   Uint8List get payload {
+    // var payload = new List<int>();
     var payload = <int>[];
     payload.add(carrierPowerStateIndex);
 
