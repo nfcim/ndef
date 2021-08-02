@@ -1,9 +1,7 @@
 library ndef;
 
 export 'record.dart';
-// utility
 export 'utilities.dart';
-// record types
 export 'record/absoluteUri.dart';
 export 'record/mime.dart';
 export 'record/deviceinfo.dart';
