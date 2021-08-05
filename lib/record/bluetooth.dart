@@ -916,7 +916,7 @@ class BluetoothLowEnergyRecord extends BluetoothRecord {
   @override
   String toString() {
     var str = "BluetoothLowEnergyRecord: ";
-    str += "address=${address!.address} ";
+    str += "address=${address?.address ?? '(null)'} ";
     str += "name=$deviceName ";
     str += "attributes=$attributes";
     return str;

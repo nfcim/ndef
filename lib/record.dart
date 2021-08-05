@@ -180,7 +180,7 @@ class NDEFRecord {
   String toString() {
     var str = "Record: ";
     str += basicInfoString;
-    str += "payload=${payload!.toHexString()}";
+    str += "payload=${(payload?.toHexString()) ?? '(null)'}";
     return str;
   }
 
