@@ -180,7 +180,7 @@ class NDEFRecord {
   String toString() {
     var str = "Record: ";
     str += basicInfoString;
-    str += "payload=${payload!.toHexString()}";
+    str += "payload=${(payload?.toHexString()) ?? '(null)'}";
     return str;
   }
 
@@ -251,10 +251,10 @@ class NDEFRecord {
 
   /// Decode a [NDEFRecord] record from raw data.
   static NDEFRecord doDecode(
-      TypeNameFormat? tnf, Uint8List? type, Uint8List? payload,
+      TypeNameFormat tnf, Uint8List type, Uint8List payload,
       { Uint8List? id, TypeFactory? typeFactory = NDEFRecord.defaultTypeFactory}) {
-    NDEFRecord? record = typeFactory!(tnf!, utf8.decode(type!));
-    if (payload!.length < record!.minPayloadLength) {
+    NDEFRecord? record = typeFactory!(tnf, utf8.decode(type));
+    if (payload.length < record!.minPayloadLength) {
       throw "Payload length must be >= ${record.minPayloadLength}";
     }
     if (record.maxPayloadLength != null &&
