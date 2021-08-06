@@ -7,8 +7,8 @@ void main() {
   var encodedUrlRecord =
       "91011655046769746875622e636f6d2f6e6663696d2f6e64656651010b55046769746875622e636f6d";
   var urlRecords = [
-    new ndef.UriRecord.fromString("https://github.com/nfcim/ndef"),
-    new ndef.UriRecord.fromString("https://github.com")
+    ndef.UriRecord.fromString("https://github.com/nfcim/ndef"),
+    ndef.UriRecord.fromString("https://github.com")
   ];
 
   /// decode full ndef message (concatenation of records)
@@ -26,7 +26,7 @@ void main() {
   }
 
   // modify the record by data-binding
-  var origPayload = urlRecords[0].payload;
+  var origPayload = urlRecords[0].payload!;
   print('===================');
   print('original payload: ' + origPayload.toHexString());
   print('original uri: ' + urlRecords[0].uri.toString());
@@ -36,13 +36,13 @@ void main() {
   urlRecords[0].content =
       'github.com/nfcim/flutter_nfc_kit'; // thats also our awesome library, check it out!
   print('payload after change content: ' +
-      urlRecords[0].payload.toHexString()); // encoded when invoking
+      urlRecords[0].payload!.toHexString()); // encoded when invoking
   print('uri after change content: ' + urlRecords[0].uri.toString());
 
   // change it back (by using payload)
   print('===================');
   urlRecords[0].payload = origPayload; // decoded when invoking
-  print('payload after changed back: ' + urlRecords[0].payload.toHexString());
+  print('payload after changed back: ' + urlRecords[0].payload!.toHexString());
   print('uri after changed back: ' + urlRecords[0].uri.toString());
 
   // encoded into message again (also canonicalize MB & MF fields)
@@ -53,7 +53,9 @@ void main() {
   // also you can decode by providing id, type and payload separately (normally from phone API)
   print('===================');
   var partiallyDecodedUrlRecord = ndef.decodePartialNdefMessage(
-      ndef.TypeNameFormat.nfcWellKnown, utf8.encode("U") as Uint8List, origPayload,
+      ndef.TypeNameFormat.nfcWellKnown,
+      utf8.encode("U") as Uint8List,
+      origPayload,
       id: Uint8List.fromList([0x1, 0x2]));
   assert(partiallyDecodedUrlRecord is ndef.UriRecord);
   print('partially decoded record: ' +

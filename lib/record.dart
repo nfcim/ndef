@@ -86,7 +86,7 @@ enum TypeNameFormat {
 }
 
 /// Construct an instance of a specific type (subclass) of [NDEFRecord] according to [tnf] and [classType]
-typedef NDEFRecord? TypeFactory(TypeNameFormat tnf, String classType);
+typedef NDEFRecord TypeFactory(TypeNameFormat tnf, String classType);
 
 /// The base class of all types of records.
 /// Also represents an record of unknown type.
@@ -151,7 +151,7 @@ class NDEFRecord {
 
   /// Hex String of id, return "(empty)" when the id bytes is null
   String get idString {
-    return id == null ? "(empty)" : id!.toHexString();
+    return id?.toHexString() ?? '(empty)';
   }
 
   set idString(String? value) {
@@ -204,14 +204,15 @@ class NDEFRecord {
     }
     this.type = type;
     this.id = id;
+    // some subclasses' setters require payload != null
     if (payload != null) {
       this.payload = payload;
     }
   }
 
   /// Construct an instance of a specific type (subclass) of [NDEFRecord] according to tnf and type
-  static NDEFRecord defaultTypeFactory(TypeNameFormat? tnf, String? classType) {
-    NDEFRecord? record;
+  static NDEFRecord defaultTypeFactory(TypeNameFormat tnf, String classType) {
+    NDEFRecord record;
     if (tnf == TypeNameFormat.nfcWellKnown) {
       if (classType == UriRecord.classType) {
         record = UriRecord();
@@ -256,9 +257,9 @@ class NDEFRecord {
   static NDEFRecord doDecode(
       TypeNameFormat tnf, Uint8List type, Uint8List payload,
       {Uint8List? id,
-      TypeFactory? typeFactory = NDEFRecord.defaultTypeFactory}) {
-    NDEFRecord? record = typeFactory!(tnf, utf8.decode(type));
-    if (payload.length < record!.minPayloadLength) {
+      TypeFactory typeFactory = NDEFRecord.defaultTypeFactory}) {
+    var record = typeFactory(tnf, utf8.decode(type));
+    if (payload.length < record.minPayloadLength) {
       throw "Payload length must be >= ${record.minPayloadLength}";
     }
     if (record.maxPayloadLength != null &&
@@ -276,7 +277,6 @@ class NDEFRecord {
   static NDEFRecord decodeStream(ByteStream stream, TypeFactory typeFactory) {
     var flags = new NDEFRecordFlags(data: stream.readByte());
 
-    //TODO: Convert "num" to "int" for null-safety
     int typeLength = stream.readByte();
     int payloadLength;
     int idLength = 0;
