@@ -9,7 +9,7 @@ class MimeRecord extends NDEFRecord {
     return classTnf;
   }
 
-  MimeRecord({String decodedType, Uint8List payload, Uint8List id})
+  MimeRecord({String? decodedType, Uint8List? payload, Uint8List? id})
       : super(id: id, payload: payload) {
     if (decodedType != null) {
       this.decodedType = decodedType;
@@ -20,7 +20,7 @@ class MimeRecord extends NDEFRecord {
   String toString() {
     var str = "MimeRecord: ";
     str += basicInfoString;
-    str += "payload=${payload.toHexString()}";
+    str += "payload=${(payload?.toHexString()) ?? '(null)'}";
     return str;
   }
 }

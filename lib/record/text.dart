@@ -30,13 +30,13 @@ class TextRecord extends WellKnownRecord {
     return str;
   }
 
-  TextEncoding encoding;
-  String _language, text;
+  late TextEncoding encoding;
+  String? _language, text;
 
   TextRecord(
       {TextEncoding encoding = TextEncoding.UTF8,
-      String language,
-      String text}) {
+      String? language,
+      String? text}) {
     this.encoding = encoding;
     if (language != null) {
       this.language = language;
@@ -44,12 +44,12 @@ class TextRecord extends WellKnownRecord {
     this.text = text;
   }
 
-  String get language {
+  String? get language {
     return _language;
   }
 
-  set language(String language) {
-    if (language.length >= 64 || language.length <= 0) {
+  set language(String? language) {
+    if (language!.length >= 64 || language.length <= 0) {
       throw "Length of language code must be in [1,64), got ${language.length}";
     }
     this._language = language;
@@ -65,16 +65,16 @@ class TextRecord extends WellKnownRecord {
   }
 
   Uint8List get payload {
-    List<int> languagePayload = utf8.encode(language);
-    List<int> textPayload;
-    int encodingFlag;
+    List<int> languagePayload = utf8.encode(language!);
+    late List<int> textPayload;
+    late int encodingFlag;
     if (encoding == TextEncoding.UTF8) {
-      textPayload = utf8.encode(text);
+      textPayload = utf8.encode(text!);
       encodingFlag = 0;
     } else if (encoding == TextEncoding.UTF16) {
       // use UTF-16 LE only in encoding
       List<int> encodedChar = [0xFEFF];
-      encodedChar.addAll(text.codeUnits);
+      encodedChar.addAll(text!.codeUnits);
       textPayload = Uint16List.fromList(encodedChar).buffer.asUint8List();
       encodingFlag = 1;
     }
@@ -82,8 +82,8 @@ class TextRecord extends WellKnownRecord {
     return new Uint8List.fromList([flag] + languagePayload + textPayload);
   }
 
-  set payload(Uint8List payload) {
-    var stream = new ByteStream(payload);
+  set payload(Uint8List? payload) {
+    var stream = new ByteStream(payload!);
 
     int flag = stream.readByte();
     int languagePayloadLength = flag & 0x3F;

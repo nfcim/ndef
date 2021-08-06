@@ -13,13 +13,13 @@ void main() {
 
   /// decode full ndef message (concatenation of records)
   /// note that we have implemented extension methods on [Uint8List], [String], [int] and [BigInt]
-  var decodedurlRecords = ndef.decodeRawNdefMessage(encodedUrlRecord.toBytes());
+  var decodedUrlRecords = ndef.decodeRawNdefMessage(encodedUrlRecord.toBytes());
 
-  assert(urlRecords.length == decodedurlRecords.length);
+  assert(urlRecords.length == decodedUrlRecords.length);
 
   for (int i = 0; i < urlRecords.length; i++) {
     var raw = urlRecords[i];
-    var decoded = decodedurlRecords[i];
+    var decoded = decodedUrlRecords[i];
     assert(decoded is ndef.UriRecord);
     assert((decoded as ndef.UriRecord).uri == raw.uri);
     print((decoded as ndef.UriRecord).toString());
@@ -53,7 +53,7 @@ void main() {
   // also you can decode by providing id, type and payload separately (normally from phone API)
   print('===================');
   var partiallyDecodedUrlRecord = ndef.decodePartialNdefMessage(
-      ndef.TypeNameFormat.nfcWellKnown, utf8.encode("U"), origPayload,
+      ndef.TypeNameFormat.nfcWellKnown, utf8.encode("U") as Uint8List, origPayload,
       id: Uint8List.fromList([0x1, 0x2]));
   assert(partiallyDecodedUrlRecord is ndef.UriRecord);
   print('partially decoded record: ' +
