@@ -19,7 +19,6 @@
 * Fix encoding / decoding of text records in UTF-16 (remove dependency of discontinued `utf` library)
 * Use extension methods to simplify usage
 
-
 ## 0.2.1
 
 * Fix some bugs caused by `null` when use blank records
@@ -40,4 +39,3 @@
 * Upgrade to Flutter 2.0
 * Add null-safety support
 * Fix some typos in code
-

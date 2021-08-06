@@ -115,9 +115,7 @@ void main() {
             title: "ndef",
             uri: "https://github.com/nfcim/ndef",
             action: Action.exec,
-            icon: {
-              "image/png": Uint8List.fromList(utf8.encode("a picture"))
-            },
+            icon: {"image/png": Uint8List.fromList(utf8.encode("a picture"))},
             size: 10000),
         // typeInfo: null),
       ],
@@ -250,8 +248,8 @@ void main() {
         true);
     assert(ByteUtils.bytesEqual(Uint8List.fromList([1, 2, 3]), null) == false);
 
-    Uint8List bytes;
-    // assert(bytes.toHexString() == "");
+    var bytes = Uint8List(0);
+    assert(bytes.toHexString() == "");
     assert(Uint8List.fromList([]).toHexString() == "");
   });
 
@@ -290,14 +288,17 @@ void main() {
     assert(wellKnownRecord.id == null);
   });
 
-  test('exception test', () {
-    UriRecord record = UriRecord();
-    //record.prefix = "test";
-  });
+  test(
+      'exception test',
+      () => expect(() {
+            UriRecord record = UriRecord();
+            record.prefix = "test";
+          }, throwsA(matches('.*'))));
 
   test('manual test', () {
-    //print(decodeRawNdefMessage(ByteUtils.hexStringToBytes(
-    //    "d2200b6170706c69636174696f6e2f766e642e626c7565746f6f74682e65702e6f6f620b0006050403020102ff61")));
+    print(decodeRawNdefMessage(ByteUtils.hexStringToBytes(
+        "d2200b6170706c69636174696f6e2f766e642e626c7565746f6f74682e65702e6f6f620b0006050403020102ff61")));
   });
+
   // TODO: more tests
 }
