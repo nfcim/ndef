@@ -40,10 +40,10 @@ if (decodedRecords[0] is ndef.TextRecord) {
 }
 
 // data-binding (by implementing payload as dynamic getter / setter)
-var origPayload = uriRecord.payload;
+var origPayload = uriRecord.payload!;
 print(origPayload.toHexString());
 uriRecord.content = "github.com/nfcim/flutter_nfc_kit";
-print(uriRecord.payload.toHexString()); // changed
+print(uriRecord.payload!.toHexString()); // changed
 uriRecord.payload = origPayload;
 print(uriRecord.content); // changed back
 
@@ -54,9 +54,3 @@ var partiallyDecodedUrlRecord = ndef.decodePartialNdefMessage(ndef.TypeNameForma
 See [examples](example/lib/main.dart) for a more complete example.
 
 Refer to the [documentation](https://pub.dev/documentation/ndef/) for more information.
-
-## TODO
-
-1. handle exceptions
-2. add class types
-3. add test
