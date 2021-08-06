@@ -51,6 +51,6 @@ print(uriRecord.content); // changed back
 var partiallyDecodedUrlRecord = ndef.decodePartialNdefMessage(ndef.TypeNameFormat.nfcWellKnown, utf8.encode("U"), origPayload, id: Uint8List.fromList([0x1, 0x2]));
 ```
 
-See [examples](example/lib/main.dart) for a more complete example.
+See [example code](example/lib/main.dart) for a more complete example. Null-safety support is added from version 0.3.0.
 
-Refer to the [documentation](https://pub.dev/documentation/ndef/) for more information.
+Refer to the [documentation](https://pub.dev/documentation/ndef/) for detailed usage.
