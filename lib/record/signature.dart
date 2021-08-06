@@ -58,14 +58,14 @@ class SignatureRecord extends WellKnownRecord {
   late Uint8List signature;
   late int signatureTypeIndex, hashTypeIndex, certificateFormatIndex;
 
-  SignatureRecord({
-    String? signatureType,
-    String hashType = "SHA-256",
-    Uint8List? signature,
-    String signatureURI = "",
-    String certificateFormat = "X.509",
-    List<Uint8List>? certificateStore,
-    String certificateURI = ""}) {
+  SignatureRecord(
+      {String? signatureType,
+      String hashType = "SHA-256",
+      Uint8List? signature,
+      String signatureURI = "",
+      String certificateFormat = "X.509",
+      List<Uint8List>? certificateStore,
+      String certificateURI = ""}) {
     this.signatureType = signatureType;
     this.hashType = hashType;
     this.signature = signature != null ? signature : new Uint8List(0);

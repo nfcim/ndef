@@ -451,7 +451,7 @@ class HandoverRequestRecord extends HandoverRecord {
   }
 
   Uint8List? get payload {
-    if (version.value> 0x11) {
+    if (version.value > 0x11) {
       if (collisionResolutionNumber == null) {
         throw "Handover Request Record must have a Collision Resolution Record";
       }
@@ -681,8 +681,10 @@ class HandoverCarrierRecord extends WellKnownRecord {
 
   Uint8List? get payload {
     var carrierTypeBytes = utf8.encode(carrierType!);
-    List<int>? payload =
-        ([_carrierTnf, carrierTypeBytes.length] + carrierTypeBytes + carrierData).cast();
+    List<int>? payload = ([_carrierTnf, carrierTypeBytes.length] +
+            carrierTypeBytes +
+            carrierData)
+        .cast();
     return Uint8List.fromList(payload);
   }
 

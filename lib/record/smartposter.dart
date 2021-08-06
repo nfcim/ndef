@@ -364,7 +364,7 @@ class SmartPosterRecord extends WellKnownRecord {
     }
     if (_titleLanguages.contains(language)) {
       _titleRecords[_titleLanguages.indexOf(language)] =
-      new TextRecord(text: text);
+          new TextRecord(text: text);
     } else {
       addTitle(text, language: language);
     }

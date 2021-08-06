@@ -358,7 +358,8 @@ class DeviceClass {
     String minorString0 = minorString;
     if (deviceClassList.containsKey(major)) {
       var text = <String>[];
-      for (var mapping in deviceClassList[major]![1] as Iterable) {// Strong cast, MAYBE have problems
+      for (var mapping in deviceClassList[major]![1] as Iterable) {
+        // Strong cast, MAYBE have problems
         var bits = minorString.substring(0, mapping.keys.first.length);
         if (mapping.containsKey(bits)) {
           text.add(mapping[bits]);
@@ -465,6 +466,7 @@ class ServiceClass {
   };
 
   late Uint8List _uuidData;
+
   /// uuidData is non nullable, so use required keyword here.
   ServiceClass({required Uint8List uuidData}) {
     this.uuidData = uuidData;
@@ -672,7 +674,7 @@ class EIR {
   }
 
   Uint8List get bytes {
-    return ([typeNum] + data) as Uint8List;// Strong cast, MAYBE have problems.
+    return ([typeNum] + data) as Uint8List; // Strong cast, MAYBE have problems.
   }
 
   set bytes(Uint8List bytes) {
@@ -742,7 +744,8 @@ class BluetoothRecord extends MimeRecord {
   }
 
   set deviceName(String deviceName) {
-    attributes[EIRType.CompleteLocalName] = utf8.encode(deviceName) as Uint8List;
+    attributes[EIRType.CompleteLocalName] =
+        utf8.encode(deviceName) as Uint8List;
     if (attributes.containsKey(EIRType.ShortenedLocalName)) {
       attributes.remove(EIRType.ShortenedLocalName);
     }
@@ -775,7 +778,8 @@ class BluetoothEasyPairingRecord extends BluetoothRecord {
     return str;
   }
 
-  BluetoothEasyPairingRecord({this.address, Map<EIRType, Uint8List>? attributes})
+  BluetoothEasyPairingRecord(
+      {this.address, Map<EIRType, Uint8List>? attributes})
       : super(attributes: attributes);
 
   EPAddress? address;
@@ -890,7 +894,8 @@ class BluetoothEasyPairingRecord extends BluetoothRecord {
     List<int>? payload = ByteUtils.intToBytes(
             data.length + address!.bytes.length + 2, 2,
             endianness: Endianness.Little) +
-        address!.bytes + data.cast();
+        address!.bytes +
+        data.cast();
     return new Uint8List.fromList(payload);
   }
 
