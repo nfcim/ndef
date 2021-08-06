@@ -63,7 +63,7 @@ Uint8List encodeNdefMessage(List<NDEFRecord> records,
   var encoded = <int>[];
   records.forEach((r) {
     encoded.addAll(r.encode());
-  }); 
+  });
 
   return new Uint8List.fromList(encoded);
 }

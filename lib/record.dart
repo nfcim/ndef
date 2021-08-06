@@ -45,7 +45,7 @@ class NDEFRecordFlags {
   }
 
   int encode() {
-    assert(0 <= TNF && TNF<= 7);
+    assert(0 <= TNF && TNF <= 7);
     return (MB.toInt() << 7) |
         (ME.toInt() << 6) |
         (CF.toInt() << 5) |
@@ -189,7 +189,10 @@ class NDEFRecord {
   late NDEFRecordFlags flags;
 
   NDEFRecord(
-      { TypeNameFormat? tnf, Uint8List? type, Uint8List? id, Uint8List? payload}) {
+      {TypeNameFormat? tnf,
+      Uint8List? type,
+      Uint8List? id,
+      Uint8List? payload}) {
     flags = new NDEFRecordFlags();
     if (tnf == null) {
       flags.TNF = TypeNameFormat.values.indexOf(this.tnf);
@@ -252,7 +255,8 @@ class NDEFRecord {
   /// Decode a [NDEFRecord] record from raw data.
   static NDEFRecord doDecode(
       TypeNameFormat tnf, Uint8List type, Uint8List payload,
-      { Uint8List? id, TypeFactory? typeFactory = NDEFRecord.defaultTypeFactory}) {
+      {Uint8List? id,
+      TypeFactory? typeFactory = NDEFRecord.defaultTypeFactory}) {
     NDEFRecord? record = typeFactory!(tnf, utf8.decode(type));
     if (payload.length < record!.minPayloadLength) {
       throw "Payload length must be >= ${record.minPayloadLength}";

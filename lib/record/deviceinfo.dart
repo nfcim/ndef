@@ -54,14 +54,13 @@ class DeviceInformationRecord extends WellKnownRecord {
   late Uint8List uuidData;
   late List<DataElement> undefinedData;
 
-  DeviceInformationRecord({
-        String? vendorName,
-        String? modelName,
-        String? uniqueName,
-        String? uuid,
-        String? versionString,
-        List<DataElement>? undefinedData
-      }) {
+  DeviceInformationRecord(
+      {String? vendorName,
+      String? modelName,
+      String? uniqueName,
+      String? uuid,
+      String? versionString,
+      List<DataElement>? undefinedData}) {
     this.vendorName = vendorName;
     this.modelName = modelName;
     this.uniqueName = uniqueName;
