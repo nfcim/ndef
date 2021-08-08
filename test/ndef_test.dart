@@ -288,12 +288,12 @@ void main() {
     assert(wellKnownRecord.id == null);
   });
 
-  test(
-      'exception test',
-      () => expect(() {
-            UriRecord record = UriRecord();
-            record.prefix = "test";
-          }, throwsA(matches('.*'))));
+  // test(
+  //     'exception test',
+  //     () => expect(() {
+  //           UriRecord record = UriRecord();
+  //           record.prefix = "test";
+  //         }, throwsA(matches('.*'))));
 
   test('manual test', () {
     print(decodeRawNdefMessage(ByteUtils.hexStringToBytes(
@@ -302,3 +302,4 @@ void main() {
 
   // TODO: more tests
 }
+
