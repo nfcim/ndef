@@ -50,7 +50,7 @@ class TextRecord extends WellKnownRecord {
 
   set language(String? language) {
     if (language!.length >= 64 || language.length <= 0) {
-      throw "Length of language code must be in [1,64), got ${language.length}";
+      throw RangeError.range(language.length, 1, 64);
     }
     this._language = language;
   }
@@ -111,7 +111,7 @@ class TextRecord extends WellKnownRecord {
       } else if (bytes[1] == 0xFE) {
         end = Endianness.Big;
       } else {
-        throw "Unknown BOM in UTF-16 encoded string.";
+        throw ArgumentError("Unknown BOM in UTF-16 encoded string.");
       }
       StringBuffer buffer = new StringBuffer();
       for (int i = 2; i < bytes.length;) {

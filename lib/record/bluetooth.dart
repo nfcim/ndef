@@ -41,7 +41,7 @@ class _Address {
       }
       addr = new Uint8List.fromList(bts);
     } else {
-      throw "Pattern of adress string is wrong, got $address";
+      throw ArgumentError("Pattern of adress string is wrong, got $address");
     }
   }
 }
@@ -63,7 +63,7 @@ class EPAddress extends _Address {
 
   set bytes(Uint8List bytes) {
     if (bytes.length != 6) {
-      throw "Bytes length of Bluetooth LE Address must be 6, got ${bytes.length}";
+      throw ArgumentError.value(bytes.length, "Bytes length of Bluetooth LE Address must be 6");
     }
     this.addr = bytes;
   }
@@ -101,7 +101,7 @@ class LEAddress extends _Address {
 
   set bytes(Uint8List bytes) {
     if (bytes.length != 7) {
-      throw "Bytes length of Bluetooth LE Address must be 7, got ${bytes.length}";
+      throw ArgumentError.value(bytes.length, "Bytes length of Bluetooth LE Address must be 7");
     }
     this.addr = bytes.sublist(0, 6);
     this.type = LEAddressType.values[bytes[6]];
@@ -385,7 +385,7 @@ class DeviceClass {
 
   set bytes(Uint8List bytes) {
     if (bytes.length != 3) {
-      throw "Bytes length of Class of Device must be 3, got ${bytes.length}";
+      throw ArgumentError.value(bytes.length, "Bytes length of Class of Device must be 3");
     }
     value = ByteUtils.bytesToInt(bytes, endianness: Endianness.Little);
   }
@@ -512,7 +512,7 @@ class ServiceClass {
     if (bytes.length == 2 || bytes.length == 4 || bytes.length == 16) {
       _uuidData = bytes;
     } else {
-      throw "Bytes length of uuidData must be 2, 4, or 16, got ${bytes.length}";
+      throw ArgumentError.value(bytes.length, "Bytes length of uuidData must be 2, 4, or 16");
     }
   }
 
@@ -688,7 +688,7 @@ class EIR {
 
   set typeNum(int? typeNum) {
     if (!numTypeMap.containsKey(typeNum)) {
-      throw "EIR type Number $typeNum is not supported";
+      throw ArgumentError("EIR type Number $typeNum is not supported");
     }
     this._typeNum = typeNum;
   }
@@ -709,7 +709,7 @@ class EIR {
       }
     }
     if (typeNum == null) {
-      throw "EIR type $type is not supported, please select one from ${EIRType.values}";
+      throw ArgumentError("EIR type $type is not supported, please select one from ${EIRType.values}");
     }
   }
 }
@@ -728,7 +728,7 @@ class BluetoothRecord extends MimeRecord {
 
   void setAttribute(EIRType? type, Uint8List value) {
     if (!EIR.typeNumMap.containsKey(type)) {
-      throw "EIR type $type is not supported, please select one from ${EIRType.values}";
+      throw ArgumentError("EIR type $type is not supported, please select one from ${EIRType.values}");
     }
     attributes[type!] = value;
   }
@@ -972,7 +972,7 @@ class BluetoothLowEnergyRecord extends BluetoothRecord {
       bytes.add(index);
       attributes[EIRType.LERole] = new Uint8List.fromList(bytes);
     } else {
-      throw "Role capability $value is undefined";
+      throw ArgumentError("Role capability $value is undefined");
     }
   }
 
@@ -1053,7 +1053,7 @@ class BluetoothLowEnergyRecord extends BluetoothRecord {
       }
     }
     if (index == null) {
-      throw "Appearance $appearance is not correct";
+      throw ArgumentError.notNull("Appearance $appearance is not correct");
     }
     attributes[EIRType.Appearance] =
         ByteUtils.intToBytes(index, 4, endianness: Endianness.Little);
@@ -1086,7 +1086,7 @@ class BluetoothLowEnergyRecord extends BluetoothRecord {
     int value = 0;
     for (int i = 0; i < flags!.length; i++) {
       if (!flagsList.contains(flags[i])) {
-        throw "Flag ${flags[i]} is not correct";
+        throw ArgumentError("Flag ${flags[i]} is not correct");
       }
       value += 1 << flagsList.indexOf(flags[i]);
     }

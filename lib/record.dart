@@ -57,8 +57,9 @@ class NDEFRecordFlags {
   void decode(int? data) {
     if (data != null) {
       if (data < 0 || data >= 256) {
-        throw "Data to decode in flags must be in [0, 256), got $data";
+        throw RangeError.range(data, 0, 255);
       }
+
       MB = ((data >> 7) & 1) == 1;
       ME = ((data >> 6) & 1) == 1;
       CF = ((data >> 5) & 1) == 1;
@@ -198,7 +199,7 @@ class NDEFRecord {
       flags.TNF = TypeNameFormat.values.indexOf(this.tnf);
     } else {
       if (this.tnf != TypeNameFormat.empty) {
-        throw "TNF has not been set in subclass of Record";
+        throw ArgumentError("TNF has not been set in subclass of Record");
       }
       this.tnf = tnf;
     }
@@ -260,11 +261,11 @@ class NDEFRecord {
       TypeFactory typeFactory = NDEFRecord.defaultTypeFactory}) {
     var record = typeFactory(tnf, utf8.decode(type));
     if (payload.length < record.minPayloadLength) {
-      throw "Payload length must be >= ${record.minPayloadLength}";
+      throw ArgumentError("Payload length must be >= ${record.minPayloadLength}");
     }
     if (record.maxPayloadLength != null &&
         payload.length < record.maxPayloadLength!) {
-      throw "Payload length must be <= ${record.maxPayloadLength}";
+      throw ArgumentError("Payload length must be <= ${record.maxPayloadLength}");
     }
     record.id = id;
     record.type = type;
@@ -319,11 +320,11 @@ class NDEFRecord {
   /// Encode this [NDEFRecord] to raw byte data.
   Uint8List encode() {
     if (type == null) {
-      throw "Type is null, please set type before encode";
+      throw ArgumentError.notNull("Type is null, please set type before encode");
     }
 
     if (payload == null) {
-      throw "Payload is null, please set parameters or set payload directly before encode";
+      throw ArgumentError.notNull("Payload is null, please set parameters or set payload directly before encode");
     }
 
     var encoded = <int>[];
@@ -347,8 +348,9 @@ class NDEFRecord {
 
     // type length
     if (type!.length >= 256) {
-      throw "Number of bytes of type must be in [0,256), got ${type!.length}";
+      throw RangeError.range(type!.length, 0, 256);
     }
+
     encoded += [type!.length];
 
     // use getter for implicit encoding
@@ -369,7 +371,7 @@ class NDEFRecord {
     // ID length
     if (id != null) {
       if (id!.length >= 256) {
-        throw "Number of bytes of identifier must be in [0,256), got ${id!.length}";
+        throw RangeError.range(id!.length, 0, 256);
       }
       encoded += [id!.length];
     }

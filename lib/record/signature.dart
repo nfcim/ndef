@@ -91,7 +91,7 @@ class SignatureRecord extends WellKnownRecord {
         return;
       }
     }
-    throw "Signature type $signatureType is not supported, please select one from $signatureTypeMap";
+    throw ArgumentError("Signature type $signatureType is not supported, please select one from $signatureTypeMap");
   }
 
   String get hashType {
@@ -105,7 +105,7 @@ class SignatureRecord extends WellKnownRecord {
         return;
       }
     }
-    throw "Hash type $hashType is not supported, please select one from [, SHA-256]";
+    throw ArgumentError("Hash type $hashType is not supported, please select one from [, SHA-256]");
   }
 
   String get certificateFormat {
@@ -119,7 +119,7 @@ class SignatureRecord extends WellKnownRecord {
         return;
       }
     }
-    throw "Certificate format $certificateFormat is not supported, please select one from $certificateFormatMap";
+    throw ArgumentError("Certificate format $certificateFormat is not supported, please select one from $certificateFormatMap");
   }
 
   List<Uint8List> get certificateStore {
@@ -128,10 +128,10 @@ class SignatureRecord extends WellKnownRecord {
 
   void addCertificateStore(Uint8List certificate) {
     if (certificate.length >= 1 << 16) {
-      throw "Bytes length of certificate must be < 2^16, got ${certificate.length}";
+      throw RangeError.range(certificate.length, 1 << 16, null);
     }
     if (_certificateStore.length >= 1 << 4) {
-      throw "Number of certificates in certificate store must be < 2^4, got ${_certificateStore.length}";
+      throw RangeError.range(_certificateStore.length, 1 << 4, null);
     }
     _certificateStore.add(certificate);
   }
@@ -183,7 +183,7 @@ class SignatureRecord extends WellKnownRecord {
     //Version Field
     if (version != classVersion) {
       //TODO:find the document of smartposter 2.0
-      throw "Signature Record is only implemented for smartposter 2.0, got ${Version.formattedString(version)}";
+      throw ArgumentError("Signature Record is only implemented for smartposter 2.0, got ${Version.formattedString(version)}");
     }
 
     //Signature Field
