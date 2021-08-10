@@ -47,7 +47,6 @@ class ByteUtils {
 
   static Uint8List bigIntToBytes(BigInt? value, int length,
       {endianness = Endianness.Big}) {
-    //TODO: MAYBE Dangerous!
     Uint8List? list =
         new List<int?>.filled(0, null, growable: false) as Uint8List;
     BigInt? v = value;

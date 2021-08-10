@@ -49,7 +49,7 @@ class ActionRecord extends WellKnownRecord {
   set payload(Uint8List? payload) {
     int actionIndex = payload![0];
     if (actionIndex >= Action.values.length && actionIndex < 0) {
-      throw 'Action code must be in [0,${Action.values.length}), got $actionIndex';
+      throw RangeError.range(actionIndex, 0, Action.values.length);
     }
     action = Action.values[actionIndex];
   }
@@ -90,7 +90,7 @@ class SizeRecord extends WellKnownRecord {
 
   set size(int size) {
     if (size < 0 || size >= 1 << 32) {
-      throw "Size of smart poster must be in [0, 2^32), got $size";
+      throw RangeError.range(size, 0, 1 << 32);
     }
     _size = size;
   }
@@ -306,7 +306,7 @@ class SmartPosterRecord extends WellKnownRecord {
 
   void addUriRecord(UriRecord record) {
     if (_uriRecords.length == 1) {
-      throw "Number of URI Record in Smart Poster Record must be 1, got ${_uriRecords.length}";
+      throw ArgumentError.value(_uriRecords.length, "Number of URI Record in Smart Poster Record must be 1");
     }
     _uriRecords.add(record);
   }
@@ -360,7 +360,7 @@ class SmartPosterRecord extends WellKnownRecord {
       language = t.key;
       text = t.value;
     } else {
-      throw "Title expects String or Map<String,String>, got ${title.runtimeType}";
+      throw ArgumentError("Title expects String or Map<String,String>, got ${title.runtimeType}");
     }
     if (_titleLanguages.contains(language)) {
       _titleRecords[_titleLanguages.indexOf(language)] =
@@ -375,7 +375,7 @@ class SmartPosterRecord extends WellKnownRecord {
     _titleRecords.add(
         new TextRecord(language: language, text: text, encoding: encoding));
     if (_titleLanguages.contains(language)) {
-      throw "Language of titles can not be repeated, got $language";
+      throw ArgumentError("Language of titles can not be repeated, got $language");
     }
     _titleLanguages.add(language);
   }
@@ -383,7 +383,7 @@ class SmartPosterRecord extends WellKnownRecord {
   void addTitleRecord(TextRecord record) {
     _titleRecords.add(record);
     if (_titleLanguages.contains(record.language)) {
-      throw "Language of titles can not be repeated, got ${record.language}";
+      throw ArgumentError("Language of titles can not be repeated, got ${record.language}");
     }
     _titleLanguages.add(record.language);
   }
@@ -484,7 +484,7 @@ class SmartPosterRecord extends WellKnownRecord {
   static void _checkValidIconType(String decodedType) {
     if (!(decodedType.startsWith('image/') ||
         decodedType.startsWith('video'))) {
-      throw "Type of Icon Records must be image or video, not $decodedType";
+      throw ArgumentError("Type of Icon Records must be image or video, not $decodedType");
     }
   }
 
@@ -550,7 +550,7 @@ class SmartPosterRecord extends WellKnownRecord {
 
   Uint8List get payload {
     if (_uriRecords.length != 1) {
-      throw "Number of URI Record in Smart Poster Record must be 1, got ${_uriRecords.length}";
+      throw ArgumentError.value(_uriRecords.length, "Number of URI Record in Smart Poster Record must be 1");
     }
     return encodeNdefMessage(allRecords);
   }
@@ -573,7 +573,7 @@ class SmartPosterRecord extends WellKnownRecord {
       }
     });
     if (uriRecords.length != 1) {
-      throw "Number of URI Record in Smart Poster Record must be 1, got ${uriRecords.length}";
+      throw ArgumentError.value(uriRecords.length, "Number of URI Record in Smart Poster Record must be 1");
     }
   }
 }
