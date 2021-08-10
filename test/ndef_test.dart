@@ -288,6 +288,7 @@ void main() {
     assert(wellKnownRecord.id == null);
   });
 
+  // TODO: exception test (urgent task)
   // test(
   //     'exception test',
   //     () => expect(() {
