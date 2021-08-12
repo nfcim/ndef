@@ -289,12 +289,12 @@ void main() {
   });
 
   // TODO: exception test (urgent task)
-  // test(
-  //     'exception test',
-  //     () => expect(() {
-  //           UriRecord record = UriRecord();
-  //           record.prefix = "test";
-  //         }, throwsA(matches('.*'))));
+  test(
+      'exception test',
+      () => expect(() {
+            UriRecord record = UriRecord();
+            record.prefix = "test";
+          }, throwsArgumentError));
 
   test('manual test', () {
     print(decodeRawNdefMessage(ByteUtils.hexStringToBytes(
