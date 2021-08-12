@@ -90,7 +90,7 @@ class DeviceInformationRecord extends WellKnownRecord {
 
   Uint8List? get payload {
     if (!(vendorName != null && modelName != null)) {
-      throw "Decoding requires the manufacturer and model name TLVs";
+      throw ArgumentError("Decoding requires the manufacturer and model name TLVs");
     }
     List<int>? payload = [];
 
@@ -141,7 +141,7 @@ class DeviceInformationRecord extends WellKnownRecord {
       }
     }
     if (!(vendorName != null && modelName != null)) {
-      throw "Decoding requires the manufacturer and model name TLVs";
+      throw ArgumentError("Decoding requires the manufacturer and model name TLVs");
     }
   }
 }

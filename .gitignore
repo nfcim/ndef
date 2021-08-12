@@ -40,3 +40,4 @@ doc/api/
 .idea/
 
 # End of https://www.toptal.com/developers/gitignore/api/dart,visualstudiocode
+/test/.gradle/
