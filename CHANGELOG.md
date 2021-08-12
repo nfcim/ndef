@@ -37,5 +37,7 @@
 ## 0.3.0
 
 * Upgrade to Flutter 2.0
-* Add null-safety support
+* Add null-safety support (#8)
 * Fix some typos in code
+* Use more precise exception in precondition-checking code (#9)
+
