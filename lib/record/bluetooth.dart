@@ -63,7 +63,8 @@ class EPAddress extends _Address {
 
   set bytes(Uint8List bytes) {
     if (bytes.length != 6) {
-      throw ArgumentError.value(bytes.length, "Bytes length of Bluetooth LE Address must be 6");
+      throw ArgumentError.value(
+          bytes.length, "Bytes length of Bluetooth LE Address must be 6");
     }
     this.addr = bytes;
   }
@@ -101,7 +102,8 @@ class LEAddress extends _Address {
 
   set bytes(Uint8List bytes) {
     if (bytes.length != 7) {
-      throw ArgumentError.value(bytes.length, "Bytes length of Bluetooth LE Address must be 7");
+      throw ArgumentError.value(
+          bytes.length, "Bytes length of Bluetooth LE Address must be 7");
     }
     this.addr = bytes.sublist(0, 6);
     this.type = LEAddressType.values[bytes[6]];
@@ -385,7 +387,8 @@ class DeviceClass {
 
   set bytes(Uint8List bytes) {
     if (bytes.length != 3) {
-      throw ArgumentError.value(bytes.length, "Bytes length of Class of Device must be 3");
+      throw ArgumentError.value(
+          bytes.length, "Bytes length of Class of Device must be 3");
     }
     value = ByteUtils.bytesToInt(bytes, endianness: Endianness.Little);
   }
@@ -512,7 +515,8 @@ class ServiceClass {
     if (bytes.length == 2 || bytes.length == 4 || bytes.length == 16) {
       _uuidData = bytes;
     } else {
-      throw ArgumentError.value(bytes.length, "Bytes length of uuidData must be 2, 4, or 16");
+      throw ArgumentError.value(
+          bytes.length, "Bytes length of uuidData must be 2, 4, or 16");
     }
   }
 
@@ -709,7 +713,8 @@ class EIR {
       }
     }
     if (typeNum == null) {
-      throw ArgumentError("EIR type $type is not supported, please select one from ${EIRType.values}");
+      throw ArgumentError(
+          "EIR type $type is not supported, please select one from ${EIRType.values}");
     }
   }
 }
@@ -728,7 +733,8 @@ class BluetoothRecord extends MimeRecord {
 
   void setAttribute(EIRType? type, Uint8List value) {
     if (!EIR.typeNumMap.containsKey(type)) {
-      throw ArgumentError("EIR type $type is not supported, please select one from ${EIRType.values}");
+      throw ArgumentError(
+          "EIR type $type is not supported, please select one from ${EIRType.values}");
     }
     attributes[type!] = value;
   }

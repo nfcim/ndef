@@ -306,7 +306,8 @@ class SmartPosterRecord extends WellKnownRecord {
 
   void addUriRecord(UriRecord record) {
     if (_uriRecords.length == 1) {
-      throw ArgumentError.value(_uriRecords.length, "Number of URI Record in Smart Poster Record must be 1");
+      throw ArgumentError.value(_uriRecords.length,
+          "Number of URI Record in Smart Poster Record must be 1");
     }
     _uriRecords.add(record);
   }
@@ -360,7 +361,8 @@ class SmartPosterRecord extends WellKnownRecord {
       language = t.key;
       text = t.value;
     } else {
-      throw ArgumentError("Title expects String or Map<String,String>, got ${title.runtimeType}");
+      throw ArgumentError(
+          "Title expects String or Map<String,String>, got ${title.runtimeType}");
     }
     if (_titleLanguages.contains(language)) {
       _titleRecords[_titleLanguages.indexOf(language)] =
@@ -375,7 +377,8 @@ class SmartPosterRecord extends WellKnownRecord {
     _titleRecords.add(
         new TextRecord(language: language, text: text, encoding: encoding));
     if (_titleLanguages.contains(language)) {
-      throw ArgumentError("Language of titles can not be repeated, got $language");
+      throw ArgumentError(
+          "Language of titles can not be repeated, got $language");
     }
     _titleLanguages.add(language);
   }
@@ -383,7 +386,8 @@ class SmartPosterRecord extends WellKnownRecord {
   void addTitleRecord(TextRecord record) {
     _titleRecords.add(record);
     if (_titleLanguages.contains(record.language)) {
-      throw ArgumentError("Language of titles can not be repeated, got ${record.language}");
+      throw ArgumentError(
+          "Language of titles can not be repeated, got ${record.language}");
     }
     _titleLanguages.add(record.language);
   }
@@ -484,7 +488,8 @@ class SmartPosterRecord extends WellKnownRecord {
   static void _checkValidIconType(String decodedType) {
     if (!(decodedType.startsWith('image/') ||
         decodedType.startsWith('video'))) {
-      throw ArgumentError("Type of Icon Records must be image or video, not $decodedType");
+      throw ArgumentError(
+          "Type of Icon Records must be image or video, not $decodedType");
     }
   }
 
@@ -550,7 +555,8 @@ class SmartPosterRecord extends WellKnownRecord {
 
   Uint8List get payload {
     if (_uriRecords.length != 1) {
-      throw ArgumentError.value(_uriRecords.length, "Number of URI Record in Smart Poster Record must be 1");
+      throw ArgumentError.value(_uriRecords.length,
+          "Number of URI Record in Smart Poster Record must be 1");
     }
     return encodeNdefMessage(allRecords);
   }
@@ -573,7 +579,8 @@ class SmartPosterRecord extends WellKnownRecord {
       }
     });
     if (uriRecords.length != 1) {
-      throw ArgumentError.value(uriRecords.length, "Number of URI Record in Smart Poster Record must be 1");
+      throw ArgumentError.value(uriRecords.length,
+          "Number of URI Record in Smart Poster Record must be 1");
     }
   }
 }

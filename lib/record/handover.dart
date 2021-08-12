@@ -142,7 +142,8 @@ class CollisionResolutionRecord extends WellKnownRecord {
     if (randomNumber is Uint8List) {
       randomNumber = (randomNumber).toInt();
     } else if (!(randomNumber is int)) {
-      throw ArgumentError("RandomNumber expects int or Uint8List, got ${randomNumber.runtimeType}");
+      throw ArgumentError(
+          "RandomNumber expects int or Uint8List, got ${randomNumber.runtimeType}");
     }
     assert(randomNumber >= 0 && randomNumber <= 0xffff);
     _randomNumber = randomNumber;
@@ -453,7 +454,8 @@ class HandoverRequestRecord extends HandoverRecord {
   Uint8List? get payload {
     if (version.value > 0x11) {
       if (collisionResolutionNumber == null) {
-        throw ArgumentError("Handover Request Record must have a Collision Resolution Record");
+        throw ArgumentError(
+            "Handover Request Record must have a Collision Resolution Record");
       }
     }
     return super.payload;
@@ -463,7 +465,8 @@ class HandoverRequestRecord extends HandoverRecord {
     super.payload = payload;
     if (version.value > 0x11) {
       if (collisionResolutionNumber == null) {
-        throw ArgumentError("Handover Request Record must have a Collision Resolution Record");
+        throw ArgumentError(
+            "Handover Request Record must have a Collision Resolution Record");
       }
     }
   }
@@ -567,7 +570,8 @@ class HandoverSelectRecord extends HandoverRecord {
 
   Uint8List? get payload {
     if (version.value < 0x12 && errorRecordList.length >= 1) {
-      throw ArgumentError("Encoding error record version ${version.value} is not supported");
+      throw ArgumentError(
+          "Encoding error record version ${version.value} is not supported");
     }
     return super.payload;
   }
