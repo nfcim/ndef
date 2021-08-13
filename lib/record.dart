@@ -261,11 +261,13 @@ class NDEFRecord {
       TypeFactory typeFactory = NDEFRecord.defaultTypeFactory}) {
     var record = typeFactory(tnf, utf8.decode(type));
     if (payload.length < record.minPayloadLength) {
-      throw ArgumentError("Payload length must be >= ${record.minPayloadLength}");
+      throw ArgumentError(
+          "Payload length must be >= ${record.minPayloadLength}");
     }
     if (record.maxPayloadLength != null &&
         payload.length < record.maxPayloadLength!) {
-      throw ArgumentError("Payload length must be <= ${record.maxPayloadLength}");
+      throw ArgumentError(
+          "Payload length must be <= ${record.maxPayloadLength}");
     }
     record.id = id;
     record.type = type;
@@ -320,11 +322,13 @@ class NDEFRecord {
   /// Encode this [NDEFRecord] to raw byte data.
   Uint8List encode() {
     if (type == null) {
-      throw ArgumentError.notNull("Type is null, please set type before encode");
+      throw ArgumentError.notNull(
+          "Type is null, please set type before encode");
     }
 
     if (payload == null) {
-      throw ArgumentError.notNull("Payload is null, please set parameters or set payload directly before encode");
+      throw ArgumentError.notNull(
+          "Payload is null, please set parameters or set payload directly before encode");
     }
 
     var encoded = <int>[];
