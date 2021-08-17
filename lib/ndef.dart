@@ -38,7 +38,7 @@ List<NDEFRecord> decodeRawNdefMessage(Uint8List data,
 /// This is most useful in mobile environment because the APIs will give you these information in a separate manner.
 NDEFRecord decodePartialNdefMessage(
     TypeNameFormat tnf, Uint8List type, Uint8List payload,
-    {required Uint8List id}) {
+    {Uint8List? id}) {
   var decoded = NDEFRecord.doDecode(tnf, type, payload, id: id);
   return decoded;
 }
