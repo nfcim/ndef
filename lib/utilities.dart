@@ -77,12 +77,12 @@ class ByteUtils {
   }
 
   static Uint8List hexStringToBytes(String hex) {
-    // Delete blank space
+    // if there are some blank space in ${hex}, this will delete blank space in it.
     hex = hex.splitMapJoin(" ", onMatch: (Match match) {
       return "";
     });
     if (hex.length % 2 != 0) {
-      throw "Hex string length must be even integer, got ${hex.length}";
+      throw ArgumentError("Hex string length must be even integer, got ${hex.length}");
     }
     var result = <int>[];
     for (int i = 0; i < hex.length; i += 2) {
