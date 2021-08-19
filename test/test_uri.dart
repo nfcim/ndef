@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ndef/ndef.dart';
 import 'package:ndef/record.dart';
@@ -19,18 +21,12 @@ void main() {
       ],
     ];
 
-    String hex = hexStrings[0].splitMapJoin(" ", onMatch: (Match match) {
-      return "";
-    });
+    // Part I: test the function of ENCODE and DECODE.
+    testParse(hexStrings, messages);
+    testGenerate(hexStrings, messages);
 
-    print(hex);
+    // Part II: test the function decodePartialNdefMessage();
+    NDEFRecord testDPNM = decodePartialNdefMessage(TypeNameFormat.absoluteURI, UriRecord.classType as Uint8List, payload, id: "dfjakfj" as Uint8List);
 
-    var result = <int>[];
-    for (int i = 0; i < hex.length; i += 2) {
-      // print(int.parse(hex.substring(i, i + 2), radix: 16));
-    }
-
-    // print(hexStrings[0].toBytes());
-    // print(decodeRawNdefMessage(hexStrings[0].toBytes()));
   });
 }
