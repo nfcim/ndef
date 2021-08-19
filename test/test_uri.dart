@@ -8,6 +8,7 @@ import 'ndef_test.dart';
 void main() {
   test('ndef message with uri type', () {
     List<String> hexStrings = [
+      // test the robustness of function which handles the  hexStrings.
       "9101165504676974    6875622e    636f6d2f6e6663696d2f6e64656651010b55046769746875622e636f6d",
     ];
 
@@ -22,10 +23,11 @@ void main() {
       return "";
     });
 
+    print(hex);
+
     var result = <int>[];
     for (int i = 0; i < hex.length; i += 2) {
       // print(int.parse(hex.substring(i, i + 2), radix: 16));
-      print(int.parse(hex.substring(i, i+2), radix: 16));
     }
 
     // print(hexStrings[0].toBytes());
