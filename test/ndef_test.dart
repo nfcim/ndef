@@ -8,7 +8,7 @@ import 'package:ndef/record/bluetooth.dart';
 import 'package:ndef/record/wellknown.dart';
 import 'package:ndef/utilities.dart';
 
-bool testParse(List<String> hexStrings, List<List<NDEFRecord>> messages) {
+void testParse(List<String> hexStrings, List<List<NDEFRecord>> messages) {
   for (int i = 0; i < hexStrings.length; i++) {
     List<NDEFRecord> decoded = decodeRawNdefMessage(hexStrings[i].toBytes());
     assert(decoded.length == messages[i].length);
@@ -16,16 +16,12 @@ bool testParse(List<String> hexStrings, List<List<NDEFRecord>> messages) {
       assert(decoded[j].isEqual(messages[i][j]));
     }
   }
-  return true;
 }
 
-bool testGenerate(List<String> hexStrings, List<List<NDEFRecord>> messages) {
+void testGenerate(List<String> hexStrings, List<List<NDEFRecord>> messages) {
   for (int i = 0; i < hexStrings.length; i++) {
-    if(!(encodeNdefMessage(messages[i]).toHexString() == hexStrings[i])) {
-      return false;
-    }
+    assert(encodeNdefMessage(messages[i]).toHexString() == hexStrings[i]);
   }
-  return true;
 }
 
 void main() {
