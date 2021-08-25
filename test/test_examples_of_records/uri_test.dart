@@ -6,26 +6,25 @@ import 'package:ndef/record/uri.dart';
 import '../ndef_test.dart';
 
 void main() {
-  group('encode and decode', (){
-    final urlName = "https://github.com/nfcim/ndef";
-    final urlName2 = "https://github.com";
+  group('encode and decode', () {
+    test('main function', () {
+      final urlName = "https://github.com/nfcim/ndef";
+      final urlName2 = "https://github.com";
 
-    List<String> hexStrings = [
-      "91011655046769746875622e636f6d2f6e6663696d2f6e64656651010b55046769746875622e636f6d",
-    ];
+      List<String> hexStrings = [
+        "91011655046769746875622e636f6d2f6e6663696d2f6e64656651010b55046769746875622e636f6d",
+      ];
 
-    List<List<NDEFRecord>> messages = [
-      [
-        UriRecord.fromString(urlName),
-        UriRecord.fromString(urlName2)
-      ],
-    ];
+      List<List<NDEFRecord>> messages = [
+        [UriRecord.fromString(urlName), UriRecord.fromString(urlName2)],
+      ];
 
-    testParse(hexStrings, messages);
-    testGenerate(hexStrings, messages);
+      testParse(hexStrings, messages);
+      testGenerate(hexStrings, messages);
+    });
   });
 
-  group('ndef message with uri type', (){
+  group('ndef message with uri type', () {
     final urlName = "https://github.com/nfcim/ndef";
 
     test('test the all parts of a record', () {
@@ -34,10 +33,37 @@ void main() {
 
       expect(UriRecord.fromString(urlName).uriString, equals(urlName));
       expect(UriRecord.fromString(urlName).iriString, equals(urlName));
-      expect(UriRecord.fromString(urlName).payload, equals([4, 103, 105, 116, 104, 117, 98, 46, 99, 111, 109, 47, 110, 102, 99, 105, 109, 47, 110, 100, 101, 102]));
+      expect(
+          UriRecord.fromString(urlName).payload,
+          equals([
+            4,
+            103,
+            105,
+            116,
+            104,
+            117,
+            98,
+            46,
+            99,
+            111,
+            109,
+            47,
+            110,
+            102,
+            99,
+            105,
+            109,
+            47,
+            110,
+            100,
+            101,
+            102
+          ]));
 
-      expect(UriRecord.fromString(urlName).tnf, equals(TypeNameFormat.nfcWellKnown));
-      expect(UriRecord.fromString(urlName).flags.runtimeType, equals(NDEFRecordFlags));
+      expect(UriRecord.fromString(urlName).tnf,
+          equals(TypeNameFormat.nfcWellKnown));
+      expect(UriRecord.fromString(urlName).flags.runtimeType,
+          equals(NDEFRecordFlags));
 
       var comparisonValue;
       for (int i = 0; i < UriRecord.prefixMap.length; i++) {
@@ -47,19 +73,26 @@ void main() {
       }
       var actualValue = UriRecord.fromString(urlName).prefix;
       expect(UriRecord.fromString(urlName).prefix, equals(comparisonValue));
-      expect(UriRecord.fromString(urlName).content, equals(urlName.replaceAll("$actualValue", "")));
+      expect(UriRecord.fromString(urlName).content,
+          equals(urlName.replaceAll("$actualValue", "")));
 
       expect(UriRecord.fromString(urlName).type, equals([85]));
       expect(UriRecord.fromString(urlName).fullType, equals('urn:nfc:wkt:U'));
       expect(UriRecord.fromString(urlName).decodedType, equals('U'));
       expect(UriRecord.fromString(urlName).runtimeType, equals(UriRecord));
 
-      expect(UriRecord.fromString(urlName).basicInfoString, equals('id=(empty) typeNameFormat=TypeNameFormat.nfcWellKnown type=U '));
+      expect(
+          UriRecord.fromString(urlName).basicInfoString,
+          equals(
+              'id=(empty) typeNameFormat=TypeNameFormat.nfcWellKnown type=U '));
       expect(UriRecord.fromString(urlName).maxPayloadLength, equals(null));
       expect(UriRecord.fromString(urlName).minPayloadLength, equals(1));
 
       expect(UriRecord.fromString(urlName).idString, equals('(empty)'));
-      expect(UriRecord.fromString(urlName).toString(), equals('UriRecord: id=(empty) typeNameFormat=TypeNameFormat.nfcWellKnown type=U uri=https://github.com/nfcim/ndef'));
+      expect(
+          UriRecord.fromString(urlName).toString(),
+          equals(
+              'UriRecord: id=(empty) typeNameFormat=TypeNameFormat.nfcWellKnown type=U uri=https://github.com/nfcim/ndef'));
     });
 
     test('test some exceptions', () {
