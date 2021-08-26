@@ -34,4 +34,16 @@ void main() {
       testGenerate(hexStrings, messages);
     });
   });
+
+  group('ndef message with smart poster type', (){
+    SmartPosterRecord smartPosterRecord1 = SmartPosterRecord(
+        title: "ndef",
+        uri: "https://github.com/nfcim/ndef",
+        action: Action.exec,
+        icon: {"image/png": Uint8List.fromList(utf8.encode("a picture"))},
+        size: 10000);
+
+
+    SmartPosterRecord smartPosterRecord2 = SmartPosterRecord(uri: "https://github.com");
+  });
 }
