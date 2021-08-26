@@ -10,7 +10,7 @@ import 'package:ndef/utilities.dart';
 
 void testParse(List<String> hexStrings, List<List<NDEFRecord>> messages) {
   for (int i = 0; i < hexStrings.length; i++) {
-    var decoded = decodeRawNdefMessage(hexStrings[i].toBytes());
+    List<NDEFRecord> decoded = decodeRawNdefMessage(hexStrings[i].toBytes());
     assert(decoded.length == messages[i].length);
     for (int j = 0; j < decoded.length; j++) {
       assert(decoded[j].isEqual(messages[i][j]));
