@@ -296,10 +296,5 @@ void main() {
             record.prefix = "test";
           }, throwsArgumentError));
 
-  test('manual test', () {
-    print(decodeRawNdefMessage(ByteUtils.hexStringToBytes(
-        "d2200b6170706c69636174696f6e2f766e642e626c7565746f6f74682e65702e6f6f620b0006050403020102ff61")));
-  });
-
   // TODO: more tests
 }
