@@ -41,3 +41,9 @@
 * Fix some typos in code
 * Use more precise exception in precondition-checking code (#9)
 
+## 0.3.1
+
+* Remove unneeded `required` on property
+* Remove unused test
+* Change to a formal version of MIT License
+
