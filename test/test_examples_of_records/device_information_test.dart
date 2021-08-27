@@ -1,6 +1,5 @@
-import 'dart:typed_data';
-
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ndef/ndef.dart';
 import 'package:ndef/record.dart';
 import 'package:ndef/record/deviceinfo.dart';
 
@@ -45,89 +44,9 @@ void main() {
 
     test('test the all parts of a record', () {
       expect(deviceInfoRecord.id, equals(null));
-      expect(
-          deviceInfoRecord.payload,
-          equals([
-            0,
-            5,
-            110,
-            102,
-            99,
-            105,
-            109,
-            1,
-            9,
-            110,
-            102,
-            99,
-            68,
-            101,
-            118,
-            105,
-            99,
-            101,
-            2,
-            7,
-            110,
-            102,
-            99,
-            78,
-            97,
-            109,
-            101,
-            3,
-            16,
-            99,
-            97,
-            174,
-            24,
-            213,
-            176,
-            17,
-            234,
-            157,
-            8,
-            64,
-            163,
-            204,
-            253,
-            9,
-            87,
-            4,
-            5,
-            49,
-            46,
-            48,
-            46,
-            48,
-            255,
-            5,
-            78,
-            70,
-            67,
-            73,
-            77
-          ]));
-      expect(
-          deviceInfoRecord.uuidData,
-          equals([
-            99,
-            97,
-            174,
-            24,
-            213,
-            176,
-            17,
-            234,
-            157,
-            8,
-            64,
-            163,
-            204,
-            253,
-            9,
-            87
-          ]));
+
+      String hexStringUsedInExpect1 = "00056e6663696d01096e666344657669636502076e66634e616d6503106361ae18d5b011ea9d0840a3ccfd09570405312e302e30ff054e4643494d";
+      expect(deviceInfoRecord.payload, equals(hexStringUsedInExpect1.toBytes()));
 
       expect(deviceInfoRecord.tnf, equals(TypeNameFormat.nfcWellKnown));
       expect(deviceInfoRecord.flags.runtimeType, equals(NDEFRecordFlags));
@@ -160,61 +79,8 @@ void main() {
       }, throwsArgumentError);
 
       expect(() {
-        var value = [
-          1,
-          9,
-          110,
-          102,
-          99,
-          68,
-          101,
-          118,
-          105,
-          99,
-          101,
-          2,
-          7,
-          110,
-          102,
-          99,
-          78,
-          97,
-          109,
-          101,
-          3,
-          16,
-          99,
-          97,
-          174,
-          24,
-          213,
-          176,
-          17,
-          234,
-          157,
-          8,
-          64,
-          163,
-          204,
-          253,
-          9,
-          87,
-          4,
-          5,
-          49,
-          46,
-          48,
-          46,
-          48,
-          255,
-          5,
-          78,
-          70,
-          67,
-          73,
-          77
-        ];
-        deviceInfoRecord.payload = Uint8List.fromList(value);
+        String hexStringUsedInExpect2 = "01096e666344657669636502076e66634e616d6503106361ae18d5b011ea9d0840a3ccfd09570405312e302e30ff054e4643494d";
+        deviceInfoRecord.payload = hexStringUsedInExpect2.toBytes();
       }, throwsArgumentError);
     });
   });

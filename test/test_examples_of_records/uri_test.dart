@@ -33,33 +33,12 @@ void main() {
 
       expect(UriRecord.fromString(urlName).uriString, equals(urlName));
       expect(UriRecord.fromString(urlName).iriString, equals(urlName));
-      expect(
-          UriRecord.fromString(urlName).payload,
-          equals([
-            4,
-            103,
-            105,
-            116,
-            104,
-            117,
-            98,
-            46,
-            99,
-            111,
-            109,
-            47,
-            110,
-            102,
-            99,
-            105,
-            109,
-            47,
-            110,
-            100,
-            101,
-            102
-          ]));
 
+      List<String> hexStringsTest = [
+        "046769746875622e636f6d2f6e6663696d2f6e646566",
+      ];
+      expect(UriRecord.fromString(urlName).payload,
+          equals(hexStringsTest[0].toBytes()));
       expect(UriRecord.fromString(urlName).tnf,
           equals(TypeNameFormat.nfcWellKnown));
       expect(UriRecord.fromString(urlName).flags.runtimeType,
