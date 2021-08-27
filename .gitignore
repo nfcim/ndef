@@ -41,3 +41,5 @@ doc/api/
 
 # End of https://www.toptal.com/developers/gitignore/api/dart,visualstudiocode
 /test/.gradle/
+
+*/.DS_Store
