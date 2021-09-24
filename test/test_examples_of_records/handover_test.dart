@@ -106,7 +106,6 @@ void main() {
         expect(acr.auxDataReferenceList, equals([]));
         expect(acr.carrierDataReference, equals([48]));
         expect(acr.carrierPowerState, equals(CarrierPowerState.inactive));
-        expect(acr.payload, equals([0, 1, 48, 0]));
         expect(AlternativeCarrierRecord.classMinPayloadLength, equals(2));
         expect(AlternativeCarrierRecord.classType, equals('ac'));
       });
@@ -160,7 +159,6 @@ void main() {
 
         expect(er.tnf, equals(TypeNameFormat.nfcWellKnown));
         expect(er.flags.runtimeType, equals(NDEFRecordFlags));
-        expect(er.payload, equals([1, 1, 2, 3, 4, 5, 6, 7, 8]));
       });
 
       test('HandoverRecord Test', () {
@@ -242,27 +240,6 @@ void main() {
                 'id=(empty) typeNameFormat=TypeNameFormat.nfcWellKnown type=Hr '));
         expect(hrr.tnf, equals(TypeNameFormat.nfcWellKnown));
         expect(hrr.flags.runtimeType, equals(NDEFRecordFlags));
-        expect(
-            hrr.payload,
-            equals([
-              19,
-              145,
-              2,
-              4,
-              97,
-              99,
-              0,
-              1,
-              48,
-              0,
-              81,
-              2,
-              2,
-              99,
-              114,
-              0,
-              75
-            ]));
 
         expect(hrr.decodedType, equals('Hr'));
         expect(hrr.fullType, equals('urn:nfc:wkt:Hr'));
@@ -313,35 +290,6 @@ void main() {
             equals(
                 'id=(empty) typeNameFormat=TypeNameFormat.nfcWellKnown type=Hs '));
         expect(hsr.flags.runtimeType, equals(NDEFRecordFlags));
-        expect(
-            hsr.payload,
-            equals([
-              19,
-              145,
-              2,
-              4,
-              97,
-              99,
-              0,
-              1,
-              48,
-              0,
-              81,
-              3,
-              9,
-              101,
-              114,
-              114,
-              1,
-              1,
-              2,
-              3,
-              4,
-              5,
-              6,
-              7,
-              8
-            ]));
 
         expect(hsr.type, equals([72, 115]));
         expect(hsr.fullType, equals('urn:nfc:wkt:Hs'));
@@ -374,7 +322,6 @@ void main() {
 
         expect(hmr.tnf, equals(TypeNameFormat.nfcWellKnown));
         expect(hmr.flags.runtimeType, equals(NDEFRecordFlags));
-        expect(hmr.payload, equals([19, 209, 2, 4, 97, 99, 0, 1, 48, 0]));
 
         expect(hmr.type, equals([72, 109]));
         expect(hmr.decodedType, equals('Hm'));
@@ -411,7 +358,6 @@ void main() {
             equals(
                 'id=(empty) typeNameFormat=TypeNameFormat.nfcWellKnown type=Hi '));
         expect(hir.flags.runtimeType, equals(NDEFRecordFlags));
-        expect(hir.payload, equals([19, 209, 2, 4, 97, 99, 0, 1, 48, 0]));
 
         expect(hir.type, equals([72, 105]));
         expect(hir.fullType, equals('urn:nfc:wkt:Hi'));
@@ -431,7 +377,6 @@ void main() {
 
       expect(hcr.tnf, equals(TypeNameFormat.nfcWellKnown));
       expect(hcr.flags.runtimeType, equals(NDEFRecordFlags));
-      expect(hcr.payload, equals([1, 15, 99, 97, 114, 114, 105, 101, 114, 84, 121, 112, 101, 84, 101, 115, 116, 1, 2, 3]));
 
       expect(hcr.type, equals([72, 99]));
       expect(hcr.decodedType, equals('Hc'));
