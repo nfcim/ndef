@@ -24,4 +24,51 @@ void main() {
       testGenerate(hexStrings, messages);
     });
   });
+
+  group('ndef message with text type', () {
+    test('TextRecord Test', () {
+      TextRecord tr = new TextRecord(language: 'emoji', text: 'Hello World!');
+
+      expect(tr.minPayloadLength, equals(1));
+
+      expect(tr.text, equals('Hello World!'));
+      expect(tr.language, equals('emoji'));
+      expect(tr.encoding, equals(TextEncoding.UTF8));
+      expect(tr.encodingString, equals('UTF-8'));
+
+      expect(tr.type, equals([84]));
+      expect(tr.fullType, equals('urn:nfc:wkt:T'));
+      expect(tr.decodedType, equals('T'));
+      expect(tr.runtimeType, equals(TextRecord));
+
+      expect(tr.tnf, equals(TypeNameFormat.nfcWellKnown));
+      expect(tr.flags.runtimeType, equals(NDEFRecordFlags));
+      expect(tr.basicInfoString, equals('id=(empty) typeNameFormat=TypeNameFormat.nfcWellKnown type=T '));
+    });
+  });
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
