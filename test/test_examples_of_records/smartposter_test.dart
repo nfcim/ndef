@@ -35,7 +35,7 @@ void main() {
     });
   });
 
-  group('ndef message with smart poster type', (){
+  group('ndef message with smart poster type', () {
     SmartPosterRecord smartPosterRecord1 = SmartPosterRecord(
         title: "ndef",
         uri: "https://github.com/nfcim/ndef",
