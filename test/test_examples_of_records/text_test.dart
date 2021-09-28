@@ -43,7 +43,10 @@ void main() {
 
       expect(tr.tnf, equals(TypeNameFormat.nfcWellKnown));
       expect(tr.flags.runtimeType, equals(NDEFRecordFlags));
-      expect(tr.basicInfoString, equals('id=(empty) typeNameFormat=TypeNameFormat.nfcWellKnown type=T '));
+      expect(
+          tr.basicInfoString,
+          equals(
+              'id=(empty) typeNameFormat=TypeNameFormat.nfcWellKnown type=T '));
     });
   });
 }

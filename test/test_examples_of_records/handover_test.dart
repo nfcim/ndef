@@ -386,7 +386,10 @@ void main() {
 
       expect(hcr.carrierData, equals([1, 2, 3]));
       expect(hcr.carrierTnf, equals(TypeNameFormat.nfcWellKnown));
-      expect(hcr.basicInfoString, equals('id=(empty) typeNameFormat=TypeNameFormat.nfcWellKnown type=Hc '));
+      expect(
+          hcr.basicInfoString,
+          equals(
+              'id=(empty) typeNameFormat=TypeNameFormat.nfcWellKnown type=Hc '));
     });
   });
 }

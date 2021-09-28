@@ -43,7 +43,7 @@ void main() {
         icon: {"image/png": Uint8List.fromList(utf8.encode("a picture"))},
         size: 10000);
 
-
-    SmartPosterRecord smartPosterRecord2 = SmartPosterRecord(uri: "https://github.com");
+    SmartPosterRecord smartPosterRecord2 =
+        SmartPosterRecord(uri: "https://github.com");
   });
 }

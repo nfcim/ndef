@@ -45,8 +45,10 @@ void main() {
     test('test the all parts of a record', () {
       expect(deviceInfoRecord.id, equals(null));
 
-      String hexStringUsedInExpect1 = "00056e6663696d01096e666344657669636502076e66634e616d6503106361ae18d5b011ea9d0840a3ccfd09570405312e302e30ff054e4643494d";
-      expect(deviceInfoRecord.payload, equals(hexStringUsedInExpect1.toBytes()));
+      String hexStringUsedInExpect1 =
+          "00056e6663696d01096e666344657669636502076e66634e616d6503106361ae18d5b011ea9d0840a3ccfd09570405312e302e30ff054e4643494d";
+      expect(
+          deviceInfoRecord.payload, equals(hexStringUsedInExpect1.toBytes()));
 
       expect(deviceInfoRecord.tnf, equals(TypeNameFormat.nfcWellKnown));
       expect(deviceInfoRecord.flags.runtimeType, equals(NDEFRecordFlags));
@@ -79,7 +81,8 @@ void main() {
       }, throwsArgumentError);
 
       expect(() {
-        String hexStringUsedInExpect2 = "01096e666344657669636502076e66634e616d6503106361ae18d5b011ea9d0840a3ccfd09570405312e302e30ff054e4643494d";
+        String hexStringUsedInExpect2 =
+            "01096e666344657669636502076e66634e616d6503106361ae18d5b011ea9d0840a3ccfd09570405312e302e30ff054e4643494d";
         deviceInfoRecord.payload = hexStringUsedInExpect2.toBytes();
       }, throwsArgumentError);
     });

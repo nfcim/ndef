@@ -45,7 +45,10 @@ void main() {
       expect(sr.tnf, equals(TypeNameFormat.nfcWellKnown));
       expect(sr.flags.runtimeType, equals(NDEFRecordFlags));
       expect(sr.signatureURI, equals(''));
-      expect(sr.basicInfoString, equals('id=(empty) typeNameFormat=TypeNameFormat.nfcWellKnown type=Sig '));
+      expect(
+          sr.basicInfoString,
+          equals(
+              'id=(empty) typeNameFormat=TypeNameFormat.nfcWellKnown type=Sig '));
 
       expect(sr.type, equals([83, 105, 103]));
       expect(sr.fullType, equals('urn:nfc:wkt:Sig'));
