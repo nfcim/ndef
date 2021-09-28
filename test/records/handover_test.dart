@@ -87,7 +87,7 @@ void main() {
       testParse(hexStrings, messages);
       testGenerate(hexStrings, messages);
     });
-    
+
     group('ndef message with handover type', () {
       test('AlternativeCarrierRecord Test', () {
         AlternativeCarrierRecord acr = new AlternativeCarrierRecord(
