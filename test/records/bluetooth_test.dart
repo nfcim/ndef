@@ -4,11 +4,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ndef/record.dart';
 import 'package:ndef/record/bluetooth.dart';
 
-import '../ndef_test.dart';
+import '../common.dart';
 
 void main() {
   group('decode and encode', () {
-    test('main function', () {
+    test('bluetooth record', () {
       List<String> hexStrings = [
         "d2200b6170706c69636174696f6e2f766e642e626c7565746f6f74682e65702e6f6f620b0006050403020102ff61",
       ];

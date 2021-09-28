@@ -3,11 +3,11 @@ import 'package:ndef/ndef.dart';
 import 'package:ndef/record.dart';
 import 'package:ndef/record/deviceinfo.dart';
 
-import '../ndef_test.dart';
+import '../common.dart';
 
 void main() {
   group('encode and decode', () {
-    test('main function', () {
+    test('device information record', () {
       List<String> hexStrings = [
         "d1023b446900056e6663696d01096e666344657669636502076e66634e616d6503106361ae18d5b011ea9d0840a3ccfd09570405312e302e30ff054e4643494d",
       ];

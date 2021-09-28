@@ -9,9 +9,11 @@ import 'package:ndef/record/handover.dart';
 import 'package:ndef/record/mime.dart';
 import 'package:ndef/utilities.dart';
 
+import '../common.dart';
+
 void main() {
   group('encode and decode', () {
-    test('main function', () {
+    test('handover record', () {
       List<String> hexStrings = [
         'd10201487211',
         '910211487212910202637212345102046163010131005a030201612f62310001',
@@ -82,22 +84,10 @@ void main() {
         ]
       ];
 
-      for (int i = 0; i < hexStrings.length; i++) {
-        var decoded =
-            decodeRawNdefMessage(ByteUtils.hexStringToBytes(hexStrings[i]));
-        assert(decoded.length == messages[i].length);
-        for (int j = 0; j < decoded.length; j++) {
-          assert(decoded[j].isEqual(messages[i][j]));
-        }
-      }
-      for (int i = 0; i < hexStrings.length; i++) {
-        var decoded = decodeRawNdefMessage(encodeNdefMessage(messages[i]));
-        assert(decoded.length == messages[i].length);
-        for (int j = 0; j < decoded.length; j++) {
-          assert(decoded[j].isEqual(messages[i][j]));
-        }
-      }
+      testParse(hexStrings, messages);
+      testGenerate(hexStrings, messages);
     });
+    
     group('ndef message with handover type', () {
       test('AlternativeCarrierRecord Test', () {
         AlternativeCarrierRecord acr = new AlternativeCarrierRecord(

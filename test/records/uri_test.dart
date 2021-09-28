@@ -3,11 +3,11 @@ import 'package:ndef/ndef.dart';
 import 'package:ndef/record.dart';
 import 'package:ndef/record/uri.dart';
 
-import '../ndef_test.dart';
+import '../common.dart';
 
 void main() {
   group('encode and decode', () {
-    test('main function', () {
+    test('uri record', () {
       final urlName = "https://github.com/nfcim/ndef";
       final urlName2 = "https://github.com";
 
