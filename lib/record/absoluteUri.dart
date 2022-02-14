@@ -16,15 +16,11 @@ class AbsoluteUriRecord extends NDEFRecord {
   }
 
   String get uri {
-    return decodedType;
+    return decodedType!; // This is really bad hack
   }
 
   set uri(String uri) {
-    decodedType = uri;
-  }
-
-  String get decodedType {
-    return uri;
+    decodedType = uri; // This is really bad hack
   }
 
   @override
@@ -40,6 +36,8 @@ class AbsoluteUriRecord extends NDEFRecord {
   }
 
   set payload(Uint8List? payload) {
-    throw ArgumentError("AbsoluteURI record has no payload, don't set it");
+    if (payload != null && payload.length > 0) {
+      throw ArgumentError("AbsoluteURI record has no payload, don't set it");
+    }
   }
 }
