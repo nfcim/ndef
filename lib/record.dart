@@ -1,8 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:ndef/ndef.dart';
-
+import 'record/smartposter.dart';
 import 'utilities.dart';
 import 'record/wellknown.dart';
 import 'record/uri.dart';
