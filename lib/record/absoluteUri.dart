@@ -15,11 +15,11 @@ class AbsoluteUriRecord extends NDEFRecord {
     }
   }
 
-  String get uri {
-    return decodedType!; // This is really bad hack
+  String? get uri {
+    return decodedType; // This is really bad hack
   }
 
-  set uri(String uri) {
+  set uri(String? uri) {
     decodedType = uri; // This is really bad hack
   }
 
