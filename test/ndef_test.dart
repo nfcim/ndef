@@ -234,6 +234,21 @@ void main() {
     testParse(hexStrings, messages);
     testGenerate(hexStrings, messages);
   });
+  
+  test('ndef message with absolute uri', () {
+    List<String> hexStrings = [
+      '931d0068747470733a2f2f6769746875622e636f6d2f6e6663696d2f6e64656653120068747470733a2f2f6769746875622e636f6d',
+    ];
+
+    List<List<NDEFRecord>> messages = [
+      [
+        AbsoluteUriRecord(uri: "https://github.com/nfcim/ndef"),
+        AbsoluteUriRecord(uri: "https://github.com")
+      ],
+    ];
+    testParse(hexStrings, messages);
+    testGenerate(hexStrings, messages);
+  });
 
   test('utilities test', () {
     assert(ByteUtils.bytesEqual(null, null) == true);
