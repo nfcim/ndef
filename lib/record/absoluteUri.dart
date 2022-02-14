@@ -32,7 +32,7 @@ class AbsoluteUriRecord extends NDEFRecord {
 
   //absoluteURI record has no payload
   Uint8List? get payload {
-    return null;
+    return Uint8List(0);
   }
 
   set payload(Uint8List? payload) {
