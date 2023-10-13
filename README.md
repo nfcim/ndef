@@ -11,6 +11,7 @@
   * Digital signature
   * Smart poster
   * Connection handover
+  * Android application record
 * Media (MIME data)
   * Bluetooth easy pairing / Bluetooth low energy
   * other MIME data
