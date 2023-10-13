@@ -10,6 +10,7 @@ export 'record/signature.dart';
 export 'record/smartposter.dart';
 export 'record/text.dart';
 export 'record/uri.dart';
+export 'record/androidApplication.dart';
 
 import 'dart:typed_data';
 import 'record.dart';
