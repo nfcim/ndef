@@ -6,13 +6,11 @@ import 'package:uuid/uuid.dart';
 import 'package:ndef/ndef.dart';
 import 'package:ndef/utilities.dart';
 
-
 class DataElement {
   late int type;
   late Uint8List value;
   DataElement(this.type, this.value);
-  DataElement.fromString(int type, String valueString) {
-    this.type = type;
+  DataElement.fromString(this.type, String valueString) {
     value = utf8.encode(valueString) as Uint8List;
   }
 
@@ -57,19 +55,15 @@ class DeviceInformationRecord extends WellKnownRecord {
   late List<DataElement> undefinedData;
 
   DeviceInformationRecord(
-      {String? vendorName,
-      String? modelName,
-      String? uniqueName,
+      {this.vendorName,
+      this.modelName,
+      this.uniqueName,
       String? uuid,
-      String? versionString,
+      this.versionString,
       List<DataElement>? undefinedData}) {
-    this.vendorName = vendorName;
-    this.modelName = modelName;
-    this.uniqueName = uniqueName;
     if (uuid != null) {
       this.uuid = uuid;
     }
-    this.versionString = versionString;
     this.undefinedData = undefinedData ?? [];
   }
 

@@ -180,10 +180,7 @@ class NDEFRecord {
   late NDEFRecordFlags flags;
 
   NDEFRecord(
-      {TypeNameFormat? tnf,
-      Uint8List? type,
-      Uint8List? id,
-      Uint8List? payload}) {
+      {TypeNameFormat? tnf, Uint8List? type, this.id, Uint8List? payload}) {
     flags = NDEFRecordFlags();
     if (tnf == null) {
       flags.TNF = TypeNameFormat.values.indexOf(this.tnf);
@@ -194,7 +191,6 @@ class NDEFRecord {
       this.tnf = tnf;
     }
     this.type = type;
-    this.id = id;
     // some subclasses' setters require payload != null
     if (payload != null) {
       this.payload = payload;

@@ -372,8 +372,7 @@ class SmartPosterRecord extends WellKnownRecord {
           "Title expects String or Map<String,String>, got ${title.runtimeType}");
     }
     if (_titleLanguages.contains(language)) {
-      _titleRecords[_titleLanguages.indexOf(language)] =
-          TextRecord(text: text);
+      _titleRecords[_titleLanguages.indexOf(language)] = TextRecord(text: text);
     } else {
       addTitle(text, language: language);
     }
@@ -381,8 +380,8 @@ class SmartPosterRecord extends WellKnownRecord {
 
   void addTitle(String text,
       {String language = 'en', TextEncoding encoding = TextEncoding.UTF8}) {
-    _titleRecords.add(
-        TextRecord(language: language, text: text, encoding: encoding));
+    _titleRecords
+        .add(TextRecord(language: language, text: text, encoding: encoding));
     if (_titleLanguages.contains(language)) {
       throw ArgumentError(
           "Language of titles can not be repeated, got $language");
@@ -503,15 +502,15 @@ class SmartPosterRecord extends WellKnownRecord {
   set icon(Map<String?, Uint8List?>? icon) {
     String? decodedType = icon!.keys.toList()[0];
     _checkValidIconType(decodedType!);
-    iconRecord = MimeRecord(
-        decodedType: decodedType, payload: icon.values.toList()[0]);
+    iconRecord =
+        MimeRecord(decodedType: decodedType, payload: icon.values.toList()[0]);
   }
 
   void addIcon(Map<String, Uint8List> icon) {
     String decodedType = icon.keys.toList()[0];
     _checkValidIconType(decodedType);
-    _iconRecords.add(MimeRecord(
-        decodedType: decodedType, payload: icon.values.toList()[0]));
+    _iconRecords.add(
+        MimeRecord(decodedType: decodedType, payload: icon.values.toList()[0]));
   }
 
   set iconRecord(MimeRecord? record) {

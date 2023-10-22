@@ -45,8 +45,7 @@ class AlternativeCarrierRecord extends WellKnownRecord {
     if (carrierDataReference != null) {
       this.carrierDataReference = carrierDataReference;
     }
-    this.auxDataReferenceList =
-        auxDataReferenceList ?? <Uint8List>[];
+    this.auxDataReferenceList = auxDataReferenceList ?? <Uint8List>[];
   }
 
   int get carrierPowerStateIndex {
@@ -294,7 +293,8 @@ class HandoverRecord extends WellKnownRecord {
   HandoverRecord(
       {String? versionString,
       List<AlternativeCarrierRecord>? alternativeCarrierRecordList}) {
-    this.alternativeCarrierRecordList = alternativeCarrierRecordList ?? <AlternativeCarrierRecord>[];
+    this.alternativeCarrierRecordList =
+        alternativeCarrierRecordList ?? <AlternativeCarrierRecord>[];
     unknownRecordList = <NDEFRecord>[];
     if (versionString != null) version.string = versionString;
   }
@@ -449,8 +449,8 @@ class HandoverRequestRecord extends HandoverRecord {
 
   set collisionResolutionNumber(int? collisionResolutionNumber) {
     if (collisionResolutionRecordList.isEmpty) {
-      collisionResolutionRecordList.add(CollisionResolutionRecord(
-          randomNumber: collisionResolutionNumber));
+      collisionResolutionRecordList.add(
+          CollisionResolutionRecord(randomNumber: collisionResolutionNumber));
     } else {
       collisionResolutionRecordList[0].randomNumber = collisionResolutionNumber;
     }
@@ -669,13 +669,12 @@ class HandoverCarrierRecord extends WellKnownRecord {
 
   HandoverCarrierRecord(
       {TypeNameFormat? carrierTnf,
-      String? carrierType,
+      this.carrierType,
       Uint8List? carrierData,
       Uint8List? id}) {
     if (carrierTnf != null) {
       this.carrierTnf = carrierTnf;
     }
-    this.carrierType = carrierType;
     if (carrierData != null) {
       this.carrierData = carrierData;
     }

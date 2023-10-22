@@ -34,15 +34,10 @@ class TextRecord extends WellKnownRecord {
   late TextEncoding encoding;
   String? _language, text;
 
-  TextRecord(
-      {TextEncoding encoding = TextEncoding.UTF8,
-      String? language,
-      String? text}) {
-    this.encoding = encoding;
+  TextRecord({this.encoding = TextEncoding.UTF8, String? language, this.text}) {
     if (language != null) {
       this.language = language;
     }
-    this.text = text;
   }
 
   String? get language {

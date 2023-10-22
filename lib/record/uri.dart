@@ -68,11 +68,10 @@ class UriRecord extends WellKnownRecord {
   int _prefixIndex = -1;
   String? content;
 
-  UriRecord({String? prefix, String? content}) {
+  UriRecord({String? prefix, this.content}) {
     if (prefix != null) {
       this.prefix = prefix;
     }
-    this.content = content;
   }
 
   /// Construct with a [UriString] or an [IriString]

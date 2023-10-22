@@ -302,9 +302,7 @@ class DeviceClass {
   late int value;
 
   /// try to use required here indicating that value is non nullable.
-  DeviceClass({required int value}) {
-    this.value = value;
-  }
+  DeviceClass({required this.value});
 
   DeviceClass.fromBytes(Uint8List bytes) {
     this.bytes = bytes;
@@ -669,9 +667,8 @@ class EIR {
     }
   }
 
-  EIR.fromTypeNum(int typeNum, Uint8List data) {
+  EIR.fromTypeNum(int typeNum, this.data) {
     this.typeNum = typeNum;
-    this.data = data;
   }
 
   EIR.fromBytes(Uint8List bytes) {
@@ -699,7 +696,7 @@ class EIR {
   }
 
   String? get typeString {
-    return typeNum == null ? null : typeNameMap[typeNum];
+    return typeNum == null ? null : typeNameMap[type];
   }
 
   EIRType? get type {
@@ -724,8 +721,7 @@ class BluetoothRecord extends MimeRecord {
   late Map<EIRType?, Uint8List> attributes;
 
   BluetoothRecord({Map<EIRType, Uint8List>? attributes}) {
-    this.attributes =
-        attributes ?? <EIRType, Uint8List>{};
+    this.attributes = attributes ?? <EIRType, Uint8List>{};
   }
 
   Uint8List? getAttribute(EIRType type) {
@@ -943,8 +939,7 @@ class BluetoothLowEnergyRecord extends BluetoothRecord {
 
   LEAddress? get address {
     if (attributes.containsKey(EIRType.LEBluetoothDeviceAddress)) {
-      return LEAddress.fromBytes(
-          attributes[EIRType.LEBluetoothDeviceAddress]);
+      return LEAddress.fromBytes(attributes[EIRType.LEBluetoothDeviceAddress]);
     } else {
       return null;
     }
