@@ -41,3 +41,15 @@
 * Fix some typos in code
 * Use more precise exception in precondition-checking code (#9)
 
+## 0.3.1
+
+Note: this tag is not pushed to GitHub, but published to pub.dev.
+
+* Remove unneeded `required` in `decodePartialNdefMessage`
+* Remove unused test
+* Change to a formal version of MIT License
+
+## 0.3.2
+
+* Upgrade to Dart v3
+* Fix multiple bugs (#14, #15, #17, #18)
