@@ -3,7 +3,6 @@ import 'dart:typed_data';
 
 import '../ndef.dart';
 import 'bluetooth.dart';
-import 'deviceinfo.dart';
 import 'wellknown.dart';
 
 enum CarrierPowerState { inactive, active, activating, unknown }

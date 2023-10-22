@@ -3,16 +3,8 @@ import 'dart:typed_data';
 
 import 'package:ndef/ndef.dart';
 
-import 'utilities.dart';
 import 'record/wellknown.dart';
-import 'record/uri.dart';
-import 'record/text.dart';
-import 'record/signature.dart';
-import 'record/deviceinfo.dart';
-import 'record/mime.dart';
 import 'record/bluetooth.dart';
-import 'record/absoluteUri.dart';
-import 'record/handover.dart';
 
 /// Represent the flags in the header of a NDEF record.
 class NDEFRecordFlags {

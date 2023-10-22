@@ -2,9 +2,6 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import '../ndef.dart';
-import 'text.dart';
-import 'uri.dart';
-import 'mime.dart';
 import 'wellknown.dart';
 
 enum Action { exec, save, edit }
