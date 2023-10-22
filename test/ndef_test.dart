@@ -6,7 +6,6 @@ import 'package:test/test.dart';
 import 'package:ndef/ndef.dart';
 import 'package:ndef/utilities.dart';
 
-
 void testParse(List<String> hexStrings, List<List<NDEFRecord>> messages) {
   for (int i = 0; i < hexStrings.length; i++) {
     var decoded = decodeRawNdefMessage(hexStrings[i].toBytes());
