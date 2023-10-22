@@ -49,7 +49,7 @@ class TextRecord extends WellKnownRecord {
   }
 
   set language(String? language) {
-    if (language!.length >= 64 || language.length <= 0) {
+    if (language != null && (language.length >= 64 || language.length <= 0)) {
       throw RangeError.range(language.length, 1, 64);
     }
     this._language = language;
