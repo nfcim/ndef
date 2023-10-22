@@ -15,15 +15,15 @@ class AbsoluteUriRecord extends NDEFRecord {
     }
   }
 
-  String get uri {
+  String? get uri {
     return decodedType;
   }
 
-  set uri(String uri) {
+  set uri(String? uri) {
     decodedType = uri;
   }
 
-  String get decodedType {
+  String? get decodedType {
     return uri;
   }
 
@@ -35,13 +35,14 @@ class AbsoluteUriRecord extends NDEFRecord {
   }
 
   // absoluteURI record has no payload
-  Uint8List? get payload {
-    return null;
+  Uint8List get payload {
+    return Uint8List(0);
   }
 
   set payload(Uint8List? payload) {
     if (payload != null && payload.length > 0) {
-      throw ArgumentError("AbsoluteURI record does not allow payload, but got ${payload.length} bytes");
+      throw ArgumentError(
+          "AbsoluteURI record does not allow payload, but got ${payload.length} bytes");
     }
   }
 }

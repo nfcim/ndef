@@ -233,6 +233,21 @@ void main() {
     testGenerate(hexStrings, messages);
   });
 
+  test('ndef message with absolute uri', () {
+    List<String> hexStrings = [
+      '931d0068747470733a2f2f6769746875622e636f6d2f6e6663696d2f6e64656653120068747470733a2f2f6769746875622e636f6d',
+    ];
+
+    List<List<NDEFRecord>> messages = [
+      [
+        AbsoluteUriRecord(uri: "https://github.com/nfcim/ndef"),
+        AbsoluteUriRecord(uri: "https://github.com")
+      ],
+    ];
+    testParse(hexStrings, messages);
+    testGenerate(hexStrings, messages);
+  });
+
   test('utilities test', () {
     assert(ByteUtils.bytesEqual(null, null) == true);
     assert(ByteUtils.bytesEqual(
@@ -293,11 +308,6 @@ void main() {
             UriRecord record = UriRecord();
             record.prefix = "test";
           }, throwsArgumentError));
-
-  test('manual test', () {
-    print(decodeRawNdefMessage(ByteUtils.hexStringToBytes(
-        "d2200b6170706c69636174696f6e2f766e642e626c7565746f6f74682e65702e6f6f620b0006050403020102ff61")));
-  });
 
   // TODO: more tests
 }
