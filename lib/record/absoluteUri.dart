@@ -34,12 +34,14 @@ class AbsoluteUriRecord extends NDEFRecord {
     return str;
   }
 
-  //absoluteURI record has no payload
+  // absoluteURI record has no payload
   Uint8List? get payload {
     return null;
   }
 
   set payload(Uint8List? payload) {
-    throw ArgumentError("AbsoluteURI record has no payload, don't set it");
+    if (payload != null && payload.length > 0) {
+      throw ArgumentError("AbsoluteURI record does not allow payload, but got ${payload.length} bytes");
+    }
   }
 }
