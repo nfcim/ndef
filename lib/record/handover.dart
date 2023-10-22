@@ -17,6 +17,7 @@ class AlternativeCarrierRecord extends WellKnownRecord {
 
   static const int classMinPayloadLength = 2;
 
+  @override
   int get minPayloadLength {
     return classMinPayloadLength;
   }
@@ -46,7 +47,7 @@ class AlternativeCarrierRecord extends WellKnownRecord {
       this.carrierDataReference = carrierDataReference;
     }
     this.auxDataReferenceList =
-        auxDataReferenceList == null ? <Uint8List>[] : auxDataReferenceList;
+        auxDataReferenceList ?? <Uint8List>[];
   }
 
   int get carrierPowerStateIndex {
@@ -59,6 +60,7 @@ class AlternativeCarrierRecord extends WellKnownRecord {
     carrierPowerState = CarrierPowerState.values[carrierPowerStateIndex];
   }
 
+  @override
   Uint8List get payload {
     var payload = <int>[];
     payload.add(carrierPowerStateIndex);
@@ -76,11 +78,12 @@ class AlternativeCarrierRecord extends WellKnownRecord {
       payload.addAll(auxDataReferenceList[i]);
     }
 
-    return new Uint8List.fromList(payload);
+    return Uint8List.fromList(payload);
   }
 
+  @override
   set payload(Uint8List? payload) {
-    var stream = new ByteStream(payload!);
+    var stream = ByteStream(payload!);
 
     carrierPowerStateIndex = stream.readByte() & 3;
     int carrierDataReferenceLength = stream.readByte();
@@ -109,10 +112,12 @@ class CollisionResolutionRecord extends WellKnownRecord {
   static const int classMinPayloadLength = 2;
   static const int classMaxPayloadLength = 2;
 
+  @override
   int get minPayloadLength {
     return classMinPayloadLength;
   }
 
+  @override
   int get maxPayloadLength {
     return classMaxPayloadLength;
   }
@@ -140,7 +145,7 @@ class CollisionResolutionRecord extends WellKnownRecord {
   set randomNumber(var randomNumber) {
     if (randomNumber is Uint8List) {
       randomNumber = (randomNumber).toInt();
-    } else if (!(randomNumber is int)) {
+    } else if (randomNumber is! int) {
       throw ArgumentError(
           "RandomNumber expects int or Uint8List, got ${randomNumber.runtimeType}");
     }
@@ -148,12 +153,14 @@ class CollisionResolutionRecord extends WellKnownRecord {
     _randomNumber = randomNumber;
   }
 
+  @override
   Uint8List get payload {
     return _randomNumber.toBytes(2);
   }
 
+  @override
   set payload(Uint8List? payload) {
-    this.randomNumber = payload;
+    randomNumber = payload;
   }
 }
 
@@ -201,6 +208,7 @@ class ErrorRecord extends WellKnownRecord {
 
   static const int classMinPayloadLength = 1;
 
+  @override
   int get minPayloadLength {
     return classMinPayloadLength;
   }
@@ -239,13 +247,15 @@ class ErrorRecord extends WellKnownRecord {
     _errorNum = ErrorReason.values.indexOf(errorReason);
   }
 
+  @override
   Uint8List? get payload {
     var payload = [errorNum] + errorData;
-    return new Uint8List.fromList(payload);
+    return Uint8List.fromList(payload);
   }
 
+  @override
   set payload(Uint8List? payload) {
-    ByteStream stream = new ByteStream(payload!);
+    ByteStream stream = ByteStream(payload!);
     errorNum = stream.readByte();
 
     if (errorNum == 1) {
@@ -267,6 +277,7 @@ class HandoverRecord extends WellKnownRecord {
 
   static const int classMinPayloadLength = 1;
 
+  @override
   int get minPayloadLength {
     return classMinPayloadLength;
   }
@@ -284,11 +295,9 @@ class HandoverRecord extends WellKnownRecord {
   HandoverRecord(
       {String? versionString,
       List<AlternativeCarrierRecord>? alternativeCarrierRecordList}) {
-    this.alternativeCarrierRecordList = alternativeCarrierRecordList == null
-        ? <AlternativeCarrierRecord>[]
-        : alternativeCarrierRecordList;
-    this.unknownRecordList = <NDEFRecord>[];
-    if (versionString != null) this.version.string = versionString;
+    this.alternativeCarrierRecordList = alternativeCarrierRecordList ?? <AlternativeCarrierRecord>[];
+    unknownRecordList = <NDEFRecord>[];
+    if (versionString != null) version.string = versionString;
   }
 
   List<NDEFRecord> get allRecordList {
@@ -315,7 +324,7 @@ class HandoverRecord extends WellKnownRecord {
         record = MimeRecord();
       }
     } else {
-      record = new NDEFRecord(tnf: tnf);
+      record = NDEFRecord(tnf: tnf);
     }
     return record;
   }
@@ -332,6 +341,7 @@ class HandoverRecord extends WellKnownRecord {
     }
   }
 
+  @override
   Uint8List? get payload {
     var data = encodeNdefMessage(allRecordList);
     // cast() 's use
@@ -339,6 +349,7 @@ class HandoverRecord extends WellKnownRecord {
     return Uint8List.fromList(payload);
   }
 
+  @override
   set payload(Uint8List? payload) {
     version = Version(value: payload![0]);
     if (payload.length > 1) {
@@ -408,7 +419,7 @@ class HandoverRequestRecord extends HandoverRecord {
         record = MimeRecord();
       }
     } else {
-      record = new NDEFRecord(tnf: tnf);
+      record = NDEFRecord(tnf: tnf);
     }
     return record;
   }
@@ -424,12 +435,13 @@ class HandoverRequestRecord extends HandoverRecord {
     }
   }
 
+  @override
   get _typeFactory {
     return HandoverRequestRecord.typeFactory;
   }
 
   int? get collisionResolutionNumber {
-    if (collisionResolutionRecordList.length >= 1) {
+    if (collisionResolutionRecordList.isNotEmpty) {
       return collisionResolutionRecordList[0].randomNumber;
     } else {
       return null;
@@ -437,8 +449,8 @@ class HandoverRequestRecord extends HandoverRecord {
   }
 
   set collisionResolutionNumber(int? collisionResolutionNumber) {
-    if (collisionResolutionRecordList.length == 0) {
-      collisionResolutionRecordList.add(new CollisionResolutionRecord(
+    if (collisionResolutionRecordList.isEmpty) {
+      collisionResolutionRecordList.add(CollisionResolutionRecord(
           randomNumber: collisionResolutionNumber));
     } else {
       collisionResolutionRecordList[0].randomNumber = collisionResolutionNumber;
@@ -450,6 +462,7 @@ class HandoverRequestRecord extends HandoverRecord {
     return super.allRecordList + collisionResolutionRecordList;
   }
 
+  @override
   Uint8List? get payload {
     if (version.value > 0x11) {
       if (collisionResolutionNumber == null) {
@@ -460,6 +473,7 @@ class HandoverRequestRecord extends HandoverRecord {
     return super.payload;
   }
 
+  @override
   set payload(Uint8List? payload) {
     super.payload = payload;
     if (version.value > 0x11) {
@@ -526,7 +540,7 @@ class HandoverSelectRecord extends HandoverRecord {
         record = MimeRecord();
       }
     } else {
-      record = new NDEFRecord(tnf: tnf);
+      record = NDEFRecord(tnf: tnf);
     }
     return record;
   }
@@ -542,12 +556,13 @@ class HandoverSelectRecord extends HandoverRecord {
     }
   }
 
+  @override
   get _typeFactory {
     return HandoverSelectRecord.typeFactory;
   }
 
   ErrorRecord? get error {
-    if (errorRecordList.length >= 1) {
+    if (errorRecordList.isNotEmpty) {
       return errorRecordList[0];
     } else {
       return null;
@@ -555,7 +570,7 @@ class HandoverSelectRecord extends HandoverRecord {
   }
 
   set error(ErrorRecord? error) {
-    if (errorRecordList.length == 0) {
+    if (errorRecordList.isEmpty) {
       errorRecordList.add(error!);
     } else {
       errorRecordList[0] = error!;
@@ -567,8 +582,9 @@ class HandoverSelectRecord extends HandoverRecord {
     return super.allRecordList + errorRecordList;
   }
 
+  @override
   Uint8List? get payload {
-    if (version.value < 0x12 && errorRecordList.length >= 1) {
+    if (version.value < 0x12 && errorRecordList.isNotEmpty) {
       throw ArgumentError(
           "Encoding error record version ${version.value} is not supported");
     }
@@ -638,6 +654,7 @@ class HandoverCarrierRecord extends WellKnownRecord {
 
   static const int classMinPayloadLength = 1;
 
+  @override
   int get minPayloadLength {
     return classMinPayloadLength;
   }
@@ -682,6 +699,7 @@ class HandoverCarrierRecord extends WellKnownRecord {
     return NDEFRecord.tnfString[_carrierTnf!] + carrierType!;
   }
 
+  @override
   Uint8List? get payload {
     var carrierTypeBytes = utf8.encode(carrierType!);
     List<int>? payload = ([_carrierTnf, carrierTypeBytes.length] +
@@ -691,8 +709,9 @@ class HandoverCarrierRecord extends WellKnownRecord {
     return Uint8List.fromList(payload);
   }
 
+  @override
   set payload(Uint8List? payload) {
-    ByteStream stream = new ByteStream(payload!);
+    ByteStream stream = ByteStream(payload!);
     _carrierTnf = stream.readByte() & 7;
     int carrierTypeLength = stream.readByte();
     carrierType = utf8.decode(stream.readBytes(carrierTypeLength));

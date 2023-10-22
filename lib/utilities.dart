@@ -31,7 +31,7 @@ class ByteUtils {
     if (endianness == Endianness.Big) {
       list = list.reversed.toList();
     }
-    return new Uint8List.fromList(list);
+    return Uint8List.fromList(list);
   }
 
   static String intToHexString(int value, int length,
@@ -48,11 +48,11 @@ class ByteUtils {
   static Uint8List bigIntToBytes(BigInt? value, int length,
       {endianness = Endianness.Big}) {
     Uint8List? list =
-        new List<int?>.filled(0, null, growable: false) as Uint8List;
+        List<int?>.filled(0, null, growable: false) as Uint8List;
     BigInt? v = value;
     for (int i = 0; i < length; i++) {
-      list.add((v! % (new BigInt.from(256))).toInt());
-      v ~/= (new BigInt.from(256));
+      list.add((v! % (BigInt.from(256))).toInt());
+      v ~/= (BigInt.from(256));
     }
 
     /// unrelated_type_equality_check checked!
@@ -63,7 +63,7 @@ class ByteUtils {
     if (endianness == Endianness.Big) {
       list = list.reversed as Uint8List?;
     }
-    return new Uint8List.fromList(list!);
+    return Uint8List.fromList(list!);
   }
 
   static String byteToHexString(int value) {
@@ -71,7 +71,7 @@ class ByteUtils {
         "Value to decode into Hex String must be in the range of [0,256)");
     var str = value.toRadixString(16);
     if (str.length == 1) {
-      str = '0' + str;
+      str = '0$str';
     }
     return str;
   }
@@ -88,7 +88,7 @@ class ByteUtils {
     for (int i = 0; i < hex.length; i += 2) {
       result.add(int.parse(hex.substring(i, i + 2), radix: 16));
     }
-    return new Uint8List.fromList(result);
+    return Uint8List.fromList(result);
   }
 
   /// Convert bytes to HexString, return a string of length 0 when bytes is null/of length 0
@@ -122,7 +122,7 @@ extension BytesConvert on Uint8List {
   String toHexString() => ByteUtils.bytesToHexString(this);
   BigInt toBigInt() => ByteUtils.bytesToBigInt(this);
   Uint8List toReverse() {
-    return Uint8List.fromList(this.reversed.toList());
+    return Uint8List.fromList(reversed.toList());
   }
 }
 
@@ -219,16 +219,16 @@ class ByteStream {
 
   BigInt readBigInt(int number, {Endianness endianness = Endianness.Big}) {
     Uint8List d = readBytes(number);
-    BigInt value = new BigInt.from(0);
+    BigInt value = BigInt.from(0);
     if (endianness == Endianness.Big) {
       for (var n = 0; n < d.length; n++) {
         value <<= 256;
-        value += new BigInt.from(d[d.length - n - 1]);
+        value += BigInt.from(d[d.length - n - 1]);
       }
     } else if (endianness == Endianness.Little) {
       for (var n = d.length - 1; n >= 0; n--) {
         value <<= 256;
-        value += new BigInt.from(d[d.length - n - 1]);
+        value += BigInt.from(d[d.length - n - 1]);
       }
     }
     return value;
@@ -274,7 +274,7 @@ class Version {
   }
 
   Version.fromDetail(int major, int minor) {
-    this.setDetail(major, minor);
+    setDetail(major, minor);
   }
 
   Version.fromString(String string) {

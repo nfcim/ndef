@@ -5,6 +5,7 @@ import '../ndef.dart';
 class ExternalRecord extends NDEFRecord {
   static const TypeNameFormat classTnf = TypeNameFormat.nfcExternal;
 
+  @override
   TypeNameFormat get tnf {
     return classTnf;
   }

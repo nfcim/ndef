@@ -52,6 +52,7 @@ class UriRecord extends WellKnownRecord {
 
   static const int classMinPayloadLength = 1;
 
+  @override
   int get minPayloadLength {
     return classMinPayloadLength;
   }
@@ -76,12 +77,12 @@ class UriRecord extends WellKnownRecord {
 
   /// Construct with a [UriString] or an [IriString]
   UriRecord.fromString(String? string) {
-    this.iriString = string!;
+    iriString = string!;
   }
 
   /// Construct with an instance of Uri
   UriRecord.fromUri(Uri? uri) {
-    this.uriString = uri.toString();
+    uriString = uri.toString();
   }
 
   String? get prefix {
@@ -102,54 +103,56 @@ class UriRecord extends WellKnownRecord {
   }
 
   String? get iriString {
-    if (this.prefix == null || this.content == null) {
+    if (prefix == null || content == null) {
       return null;
     }
-    return this.prefix! + this.content!;
+    return prefix! + content!;
   }
 
   set iriString(String? iriString) {
     for (int i = 1; i < prefixMap.length; i++) {
       if (iriString!.startsWith(prefixMap[i])) {
-        this._prefixIndex = i;
-        this.content = iriString.substring(prefix!.length);
+        _prefixIndex = i;
+        content = iriString.substring(prefix!.length);
         return;
       }
     }
-    this._prefixIndex = 0;
-    this.content = iriString;
+    _prefixIndex = 0;
+    content = iriString;
   }
 
   String? get uriString {
-    if (this.prefix == null || this.content == null) {
+    if (prefix == null || content == null) {
       return null;
     }
-    return Uri.parse(this.prefix! + this.content!).toString();
+    return Uri.parse(prefix! + content!).toString();
   }
 
   set uriString(String? uriString) {
-    this.iriString = uriString;
+    iriString = uriString;
   }
 
   Uri? get uri {
-    if (this.prefix == null || this.content == null) {
+    if (prefix == null || content == null) {
       return null;
     }
     return Uri.parse(iriString!);
   }
 
   set uri(Uri? uri) {
-    this.iriString = uri.toString();
+    iriString = uri.toString();
   }
 
   /// Encode and Get payload, return null when the prefix or content is null
+  @override
   Uint8List? get payload {
     if (content == null || prefix == null) {
       return null;
     }
-    return new Uint8List.fromList([_prefixIndex] + utf8.encode(content!));
+    return Uint8List.fromList([_prefixIndex] + utf8.encode(content!));
   }
 
+  @override
   set payload(Uint8List? payload) {
     int prefixIndex = payload![0];
     if (prefixIndex < prefixMap.length) {

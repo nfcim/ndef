@@ -5,6 +5,7 @@ import '../ndef.dart';
 class MimeRecord extends NDEFRecord {
   static const TypeNameFormat classTnf = TypeNameFormat.media;
 
+  @override
   TypeNameFormat get tnf {
     return classTnf;
   }

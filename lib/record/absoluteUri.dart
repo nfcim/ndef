@@ -5,6 +5,7 @@ import '../ndef.dart';
 class AbsoluteUriRecord extends NDEFRecord {
   static const TypeNameFormat classTnf = TypeNameFormat.absoluteURI;
 
+  @override
   TypeNameFormat get tnf {
     return classTnf;
   }
@@ -23,6 +24,7 @@ class AbsoluteUriRecord extends NDEFRecord {
     decodedType = uri;
   }
 
+  @override
   String? get decodedType {
     return uri;
   }
@@ -35,12 +37,14 @@ class AbsoluteUriRecord extends NDEFRecord {
   }
 
   // absoluteURI record has no payload
+  @override
   Uint8List get payload {
     return Uint8List(0);
   }
 
+  @override
   set payload(Uint8List? payload) {
-    if (payload != null && payload.length > 0) {
+    if (payload != null && payload.isNotEmpty) {
       throw ArgumentError(
           "AbsoluteURI record does not allow payload, but got ${payload.length} bytes");
     }

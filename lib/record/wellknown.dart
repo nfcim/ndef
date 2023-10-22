@@ -5,6 +5,7 @@ import '../ndef.dart';
 class WellKnownRecord extends NDEFRecord {
   static const TypeNameFormat classTnf = TypeNameFormat.nfcWellKnown;
 
+  @override
   TypeNameFormat get tnf {
     return classTnf;
   }

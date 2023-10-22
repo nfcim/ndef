@@ -34,6 +34,7 @@ class DeviceInformationRecord extends WellKnownRecord {
 
   static const int classMinPayloadLength = 2;
 
+  @override
   int get minPayloadLength {
     return classMinPayloadLength;
   }
@@ -68,7 +69,7 @@ class DeviceInformationRecord extends WellKnownRecord {
       this.uuid = uuid;
     }
     this.versionString = versionString;
-    this.undefinedData = undefinedData == null ? [] : undefinedData;
+    this.undefinedData = undefinedData ?? [];
   }
 
   String get uuid {
@@ -76,7 +77,7 @@ class DeviceInformationRecord extends WellKnownRecord {
   }
 
   set uuid(String uuid) {
-    uuidData = new Uint8List.fromList(Uuid.parse(uuid));
+    uuidData = Uint8List.fromList(Uuid.parse(uuid));
   }
 
   void _addEncodedData(String? value, int type, List<int?> payload) {
@@ -88,6 +89,7 @@ class DeviceInformationRecord extends WellKnownRecord {
     }
   }
 
+  @override
   Uint8List? get payload {
     if (!(vendorName != null && modelName != null)) {
       throw ArgumentError(
@@ -111,11 +113,12 @@ class DeviceInformationRecord extends WellKnownRecord {
       payload.add(valueBytes.length);
       payload.addAll(valueBytes);
     }
-    return new Uint8List.fromList(payload);
+    return Uint8List.fromList(payload);
   }
 
+  @override
   set payload(Uint8List? payload) {
-    ByteStream stream = new ByteStream(payload!);
+    ByteStream stream = ByteStream(payload!);
     while (!stream.isEnd()) {
       int type = stream.readByte();
       int length = stream.readByte();

@@ -20,6 +20,7 @@ class AARRecord extends ExternalRecord {
     return Uint8List.fromList(utf8.encode(packageName));
   }
 
+  @override
   set payload(Uint8List? payload) {
     packageName = utf8.decode(payload!);
   }

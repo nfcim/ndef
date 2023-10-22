@@ -15,6 +15,7 @@ class SignatureRecord extends WellKnownRecord {
 
   static const int classMinPayloadLength = 6;
 
+  @override
   int get minPayloadLength {
     return classMinPayloadLength;
   }
@@ -27,7 +28,7 @@ class SignatureRecord extends WellKnownRecord {
     str += "signature=${signature.toHexString()} ";
     str += "signatureURI=$signatureURI ";
     str += "certificateFormat=$certificateFormat ";
-    str += "certificateStore=" + certificateStore.toString() + " ";
+    str += "certificateStore=$certificateStore ";
     str += "certificateURI=$certificateURI";
     return str;
   }
@@ -68,10 +69,10 @@ class SignatureRecord extends WellKnownRecord {
       String certificateURI = ""}) {
     this.signatureType = signatureType;
     this.hashType = hashType;
-    this.signature = signature != null ? signature : new Uint8List(0);
+    this.signature = signature ?? Uint8List(0);
     this.signatureURI = signatureURI;
     this.certificateFormat = certificateFormat;
-    this._certificateStore = <Uint8List>[];
+    _certificateStore = <Uint8List>[];
     if (certificateStore != null) {
       for (var c in certificateStore) {
         addCertificateStore(c);
@@ -126,7 +127,7 @@ class SignatureRecord extends WellKnownRecord {
   }
 
   List<Uint8List> get certificateStore {
-    return new List<Uint8List>.from(_certificateStore, growable: false);
+    return List<Uint8List>.from(_certificateStore, growable: false);
   }
 
   void addCertificateStore(Uint8List certificate) {
@@ -139,8 +140,9 @@ class SignatureRecord extends WellKnownRecord {
     _certificateStore.add(certificate);
   }
 
+  @override
   Uint8List get payload {
-    var payload;
+    List<int> payload;
 
     //Version Field pass
     //Signature Field
@@ -169,15 +171,16 @@ class SignatureRecord extends WellKnownRecord {
       certificateURIBytes.addAll(certificateURI!.length.toBytes(2));
       certificateURIBytes.addAll(utf8.encode(certificateURI!));
     }
-    var certificateBytes = new Uint8List.fromList(
+    var certificateBytes = Uint8List.fromList(
         [certificateFlag] + certificateStoreBytes + certificateURIBytes);
 
     payload = [classVersion] + (signatureBytes) + certificateBytes;
-    return new Uint8List.fromList(payload);
+    return Uint8List.fromList(payload);
   }
 
+  @override
   set payload(Uint8List? payload) {
-    ByteStream stream = new ByteStream(payload!);
+    ByteStream stream = ByteStream(payload!);
 
     int version = stream.readByte();
     int signatureFlag = stream.readByte();
@@ -195,10 +198,11 @@ class SignatureRecord extends WellKnownRecord {
     signatureTypeIndex = signatureFlag & 0x7F;
     int signatureURILength = stream.readInt(2);
 
-    if (signatureURIPresent == 1)
+    if (signatureURIPresent == 1) {
       signatureURI = utf8.decode(stream.readBytes(signatureURILength));
-    else
+    } else {
       signature = stream.readBytes(signatureURILength);
+    }
 
     //Certificate Field
     int certificateFlag = stream.readByte();
