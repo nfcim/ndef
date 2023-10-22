@@ -3,8 +3,9 @@ import 'dart:typed_data';
 
 import 'package:uuid/uuid.dart';
 
-import '../ndef.dart';
-import 'wellknown.dart';
+import 'package:ndef/ndef.dart';
+import 'package:ndef/utilities.dart';
+
 
 class DataElement {
   late int type;

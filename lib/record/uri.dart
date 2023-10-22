@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'wellknown.dart';
+import 'package:ndef/ndef.dart';
 
 class UriRecord extends WellKnownRecord {
   static List<String> prefixMap = [

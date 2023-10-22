@@ -2,9 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:ndef/ndef.dart';
-
-import 'record/wellknown.dart';
-import 'record/bluetooth.dart';
+import 'package:ndef/utilities.dart';
 
 /// Represent the flags in the header of a NDEF record.
 class NDEFRecordFlags {

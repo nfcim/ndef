@@ -4,8 +4,8 @@ import 'dart:typed_data';
 import 'package:test/test.dart';
 
 import 'package:ndef/ndef.dart';
-import 'package:ndef/record/bluetooth.dart';
-import 'package:ndef/record/wellknown.dart';
+import 'package:ndef/utilities.dart';
+
 
 void testParse(List<String> hexStrings, List<List<NDEFRecord>> messages) {
   for (int i = 0; i < hexStrings.length; i++) {

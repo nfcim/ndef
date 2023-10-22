@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:ndef/ndef.dart' as ndef;
+import 'package:ndef/utilities.dart';
 
 void main() {
   var encodedUrlRecord =

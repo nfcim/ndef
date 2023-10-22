@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
-import '../ndef.dart';
+import 'package:ndef/ndef.dart';
+import 'package:ndef/utilities.dart';
 
 class ExternalRecord extends NDEFRecord {
   static const TypeNameFormat classTnf = TypeNameFormat.nfcExternal;

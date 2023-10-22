@@ -1,9 +1,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import '../ndef.dart';
-import 'bluetooth.dart';
-import 'wellknown.dart';
+import 'package:ndef/ndef.dart';
+import 'package:ndef/utilities.dart';
 
 enum CarrierPowerState { inactive, active, activating, unknown }
 

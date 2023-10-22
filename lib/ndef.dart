@@ -1,16 +1,20 @@
 library ndef;
 
 export 'record.dart';
-export 'utilities.dart';
-export 'record/absoluteUri.dart';
+// export 'utilities.dart';
+
+// export all types of records
+export 'record/absolute_uri.dart';
 export 'record/mime.dart';
-export 'record/deviceinfo.dart';
+export 'record/device_info.dart';
 export 'record/handover.dart';
 export 'record/signature.dart';
-export 'record/smartposter.dart';
+export 'record/smart_poster.dart';
 export 'record/text.dart';
 export 'record/uri.dart';
-export 'record/androidApplication.dart';
+export 'record/android_application.dart';
+export 'record/bluetooth.dart';
+export 'record/well_known.dart';
 
 import 'dart:typed_data';
 import 'record.dart';

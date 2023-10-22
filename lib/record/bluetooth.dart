@@ -3,7 +3,8 @@ import 'dart:convert';
 
 import 'package:uuid/uuid.dart';
 
-import '../ndef.dart';
+import 'package:ndef/ndef.dart';
+import 'package:ndef/utilities.dart';
 
 class _Address {
   late Uint8List addr;
