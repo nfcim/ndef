@@ -529,9 +529,6 @@ class SmartPosterRecord extends WellKnownRecord {
 
   @override
   bool isEqual(NDEFRecord other) {
-    if (!(other is NDEFRecord)) {
-      return false;
-    }
     var o = other as SmartPosterRecord;
     return (tnf == other.tnf) &&
         ByteUtils.bytesEqual(type, other.type) &&

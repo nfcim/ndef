@@ -25,7 +25,6 @@ void testGenerate(List<String> hexStrings, List<List<NDEFRecord>> messages) {
 
 void main() {
   test('ndef message with uri type', () {
-    // TODO: fill in tests
     List<String> hexStrings = [
       "91011655046769746875622e636f6d2f6e6663696d2f6e64656651010b55046769746875622e636f6d",
     ];
@@ -287,7 +286,7 @@ void main() {
     assert(wellKnownRecord.id == null);
   });
 
-  // TODO: exception test (urgent task)
+  // exception test
   test(
       'exception test',
       () => expect(() {

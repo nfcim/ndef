@@ -387,8 +387,7 @@ class NDEFRecord {
   }
 
   bool isEqual(NDEFRecord other) {
-    return (other is NDEFRecord) &&
-        (tnf == other.tnf) &&
+    return tnf == other.tnf &&
         ByteUtils.bytesEqual(type!, other.type) &&
         ByteUtils.bytesEqual(id, other.id) &&
         ByteUtils.bytesEqual(payload, other.payload);

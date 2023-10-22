@@ -10,12 +10,10 @@ jobs:
         if: "!contains(github.event.head_commit.message, 'ci skip')"
 
         steps:
-        - uses: actions/checkout@v2
-        - uses: subosito/flutter-action@v1
-          with:
-            channel: 'stable'
-        - run: flutter pub get
-        - run: flutter test
+        - uses: actions/checkout@v3
+        - uses: dart-lang/setup-dart@v1
+        - run: dart pub get
+        - run: dart test
         - name: Run example code
           run: |
             cd example
