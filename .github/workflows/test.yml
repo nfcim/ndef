@@ -17,6 +17,7 @@ jobs:
           - uses: dart-lang/setup-dart@v1
             with:
               sdk: ${{ matrix.sdk }}
+          - run: dart pub get
           - run: dart format --output=none --set-exit-if-changed .
           - run: dart analyze
           - run: dart test
