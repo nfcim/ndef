@@ -53,3 +53,8 @@ Note: this tag is not pushed to GitHub, but published to pub.dev.
 
 * Upgrade to Dart v3
 * Fix multiple bugs (#14, #15, #17, #18)
+
+## 0.3.3
+
+* Restructure the project (no functional changes)
+* Fix numerous lint warnings
