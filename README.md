@@ -5,19 +5,26 @@
 
 `ndef` is a Dart library to decode & encode NDEF records, supporting multiple types including (grouped by Type Name Format):
 
-* NFC Well Known
-  * Text
-  * URI with well-known prefix
-  * Digital signature
-  * Smart poster
-  * Connection handover
-  * Android application record
-* Media (MIME data)
-  * Bluetooth easy pairing / Bluetooth low energy
-  * other MIME data
-* Absolute URI
+* NFC Well-known Records (TNF 1 / `urn:nfc:wkt:`), with:
+  * Text (class `T`)
+  * URI with well-known prefix (class `U`)
+  * Digital signature (class `Sig`)
+  * Smart poster (class `Sp`), including sub-record:
+    * Action (class `act`)
+    * Size (class `s`)
+    * Type (class `t`)
+  * Connection handover (class `Hr/Hs/Hm/Hi/Hc/ac/cr`)
+* Media Records (TNF 2, containing MIME data), with:
+  * Bluetooth easy pairing (class `application/vnd.bluetooth.ep.oob`)
+  * Bluetooth low energy (class `application/vnd.bluetooth.le.oob`)
+* Absolute URI Records (TNF 3)
+* External Records (TNF 4 / `urn:nfc:ext:`), with:
+  * Android application record (class `android.com:pkg`)
 
-**This library is still under active development and subject to breaking API changes and malfunction. Pull requests and issues are most welcomed.**
+**This library is still under active development and subject to breaking API changes and malfunction. Pull requests and issues are most welcomed, especially on:**
+
+* Bug fixes
+* New support for other record types
 
 ## Usage
 
@@ -37,7 +44,7 @@ assert(decodedRecords.length == 1);
 if (decodedRecords[0] is ndef.TextRecord) {
   assert(decodeRecords[0].text == "Hello");
 }  else {
-  // no we will not reach here
+  // we will not reach here
 }
 
 // data-binding (by implementing payload as dynamic getter / setter)
@@ -52,6 +59,6 @@ print(uriRecord.content); // changed back
 var partiallyDecodedUrlRecord = ndef.decodePartialNdefMessage(ndef.TypeNameFormat.nfcWellKnown, utf8.encode("U"), origPayload, id: Uint8List.fromList([0x1, 0x2]));
 ```
 
-See [example code](example/lib/main.dart) for a more complete example. Null-safety support is added from version 0.3.0.
+See [example code](example/lib/main.dart) for a more complete example.
 
 Refer to the [documentation](https://pub.dev/documentation/ndef/) for detailed usage.
