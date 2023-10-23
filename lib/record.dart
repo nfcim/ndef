@@ -234,6 +234,12 @@ class NDEFRecord {
       }
     } else if (tnf == TypeNameFormat.absoluteURI) {
       record = AbsoluteUriRecord();
+    } else if (tnf == TypeNameFormat.nfcExternal) {
+      if (classType == AARRecord.classType) {
+        record = AARRecord();
+      } else {
+        record = ExternalRecord();
+      }
     } else {
       record = NDEFRecord(tnf: tnf);
     }
