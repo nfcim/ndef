@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:ndef/ndef.dart';
+import 'package:ndef/record.dart';
 import 'package:ndef/utilities.dart';
 
 class MimeRecord extends NDEFRecord {

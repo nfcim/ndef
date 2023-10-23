@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'external_record.dart';
+import 'package:ndef/records/external/external.dart';
 
 class AARRecord extends ExternalRecord {
   static const String classType = "android.com:pkg";

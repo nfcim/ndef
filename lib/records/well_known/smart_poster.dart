@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+// this file uses too many symbols, import the whole library instead
 import 'package:ndef/ndef.dart';
 import 'package:ndef/utilities.dart';
 

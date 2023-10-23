@@ -3,7 +3,7 @@ import 'dart:typed_data';
 
 import 'package:uuid/uuid.dart';
 
-import 'package:ndef/ndef.dart';
+import 'package:ndef/records/well_known/well_known.dart';
 import 'package:ndef/utilities.dart';
 
 class DataElement {

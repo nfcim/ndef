@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:ndef/ndef.dart';
+import 'package:ndef/records/well_known/well_known.dart';
 import 'package:ndef/utilities.dart';
 
 enum TextEncoding { UTF8, UTF16 }

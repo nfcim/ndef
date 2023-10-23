@@ -3,7 +3,7 @@ import 'dart:convert';
 
 import 'package:uuid/uuid.dart';
 
-import 'package:ndef/ndef.dart';
+import 'package:ndef/records/media/mime.dart';
 import 'package:ndef/utilities.dart';
 
 class _Address {
