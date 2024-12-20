@@ -36,7 +36,8 @@ void main() {
   print('===================');
   urlRecords[0].content =
       'github.com/nfcim/flutter_nfc_kit'; // thats also our awesome library, check it out!
-  print('payload after change content: ${urlRecords[0].payload!.toHexString()}'); // encoded when invoking
+  print(
+      'payload after change content: ${urlRecords[0].payload!.toHexString()}'); // encoded when invoking
   print('uri after change content: ${urlRecords[0].uri}');
 
   // change it back (by using payload)
@@ -53,10 +54,9 @@ void main() {
   // also you can decode by providing id, type and payload separately (normally from phone API)
   print('===================');
   var partiallyDecodedUrlRecord = ndef.decodePartialNdefMessage(
-      ndef.TypeNameFormat.nfcWellKnown,
-      utf8.encode("U"),
-      origPayload,
+      ndef.TypeNameFormat.nfcWellKnown, utf8.encode("U"), origPayload,
       id: Uint8List.fromList([0x1, 0x2]));
   assert(partiallyDecodedUrlRecord is ndef.UriRecord);
-  print('partially decoded record: ${partiallyDecodedUrlRecord as ndef.UriRecord}');
+  print(
+      'partially decoded record: ${partiallyDecodedUrlRecord as ndef.UriRecord}');
 }
