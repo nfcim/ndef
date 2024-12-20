@@ -58,3 +58,8 @@ Note: this tag is not pushed to GitHub, but published to pub.dev.
 
 * Restructure the project (no functional changes)
 * Fix numerous lint warnings
+
+## 0.3.4
+
+* No functional changes
+* Fix more lint warnings
