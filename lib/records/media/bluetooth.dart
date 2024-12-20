@@ -748,7 +748,7 @@ class BluetoothRecord extends MimeRecord {
 
   set deviceName(String deviceName) {
     attributes[EIRType.CompleteLocalName] =
-        utf8.encode(deviceName) as Uint8List;
+        utf8.encode(deviceName);
     if (attributes.containsKey(EIRType.ShortenedLocalName)) {
       attributes.remove(EIRType.ShortenedLocalName);
     }

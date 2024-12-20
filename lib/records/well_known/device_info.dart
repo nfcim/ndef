@@ -11,7 +11,7 @@ class DataElement {
   late Uint8List value;
   DataElement(this.type, this.value);
   DataElement.fromString(this.type, String valueString) {
-    value = utf8.encode(valueString) as Uint8List;
+    value = utf8.encode(valueString);
   }
 
   @override
@@ -78,7 +78,7 @@ class DeviceInformationRecord extends WellKnownRecord {
   void _addEncodedData(String? value, int type, List<int?> payload) {
     if (value != null) {
       payload.add(type);
-      Uint8List valueBytes = utf8.encode(value) as Uint8List;
+      Uint8List valueBytes = utf8.encode(value);
       payload.add(valueBytes.length);
       payload.addAll(valueBytes);
     }

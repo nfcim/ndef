@@ -128,7 +128,7 @@ class NDEFRecord {
       if (decodedType == null) {
         return null;
       } else {
-        return utf8.encode(decodedType!) as Uint8List;
+        return utf8.encode(decodedType!);
       }
     }
   }

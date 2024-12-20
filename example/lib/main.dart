@@ -29,36 +29,34 @@ void main() {
   // modify the record by data-binding
   var origPayload = urlRecords[0].payload!;
   print('===================');
-  print('original payload: ' + origPayload.toHexString());
-  print('original uri: ' + urlRecords[0].uri.toString());
+  print('original payload: ${origPayload.toHexString()}');
+  print('original uri: ${urlRecords[0].uri}');
 
   // change uri
   print('===================');
   urlRecords[0].content =
       'github.com/nfcim/flutter_nfc_kit'; // thats also our awesome library, check it out!
-  print('payload after change content: ' +
-      urlRecords[0].payload!.toHexString()); // encoded when invoking
-  print('uri after change content: ' + urlRecords[0].uri.toString());
+  print('payload after change content: ${urlRecords[0].payload!.toHexString()}'); // encoded when invoking
+  print('uri after change content: ${urlRecords[0].uri}');
 
   // change it back (by using payload)
   print('===================');
   urlRecords[0].payload = origPayload; // decoded when invoking
-  print('payload after changed back: ' + urlRecords[0].payload!.toHexString());
-  print('uri after changed back: ' + urlRecords[0].uri.toString());
+  print('payload after changed back: ${urlRecords[0].payload!.toHexString()}');
+  print('uri after changed back: ${urlRecords[0].uri}');
 
   // encoded into message again (also canonicalize MB & MF fields)
   var encodedAgain = ndef.encodeNdefMessage(urlRecords);
   assert(encodedAgain.toHexString() == encodedUrlRecord);
-  print('encoded single record: ' + urlRecords[0].encode().toHexString());
+  print('encoded single record: ${urlRecords[0].encode().toHexString()}');
 
   // also you can decode by providing id, type and payload separately (normally from phone API)
   print('===================');
   var partiallyDecodedUrlRecord = ndef.decodePartialNdefMessage(
       ndef.TypeNameFormat.nfcWellKnown,
-      utf8.encode("U") as Uint8List,
+      utf8.encode("U"),
       origPayload,
       id: Uint8List.fromList([0x1, 0x2]));
   assert(partiallyDecodedUrlRecord is ndef.UriRecord);
-  print('partially decoded record: ' +
-      (partiallyDecodedUrlRecord as ndef.UriRecord).toString());
+  print('partially decoded record: ${partiallyDecodedUrlRecord as ndef.UriRecord}');
 }

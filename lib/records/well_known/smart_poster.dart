@@ -138,7 +138,7 @@ class TypeRecord extends WellKnownRecord {
 
   @override
   Uint8List get payload {
-    return utf8.encode(typeInfo!) as Uint8List;
+    return utf8.encode(typeInfo!);
   }
 
   @override
