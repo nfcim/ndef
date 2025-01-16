@@ -352,15 +352,15 @@ class NDEFRecord {
     // use getter for implicit encoding
     var encodedPayload = payload;
 
-    // payload length
+    // payload length (Big Endian)
     if (encodedPayload!.length < 256) {
       encoded += [encodedPayload.length];
     } else {
       encoded += [
-        encodedPayload.length & 0xff,
-        (encodedPayload.length >> 8) & 0xff,
+        (encodedPayload.length >> 24) & 0xff, // MSB first
         (encodedPayload.length >> 16) & 0xff,
-        (encodedPayload.length >> 24) & 0xff,
+        (encodedPayload.length >> 8) & 0xff,
+        encodedPayload.length & 0xff,
       ];
     }
 
