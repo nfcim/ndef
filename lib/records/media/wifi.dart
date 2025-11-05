@@ -7,134 +7,74 @@ import 'package:ndef/utilities.dart';
 /// WiFi authentication types according to WSC specification.
 enum WifiAuthenticationType {
   /// Open network (no authentication)
-  open,
+  open(0x0001),
 
   /// WPA Personal
-  wpaPersonal,
+  wpaPersonal(0x0002),
 
   /// Shared key
-  shared,
+  shared(0x0004),
 
   /// WPA Enterprise
-  wpaEnterprise,
+  wpaEnterprise(0x0008),
 
   /// WPA2 Enterprise
-  wpa2Enterprise,
+  wpa2Enterprise(0x0010),
 
   /// WPA2 Personal
-  wpa2Personal,
+  wpa2Personal(0x0020),
 
   /// WPA/WPA2 Personal
-  wpaWpa2Personal,
+  wpaWpa2Personal(0x0022),
 
   /// WPA3 Personal (SAE)
-  wpa3Personal,
+  wpa3Personal(0x0040),
 
   /// WPA3 Enterprise
-  wpa3Enterprise,
+  wpa3Enterprise(0x0080);
+
+  /// The WSC (WiFi Simple Configuration) value for this authentication type
+  final int wscValue;
+
+  const WifiAuthenticationType(this.wscValue);
+
+  /// Creates a [WifiAuthenticationType] from a WSC value
+  static WifiAuthenticationType fromWscValue(int value) {
+    return values.firstWhere(
+      (e) => e.wscValue == value,
+      orElse: () => WifiAuthenticationType.open,
+    );
+  }
 }
 
 /// WiFi encryption types according to WSC specification.
 enum WifiEncryptionType {
   /// No encryption
-  none,
+  none(0x0001),
 
   /// WEP encryption
-  wep,
+  wep(0x0002),
 
   /// TKIP encryption
-  tkip,
+  tkip(0x0004),
 
   /// AES encryption
-  aes,
+  aes(0x0008),
 
   /// AES/TKIP mixed mode
-  aesTkip,
-}
+  aesTkip(0x000C);
 
-/// Extension to convert authentication type to WSC value
-extension WifiAuthenticationTypeExtension on WifiAuthenticationType {
-  int get wscValue {
-    switch (this) {
-      case WifiAuthenticationType.open:
-        return 0x0001;
-      case WifiAuthenticationType.wpaPersonal:
-        return 0x0002;
-      case WifiAuthenticationType.shared:
-        return 0x0004;
-      case WifiAuthenticationType.wpaEnterprise:
-        return 0x0008;
-      case WifiAuthenticationType.wpa2Enterprise:
-        return 0x0010;
-      case WifiAuthenticationType.wpa2Personal:
-        return 0x0020;
-      case WifiAuthenticationType.wpaWpa2Personal:
-        return 0x0022;
-      case WifiAuthenticationType.wpa3Personal:
-        return 0x0040;
-      case WifiAuthenticationType.wpa3Enterprise:
-        return 0x0080;
-    }
-  }
+  /// The WSC (WiFi Simple Configuration) value for this encryption type
+  final int wscValue;
 
-  static WifiAuthenticationType fromWscValue(int value) {
-    switch (value) {
-      case 0x0001:
-        return WifiAuthenticationType.open;
-      case 0x0002:
-        return WifiAuthenticationType.wpaPersonal;
-      case 0x0004:
-        return WifiAuthenticationType.shared;
-      case 0x0008:
-        return WifiAuthenticationType.wpaEnterprise;
-      case 0x0010:
-        return WifiAuthenticationType.wpa2Enterprise;
-      case 0x0020:
-        return WifiAuthenticationType.wpa2Personal;
-      case 0x0022:
-        return WifiAuthenticationType.wpaWpa2Personal;
-      case 0x0040:
-        return WifiAuthenticationType.wpa3Personal;
-      case 0x0080:
-        return WifiAuthenticationType.wpa3Enterprise;
-      default:
-        return WifiAuthenticationType.open;
-    }
-  }
-}
+  const WifiEncryptionType(this.wscValue);
 
-/// Extension to convert encryption type to WSC value
-extension WifiEncryptionTypeExtension on WifiEncryptionType {
-  int get wscValue {
-    switch (this) {
-      case WifiEncryptionType.none:
-        return 0x0001;
-      case WifiEncryptionType.wep:
-        return 0x0002;
-      case WifiEncryptionType.tkip:
-        return 0x0004;
-      case WifiEncryptionType.aes:
-        return 0x0008;
-      case WifiEncryptionType.aesTkip:
-        return 0x000C;
-    }
-  }
-
+  /// Creates a [WifiEncryptionType] from a WSC value
   static WifiEncryptionType fromWscValue(int value) {
-    switch (value) {
-      case 0x0001:
-        return WifiEncryptionType.none;
-      case 0x0002:
-        return WifiEncryptionType.wep;
-      case 0x0004:
-        return WifiEncryptionType.tkip;
-      case 0x0008:
-        return WifiEncryptionType.aes;
-      case 0x000C:
-        return WifiEncryptionType.aesTkip;
-      default:
-        return WifiEncryptionType.none;
-    }
+    return values.firstWhere(
+      (e) => e.wscValue == value,
+      orElse: () => WifiEncryptionType.none,
+    );
   }
 }
 
@@ -372,12 +312,11 @@ class WifiRecord extends MimeRecord {
           break;
         case _attrAuthType:
           final authValue = (attrValue[0] << 8) | attrValue[1];
-          authenticationType =
-              WifiAuthenticationTypeExtension.fromWscValue(authValue);
+          authenticationType = WifiAuthenticationType.fromWscValue(authValue);
           break;
         case _attrEncryptionType:
           final encValue = (attrValue[0] << 8) | attrValue[1];
-          encryptionType = WifiEncryptionTypeExtension.fromWscValue(encValue);
+          encryptionType = WifiEncryptionType.fromWscValue(encValue);
           break;
         case _attrMacAddress:
           if (attrValue.length == 6) {
@@ -393,4 +332,3 @@ class WifiRecord extends MimeRecord {
     }
   }
 }
-
