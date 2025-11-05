@@ -3,7 +3,6 @@ import 'dart:typed_data';
 
 import 'package:ndef/ndef.dart';
 import 'package:ndef/utilities.dart';
-import 'package:ndef/records/media/wifi.dart';
 
 /// Represent the flags in the header of a NDEF record.
 class NDEFRecordFlags {

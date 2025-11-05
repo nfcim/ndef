@@ -143,8 +143,8 @@ class WifiRecord extends MimeRecord {
     this.encryptionType = WifiEncryptionType.aes,
     this.macAddress,
     this.networkIndex = 1,
-    Uint8List? id,
-  }) : super(id: id) {
+    super.id,
+  }) : super(decodedType: WifiRecord.classType) {
     // Validate MAC address format if provided
     if (macAddress != null) {
       _macAddressToBytes(macAddress); // This will throw if invalid
@@ -244,10 +244,8 @@ class WifiRecord extends MimeRecord {
 
     // MAC Address (optional)
     if (macAddress != null) {
-      final macBytes = _macAddressToBytes(macAddress);
-      if (macBytes != null) {
-        credentialData.add(_encodeTLV(_attrMacAddress, macBytes));
-      }
+      final macBytes = _macAddressToBytes(macAddress)!;
+      credentialData.add(_encodeTLV(_attrMacAddress, macBytes));
     }
 
     // Combine all credential data
