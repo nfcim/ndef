@@ -12,13 +12,13 @@ import 'package:ndef/utilities.dart';
 class DataElement {
   /// The type identifier of the data element.
   late int type;
-  
+
   /// The value of the data element as bytes.
   late Uint8List value;
-  
+
   /// Constructs a [DataElement] with [type] and [value].
   DataElement(this.type, this.value);
-  
+
   /// Constructs a [DataElement] with [type] and [valueString] encoded as UTF-8.
   DataElement.fromString(this.type, String valueString) {
     value = utf8.encode(valueString);
@@ -68,30 +68,31 @@ class DeviceInformationRecord extends WellKnownRecord {
 
   /// The vendor name of the device.
   String? vendorName;
-  
+
   /// The model name of the device.
   String? modelName;
-  
+
   /// The unique name of the device.
   String? uniqueName;
-  
+
   /// The version string of the device.
   String? versionString;
-  
+
   /// The UUID as raw bytes.
   late Uint8List uuidData;
-  
+
   /// Additional undefined data elements.
   late List<DataElement> undefinedData;
 
   /// Constructs a [DeviceInformationRecord] with optional device information fields.
-  DeviceInformationRecord(
-      {this.vendorName,
-      this.modelName,
-      this.uniqueName,
-      String? uuid,
-      this.versionString,
-      List<DataElement>? undefinedData}) {
+  DeviceInformationRecord({
+    this.vendorName,
+    this.modelName,
+    this.uniqueName,
+    String? uuid,
+    this.versionString,
+    List<DataElement>? undefinedData,
+  }) {
     if (uuid != null) {
       this.uuid = uuid;
     }
@@ -121,7 +122,8 @@ class DeviceInformationRecord extends WellKnownRecord {
   Uint8List? get payload {
     if (!(vendorName != null && modelName != null)) {
       throw ArgumentError(
-          "Decoding requires the manufacturer and model name TLVs");
+        "Decoding requires the manufacturer and model name TLVs",
+      );
     }
     List<int>? payload = [];
 
@@ -174,7 +176,8 @@ class DeviceInformationRecord extends WellKnownRecord {
     }
     if (!(vendorName != null && modelName != null)) {
       throw ArgumentError(
-          "Decoding requires the manufacturer and model name TLVs");
+        "Decoding requires the manufacturer and model name TLVs",
+      );
     }
   }
 }

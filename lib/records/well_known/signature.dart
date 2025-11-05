@@ -49,7 +49,7 @@ class SignatureRecord extends WellKnownRecord {
     "ECDSA-P224",
     "ECDSA-K233",
     "ECDSA-B233",
-    "ECDSA-P256"
+    "ECDSA-P256",
   ];
 
   /// Map of supported hash types.
@@ -60,32 +60,33 @@ class SignatureRecord extends WellKnownRecord {
 
   /// URI for the signature.
   String? signatureURI;
-  
+
   /// URI for the certificate.
   String? certificateURI;
   late List<Uint8List> _certificateStore;
-  
+
   /// The signature bytes.
   late Uint8List signature;
-  
+
   /// Internal index for signature type.
   late int signatureTypeIndex;
-  
+
   /// Internal index for hash type.
   late int hashTypeIndex;
-  
+
   /// Internal index for certificate format.
   late int certificateFormatIndex;
 
   /// Constructs a [SignatureRecord] with signature and certificate information.
-  SignatureRecord(
-      {String? signatureType,
-      String hashType = "SHA-256",
-      Uint8List? signature,
-      this.signatureURI = "",
-      String certificateFormat = "X.509",
-      List<Uint8List>? certificateStore,
-      this.certificateURI = ""}) {
+  SignatureRecord({
+    String? signatureType,
+    String hashType = "SHA-256",
+    Uint8List? signature,
+    this.signatureURI = "",
+    String certificateFormat = "X.509",
+    List<Uint8List>? certificateStore,
+    this.certificateURI = "",
+  }) {
     this.signatureType = signatureType;
     this.hashType = hashType;
     this.signature = signature ?? Uint8List(0);
@@ -112,7 +113,8 @@ class SignatureRecord extends WellKnownRecord {
       }
     }
     throw ArgumentError(
-        "Signature type $signatureType is not supported, please select one from $signatureTypeMap");
+      "Signature type $signatureType is not supported, please select one from $signatureTypeMap",
+    );
   }
 
   /// Gets the hash type string.
@@ -129,7 +131,8 @@ class SignatureRecord extends WellKnownRecord {
       }
     }
     throw ArgumentError(
-        "Hash type $hashType is not supported, please select one from [, SHA-256]");
+      "Hash type $hashType is not supported, please select one from [, SHA-256]",
+    );
   }
 
   /// Gets the certificate format string.
@@ -146,7 +149,8 @@ class SignatureRecord extends WellKnownRecord {
       }
     }
     throw ArgumentError(
-        "Certificate format $certificateFormat is not supported, please select one from $certificateFormatMap");
+      "Certificate format $certificateFormat is not supported, please select one from $certificateFormatMap",
+    );
   }
 
   /// Gets a copy of the certificate store.
@@ -176,16 +180,19 @@ class SignatureRecord extends WellKnownRecord {
     int signatureURIPresent = (signatureURI == "") ? 0 : 1;
     int signatureFlag = (signatureURIPresent << 7) | signatureTypeIndex;
 
-    var signatureURIBytes =
-        signatureURIPresent == 0 ? signature : utf8.encode(signatureURI!);
+    var signatureURIBytes = signatureURIPresent == 0
+        ? signature
+        : utf8.encode(signatureURI!);
     var signatureLENGTHBytes = signatureURIBytes.length.toBytes(2);
-    var signatureBytes = [signatureFlag, hashTypeIndex] +
+    var signatureBytes =
+        [signatureFlag, hashTypeIndex] +
         signatureLENGTHBytes +
         signatureURIBytes;
 
     //Certificate Field
     int certificateURIPresent = (certificateURI == "") ? 0 : 1;
-    int certificateFlag = (certificateURIPresent << 7) |
+    int certificateFlag =
+        (certificateURIPresent << 7) |
         (certificateFormatIndex << 4) |
         certificateStore.length;
     var certificateStoreBytes = <int>[];
@@ -199,7 +206,8 @@ class SignatureRecord extends WellKnownRecord {
       certificateURIBytes.addAll(utf8.encode(certificateURI!));
     }
     var certificateBytes = Uint8List.fromList(
-        [certificateFlag] + certificateStoreBytes + certificateURIBytes);
+      [certificateFlag] + certificateStoreBytes + certificateURIBytes,
+    );
 
     payload = [classVersion] + (signatureBytes) + certificateBytes;
     return Uint8List.fromList(payload);
@@ -217,7 +225,8 @@ class SignatureRecord extends WellKnownRecord {
     if (version != classVersion) {
       //TODO:find the document of smartposter 2.0
       throw ArgumentError(
-          "Signature Record is only implemented for smartposter 2.0, got ${Version.formattedString(version)}");
+        "Signature Record is only implemented for smartposter 2.0, got ${Version.formattedString(version)}",
+      );
     }
 
     //Signature Field

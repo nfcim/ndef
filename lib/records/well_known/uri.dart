@@ -72,7 +72,7 @@ class UriRecord extends WellKnownRecord {
   }
 
   int _prefixIndex = -1;
-  
+
   /// The URI content after the prefix.
   String? content;
 
@@ -106,7 +106,8 @@ class UriRecord extends WellKnownRecord {
     int prefixIndex = prefixMap.indexOf(prefix!);
     if (prefixIndex == -1) {
       throw ArgumentError(
-          "URI Prefix $prefix is not supported, please select one from $prefixMap");
+        "URI Prefix $prefix is not supported, please select one from $prefixMap",
+      );
     } else {
       _prefixIndex = prefixIndex;
     }

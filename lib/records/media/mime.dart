@@ -18,7 +18,7 @@ class MimeRecord extends NDEFRecord {
 
   /// Constructs a [MimeRecord] with optional [decodedType], [payload], and [id].
   MimeRecord({String? decodedType, Uint8List? payload, Uint8List? id})
-      : super(id: id, payload: payload) {
+    : super(id: id, payload: payload) {
     if (decodedType != null) {
       this.decodedType = decodedType;
     }

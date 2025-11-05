@@ -75,18 +75,24 @@ class NDEFRecordFlags {
 enum TypeNameFormat {
   /// Empty record (no type, ID, or payload).
   empty,
+
   /// NFC Forum well-known type.
   nfcWellKnown,
+
   /// Media type (RFC 2046).
   media,
+
   /// Absolute URI (RFC 3986).
   absoluteURI,
+
   /// NFC Forum external type.
   nfcExternal,
+
   /// Unknown type.
   unknown,
+
   /// Unchanged (for chunked records).
-  unchanged
+  unchanged,
 }
 
 /// Construct an instance of a specific type (subclass) of [NDEFRecord] according to [tnf] and [classType]
@@ -102,7 +108,7 @@ class NDEFRecord {
     "",
     "urn:nfc:ext:",
     "unknown",
-    "unchanged"
+    "unchanged",
   ];
 
   /// Predefined TNF of a specific record type.
@@ -173,7 +179,7 @@ class NDEFRecord {
 
   /// The minimum payload length for this record type.
   static const int classMinPayloadLength = 0;
-  
+
   /// The maximum payload length for this record type, null means no limit.
   static const int? classMaxPayloadLength = null;
 
@@ -205,16 +211,20 @@ class NDEFRecord {
 
   /// The ID of the record (optional).
   Uint8List? id;
-  
+
   /// The payload data of the record.
   Uint8List? payload;
-  
+
   /// The flags header of the record.
   late NDEFRecordFlags flags;
 
   /// Constructs an [NDEFRecord] with optional [tnf], [type], [id], and [payload].
-  NDEFRecord(
-      {TypeNameFormat? tnf, Uint8List? type, this.id, Uint8List? payload}) {
+  NDEFRecord({
+    TypeNameFormat? tnf,
+    Uint8List? type,
+    this.id,
+    Uint8List? payload,
+  }) {
     flags = NDEFRecordFlags();
     if (tnf == null) {
       flags.TNF = TypeNameFormat.values.indexOf(this.tnf);
@@ -282,18 +292,23 @@ class NDEFRecord {
 
   /// Decode a [NDEFRecord] record from raw data.
   static NDEFRecord doDecode(
-      TypeNameFormat tnf, Uint8List type, Uint8List payload,
-      {Uint8List? id,
-      TypeFactory typeFactory = NDEFRecord.defaultTypeFactory}) {
+    TypeNameFormat tnf,
+    Uint8List type,
+    Uint8List payload, {
+    Uint8List? id,
+    TypeFactory typeFactory = NDEFRecord.defaultTypeFactory,
+  }) {
     var record = typeFactory(tnf, utf8.decode(type));
     if (payload.length < record.minPayloadLength) {
       throw ArgumentError(
-          "Payload length must be >= ${record.minPayloadLength}");
+        "Payload length must be >= ${record.minPayloadLength}",
+      );
     }
     if (record.maxPayloadLength != null &&
         payload.length < record.maxPayloadLength!) {
       throw ArgumentError(
-          "Payload length must be <= ${record.maxPayloadLength}");
+        "Payload length must be <= ${record.maxPayloadLength}",
+      );
     }
     record.id = id;
     record.type = type;
@@ -339,8 +354,13 @@ class NDEFRecord {
     var payload = stream.readBytes(payloadLength);
     var typeNameFormat = TypeNameFormat.values[flags.TNF];
 
-    var decoded = doDecode(typeNameFormat, type, payload,
-        id: id, typeFactory: typeFactory);
+    var decoded = doDecode(
+      typeNameFormat,
+      type,
+      payload,
+      id: id,
+      typeFactory: typeFactory,
+    );
     decoded.flags = flags;
     return decoded;
   }
@@ -349,12 +369,14 @@ class NDEFRecord {
   Uint8List encode() {
     if (type == null) {
       throw ArgumentError.notNull(
-          "Type is null, please set type before encode");
+        "Type is null, please set type before encode",
+      );
     }
 
     if (payload == null) {
       throw ArgumentError.notNull(
-          "Payload is null, please set parameters or set payload directly before encode");
+        "Payload is null, please set parameters or set payload directly before encode",
+      );
     }
 
     var encoded = <int>[];

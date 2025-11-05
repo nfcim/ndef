@@ -6,15 +6,18 @@ import 'package:ndef/ndef.dart';
 import 'package:ndef/utilities.dart';
 
 /// Power state of a carrier in connection handover.
-enum CarrierPowerState { 
+enum CarrierPowerState {
   /// Carrier is inactive.
-  inactive, 
+  inactive,
+
   /// Carrier is active and ready.
-  active, 
+  active,
+
   /// Carrier is activating.
-  activating, 
+  activating,
+
   /// Carrier state is unknown.
-  unknown 
+  unknown,
 }
 
 /// A NDEF record describing an alternative carrier for connection handover.
@@ -49,18 +52,19 @@ class AlternativeCarrierRecord extends WellKnownRecord {
 
   /// The power state of the carrier.
   late CarrierPowerState carrierPowerState;
-  
+
   /// Reference to the carrier data record.
   late Uint8List carrierDataReference;
-  
+
   /// List of auxiliary data references.
   late List<Uint8List> auxDataReferenceList;
 
   /// Constructs an [AlternativeCarrierRecord] with carrier information.
-  AlternativeCarrierRecord(
-      {CarrierPowerState? carrierPowerState,
-      Uint8List? carrierDataReference,
-      List<Uint8List>? auxDataReferenceList}) {
+  AlternativeCarrierRecord({
+    CarrierPowerState? carrierPowerState,
+    Uint8List? carrierDataReference,
+    List<Uint8List>? auxDataReferenceList,
+  }) {
     if (carrierPowerState != null) {
       this.carrierPowerState = carrierPowerState;
     }
@@ -77,8 +81,10 @@ class AlternativeCarrierRecord extends WellKnownRecord {
 
   /// Sets the carrier power state from an index.
   set carrierPowerStateIndex(int carrierPowerStateIndex) {
-    assert(carrierPowerStateIndex >= 0 &&
-        carrierPowerStateIndex < CarrierPowerState.values.length);
+    assert(
+      carrierPowerStateIndex >= 0 &&
+          carrierPowerStateIndex < CarrierPowerState.values.length,
+    );
     carrierPowerState = CarrierPowerState.values[carrierPowerStateIndex];
   }
 
@@ -91,8 +97,10 @@ class AlternativeCarrierRecord extends WellKnownRecord {
     payload.add(carrierDataReference.length);
     payload.addAll(carrierDataReference);
 
-    assert(auxDataReferenceList.length < 255,
-        "Number of auxDataReference must be in [0,256)");
+    assert(
+      auxDataReferenceList.length < 255,
+      "Number of auxDataReference must be in [0,256)",
+    );
 
     payload.add(auxDataReferenceList.length);
     for (int i = 0; i < auxDataReferenceList.length; i++) {
@@ -117,8 +125,10 @@ class AlternativeCarrierRecord extends WellKnownRecord {
       auxDataReferenceList.add(stream.readBytes(auxDataReferenceLength));
     }
 
-    assert(stream.isEnd() == true,
-        "payload has ${stream.unreadLength} bytes after decode");
+    assert(
+      stream.isEnd() == true,
+      "payload has ${stream.unreadLength} bytes after decode",
+    );
   }
 }
 
@@ -137,7 +147,7 @@ class CollisionResolutionRecord extends WellKnownRecord {
 
   /// The minimum payload length for Collision Resolution records.
   static const int classMinPayloadLength = 2;
-  
+
   /// The maximum payload length for Collision Resolution records.
   static const int classMaxPayloadLength = 2;
 
@@ -179,7 +189,8 @@ class CollisionResolutionRecord extends WellKnownRecord {
       randomNumber = (randomNumber).toInt();
     } else if (randomNumber is! int) {
       throw ArgumentError(
-          "RandomNumber expects int or Uint8List, got ${randomNumber.runtimeType}");
+        "RandomNumber expects int or Uint8List, got ${randomNumber.runtimeType}",
+      );
     }
     assert(randomNumber >= 0 && randomNumber <= 0xffff);
     _randomNumber = randomNumber;
@@ -200,7 +211,7 @@ enum ErrorReason {
   temporarilyOutOfMemory,
   permanentlyOutOfMemory,
   carrierSpecificError,
-  other
+  other,
 }
 
 /// A NDEF record describing an error in connection handover.
@@ -219,7 +230,7 @@ class ErrorRecord extends WellKnownRecord {
   static const List<String> errorStringMap = [
     "temporarily out of memory, may retry after X milliseconds",
     "permanently out of memory, may retry with at most X octets",
-    "carrier specific error, may retry after X milliseconds"
+    "carrier specific error, may retry after X milliseconds",
   ];
 
   @override
@@ -231,7 +242,7 @@ class ErrorRecord extends WellKnownRecord {
   }
 
   late int _errorNum;
-  
+
   /// Additional error-specific data.
   late Uint8List errorData;
 
@@ -319,10 +330,10 @@ class ErrorRecord extends WellKnownRecord {
 class HandoverRecord extends WellKnownRecord {
   /// The handover protocol version.
   Version version = Version();
-  
+
   /// List of alternative carrier records.
   late List<AlternativeCarrierRecord> alternativeCarrierRecordList;
-  
+
   /// List of unknown/unrecognized records.
   late List<NDEFRecord> unknownRecordList;
 
@@ -345,9 +356,10 @@ class HandoverRecord extends WellKnownRecord {
   }
 
   /// Constructs a [HandoverRecord] with optional version and carrier records.
-  HandoverRecord(
-      {String? versionString,
-      List<AlternativeCarrierRecord>? alternativeCarrierRecordList}) {
+  HandoverRecord({
+    String? versionString,
+    List<AlternativeCarrierRecord>? alternativeCarrierRecordList,
+  }) {
     this.alternativeCarrierRecordList =
         alternativeCarrierRecordList ?? <AlternativeCarrierRecord>[];
     unknownRecordList = <NDEFRecord>[];
@@ -409,8 +421,10 @@ class HandoverRecord extends WellKnownRecord {
   set payload(Uint8List? payload) {
     version = Version(value: payload![0]);
     if (payload.length > 1) {
-      var records =
-          decodeRawNdefMessage(payload.sublist(1), typeFactory: _typeFactory);
+      var records = decodeRawNdefMessage(
+        payload.sublist(1),
+        typeFactory: _typeFactory,
+      );
       for (int i = 0; i < records.length; i++) {
         addRecord(records[i]);
       }
@@ -445,13 +459,14 @@ class HandoverRequestRecord extends HandoverRecord {
   late List<CollisionResolutionRecord> collisionResolutionRecordList;
 
   /// Constructs a [HandoverRequestRecord] with version, collision resolution, and carriers.
-  HandoverRequestRecord(
-      {String versionString = "1.3",
-      int? collisionResolutionNumber,
-      List<AlternativeCarrierRecord>? alternativeCarrierRecordList})
-      : super(
-            versionString: versionString,
-            alternativeCarrierRecordList: alternativeCarrierRecordList) {
+  HandoverRequestRecord({
+    String versionString = "1.3",
+    int? collisionResolutionNumber,
+    List<AlternativeCarrierRecord>? alternativeCarrierRecordList,
+  }) : super(
+         versionString: versionString,
+         alternativeCarrierRecordList: alternativeCarrierRecordList,
+       ) {
     collisionResolutionRecordList = <CollisionResolutionRecord>[];
     if (collisionResolutionNumber != null) {
       this.collisionResolutionNumber = collisionResolutionNumber;
@@ -513,7 +528,8 @@ class HandoverRequestRecord extends HandoverRecord {
   set collisionResolutionNumber(int? collisionResolutionNumber) {
     if (collisionResolutionRecordList.isEmpty) {
       collisionResolutionRecordList.add(
-          CollisionResolutionRecord(randomNumber: collisionResolutionNumber));
+        CollisionResolutionRecord(randomNumber: collisionResolutionNumber),
+      );
     } else {
       collisionResolutionRecordList[0].randomNumber = collisionResolutionNumber;
     }
@@ -529,7 +545,8 @@ class HandoverRequestRecord extends HandoverRecord {
     if (version.value > 0x11) {
       if (collisionResolutionNumber == null) {
         throw ArgumentError(
-            "Handover Request Record must have a Collision Resolution Record");
+          "Handover Request Record must have a Collision Resolution Record",
+        );
       }
     }
     return super.payload;
@@ -541,7 +558,8 @@ class HandoverRequestRecord extends HandoverRecord {
     if (version.value > 0x11) {
       if (collisionResolutionNumber == null) {
         throw ArgumentError(
-            "Handover Request Record must have a Collision Resolution Record");
+          "Handover Request Record must have a Collision Resolution Record",
+        );
       }
     }
   }
@@ -568,13 +586,14 @@ class HandoverSelectRecord extends HandoverRecord {
 
   late List<ErrorRecord> errorRecordList;
 
-  HandoverSelectRecord(
-      {String versionString = "1.3",
-      ErrorRecord? error,
-      List<AlternativeCarrierRecord>? alternativeCarrierRecordList})
-      : super(
-            versionString: versionString,
-            alternativeCarrierRecordList: alternativeCarrierRecordList) {
+  HandoverSelectRecord({
+    String versionString = "1.3",
+    ErrorRecord? error,
+    List<AlternativeCarrierRecord>? alternativeCarrierRecordList,
+  }) : super(
+         versionString: versionString,
+         alternativeCarrierRecordList: alternativeCarrierRecordList,
+       ) {
     errorRecordList = <ErrorRecord>[];
     if (error != null) {
       this.error = error;
@@ -648,7 +667,8 @@ class HandoverSelectRecord extends HandoverRecord {
   Uint8List? get payload {
     if (version.value < 0x12 && errorRecordList.isNotEmpty) {
       throw ArgumentError(
-          "Encoding error record version ${version.value} is not supported");
+        "Encoding error record version ${version.value} is not supported",
+      );
     }
     return super.payload;
   }
@@ -672,12 +692,13 @@ class HandoverMediationRecord extends HandoverRecord {
     return str;
   }
 
-  HandoverMediationRecord(
-      {String versionString = "1.3",
-      List<AlternativeCarrierRecord>? alternativeCarrierRecordList})
-      : super(
-            versionString: versionString,
-            alternativeCarrierRecordList: alternativeCarrierRecordList);
+  HandoverMediationRecord({
+    String versionString = "1.3",
+    List<AlternativeCarrierRecord>? alternativeCarrierRecordList,
+  }) : super(
+         versionString: versionString,
+         alternativeCarrierRecordList: alternativeCarrierRecordList,
+       );
 }
 
 class HandoverInitiateRecord extends HandoverRecord {
@@ -698,12 +719,13 @@ class HandoverInitiateRecord extends HandoverRecord {
     return str;
   }
 
-  HandoverInitiateRecord(
-      {String versionString = "1.3",
-      List<AlternativeCarrierRecord>? alternativeCarrierRecordList})
-      : super(
-            versionString: versionString,
-            alternativeCarrierRecordList: alternativeCarrierRecordList);
+  HandoverInitiateRecord({
+    String versionString = "1.3",
+    List<AlternativeCarrierRecord>? alternativeCarrierRecordList,
+  }) : super(
+         versionString: versionString,
+         alternativeCarrierRecordList: alternativeCarrierRecordList,
+       );
 }
 
 class HandoverCarrierRecord extends WellKnownRecord {
@@ -730,11 +752,12 @@ class HandoverCarrierRecord extends WellKnownRecord {
     return str;
   }
 
-  HandoverCarrierRecord(
-      {TypeNameFormat? carrierTnf,
-      this.carrierType,
-      Uint8List? carrierData,
-      Uint8List? id}) {
+  HandoverCarrierRecord({
+    TypeNameFormat? carrierTnf,
+    this.carrierType,
+    Uint8List? carrierData,
+    Uint8List? id,
+  }) {
     if (carrierTnf != null) {
       this.carrierTnf = carrierTnf;
     }
@@ -763,10 +786,11 @@ class HandoverCarrierRecord extends WellKnownRecord {
   @override
   Uint8List? get payload {
     var carrierTypeBytes = utf8.encode(carrierType!);
-    List<int>? payload = ([_carrierTnf, carrierTypeBytes.length] +
-            carrierTypeBytes +
-            carrierData)
-        .cast();
+    List<int>? payload =
+        ([_carrierTnf, carrierTypeBytes.length] +
+                carrierTypeBytes +
+                carrierData)
+            .cast();
     return Uint8List.fromList(payload);
   }
 

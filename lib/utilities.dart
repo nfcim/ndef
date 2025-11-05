@@ -1,11 +1,12 @@
 import 'dart:typed_data';
 
 /// Represents the byte order (endianness) for multi-byte values.
-enum Endianness { 
+enum Endianness {
   /// Big-endian byte order (most significant byte first).
-  Big, 
+  Big,
+
   /// Little-endian byte order (least significant byte first).
-  Little 
+  Little,
 }
 
 /// Utility class to play with raw bytes.
@@ -19,15 +20,20 @@ class ByteUtils {
   }
 
   /// Converts [bytes] to an integer with the specified [endianness].
-  static int bytesToInt(Uint8List? bytes,
-      {Endianness endianness = Endianness.Big}) {
+  static int bytesToInt(
+    Uint8List? bytes, {
+    Endianness endianness = Endianness.Big,
+  }) {
     var stream = ByteStream(bytes!);
     return stream.readInt(stream.length, endianness: endianness);
   }
 
   /// Converts an integer [value] to bytes with specified [length] and [endianness].
-  static Uint8List intToBytes(int value, int length,
-      {Endianness endianness = Endianness.Big}) {
+  static Uint8List intToBytes(
+    int value,
+    int length, {
+    Endianness endianness = Endianness.Big,
+  }) {
     assert(length <= 8);
     var list = <int>[];
 
@@ -46,21 +52,29 @@ class ByteUtils {
   }
 
   /// Converts an integer [value] to a hex string with specified [length] and [endianness].
-  static String intToHexString(int value, int length,
-      {Endianness endianness = Endianness.Big}) {
+  static String intToHexString(
+    int value,
+    int length, {
+    Endianness endianness = Endianness.Big,
+  }) {
     return bytesToHexString(intToBytes(value, length, endianness: endianness));
   }
 
   /// Converts [bytes] to a BigInt with the specified [endianness].
-  static BigInt bytesToBigInt(Uint8List bytes,
-      {Endianness endianness = Endianness.Big}) {
+  static BigInt bytesToBigInt(
+    Uint8List bytes, {
+    Endianness endianness = Endianness.Big,
+  }) {
     var stream = ByteStream(bytes);
     return stream.readBigInt(stream.length, endianness: endianness);
   }
 
   /// Converts a BigInt [value] to bytes with specified [length] and [endianness].
-  static Uint8List bigIntToBytes(BigInt? value, int length,
-      {endianness = Endianness.Big}) {
+  static Uint8List bigIntToBytes(
+    BigInt? value,
+    int length, {
+    endianness = Endianness.Big,
+  }) {
     Uint8List? list = List<int?>.filled(0, null, growable: false) as Uint8List;
     BigInt? v = value;
     for (int i = 0; i < length; i++) {
@@ -81,8 +95,10 @@ class ByteUtils {
 
   /// Converts a single byte [value] to a 2-character hex string.
   static String byteToHexString(int value) {
-    assert(value >= 0 && value < 256,
-        "Value to decode into Hex String must be in the range of [0,256)");
+    assert(
+      value >= 0 && value < 256,
+      "Value to decode into Hex String must be in the range of [0,256)",
+    );
     var str = value.toRadixString(16);
     if (str.length == 1) {
       str = '0$str';
@@ -95,9 +111,12 @@ class ByteUtils {
   /// Spaces in the hex string are ignored.
   static Uint8List hexStringToBytes(String hex) {
     // Delete blank space
-    hex = hex.splitMapJoin(" ", onMatch: (Match match) {
-      return "";
-    });
+    hex = hex.splitMapJoin(
+      " ",
+      onMatch: (Match match) {
+        return "";
+      },
+    );
     if (hex.length % 2 != 0) {
       throw "Hex string length must be even integer, got ${hex.length}";
     }
@@ -138,13 +157,13 @@ extension BytesConvert on Uint8List {
   /// Converts bytes to an integer with the specified [endianness].
   int toInt({Endianness endianness = Endianness.Big}) =>
       ByteUtils.bytesToInt(this, endianness: endianness);
-  
+
   /// Converts bytes to a hex string.
   String toHexString() => ByteUtils.bytesToHexString(this);
-  
+
   /// Converts bytes to a BigInt.
   BigInt toBigInt() => ByteUtils.bytesToBigInt(this);
-  
+
   /// Returns a reversed copy of the bytes.
   Uint8List toReverse() {
     return Uint8List.fromList(reversed.toList());
@@ -163,12 +182,13 @@ extension HexStringConvert on String {
 extension IntConvert on int {
   /// Converts a single byte integer to a hex string.
   String toHexStringAsByte() => ByteUtils.byteToHexString(this);
-  
+
   /// Converts an integer to a hex string with specified [length] and [endianness].
-  String toHexStringAsBytes(int length,
-          {Endianness endianness = Endianness.Big}) =>
-      ByteUtils.intToHexString(this, length, endianness: endianness);
-  
+  String toHexStringAsBytes(
+    int length, {
+    Endianness endianness = Endianness.Big,
+  }) => ByteUtils.intToHexString(this, length, endianness: endianness);
+
   /// Converts an integer to bytes with specified [length] and [endianness].
   Uint8List toBytes(int length, {Endianness endianness = Endianness.Big}) =>
       ByteUtils.intToBytes(this, length, endianness: endianness);

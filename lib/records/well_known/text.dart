@@ -5,11 +5,12 @@ import 'package:ndef/records/well_known/well_known.dart';
 import 'package:ndef/utilities.dart';
 
 /// Text encoding types supported by [TextRecord].
-enum TextEncoding { 
+enum TextEncoding {
   /// UTF-8 encoding.
-  UTF8, 
+  UTF8,
+
   /// UTF-16 encoding.
-  UTF16 
+  UTF16,
 }
 
 /// A NDEF record containing text with language code.
@@ -45,7 +46,7 @@ class TextRecord extends WellKnownRecord {
   /// The text encoding type.
   late TextEncoding encoding;
   String? _language;
-  
+
   /// The text content.
   String? text;
 

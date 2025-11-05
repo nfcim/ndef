@@ -6,13 +6,15 @@ import 'package:ndef/ndef.dart';
 import 'package:ndef/utilities.dart';
 
 /// Actions that can be performed on a Smart Poster.
-enum Action { 
+enum Action {
   /// Execute/open the resource.
-  exec, 
+  exec,
+
   /// Save for later use.
-  save, 
+  save,
+
   /// Edit the resource.
-  edit 
+  edit,
 }
 
 /// A NDEF record indicating the suggested action for a Smart Poster.
@@ -27,7 +29,7 @@ class ActionRecord extends WellKnownRecord {
 
   /// The minimum payload length for Action records.
   static const int classMinPayloadLength = 1;
-  
+
   /// The maximum payload length for Action records.
   static const int classMaxPayloadLength = 1;
 
@@ -84,7 +86,7 @@ class SizeRecord extends WellKnownRecord {
 
   /// The minimum payload length for Size records.
   static const int classMinPayloadLength = 4;
-  
+
   /// The maximum payload length for Size records.
   static const int classMaxPayloadLength = 4;
 
@@ -354,8 +356,10 @@ class SmartPosterRecord extends WellKnownRecord {
   /// Adds a URI record (Smart Poster must have exactly one).
   void addUriRecord(UriRecord record) {
     if (_uriRecords.length == 1) {
-      throw ArgumentError.value(_uriRecords.length,
-          "Number of URI Record in Smart Poster Record must be 1");
+      throw ArgumentError.value(
+        _uriRecords.length,
+        "Number of URI Record in Smart Poster Record must be 1",
+      );
     }
     _uriRecords.add(record);
   }
@@ -414,7 +418,8 @@ class SmartPosterRecord extends WellKnownRecord {
       text = t.value;
     } else {
       throw ArgumentError(
-          "Title expects String or Map<String,String>, got ${title.runtimeType}");
+        "Title expects String or Map<String,String>, got ${title.runtimeType}",
+      );
     }
     if (_titleLanguages.contains(language)) {
       _titleRecords[_titleLanguages.indexOf(language)] = TextRecord(text: text);
@@ -424,13 +429,18 @@ class SmartPosterRecord extends WellKnownRecord {
   }
 
   /// Adds a title with the specified [text], [language], and [encoding].
-  void addTitle(String text,
-      {String language = 'en', TextEncoding encoding = TextEncoding.UTF8}) {
-    _titleRecords
-        .add(TextRecord(language: language, text: text, encoding: encoding));
+  void addTitle(
+    String text, {
+    String language = 'en',
+    TextEncoding encoding = TextEncoding.UTF8,
+  }) {
+    _titleRecords.add(
+      TextRecord(language: language, text: text, encoding: encoding),
+    );
     if (_titleLanguages.contains(language)) {
       throw ArgumentError(
-          "Language of titles can not be repeated, got $language");
+        "Language of titles can not be repeated, got $language",
+      );
     }
     _titleLanguages.add(language);
   }
@@ -440,7 +450,8 @@ class SmartPosterRecord extends WellKnownRecord {
     _titleRecords.add(record);
     if (_titleLanguages.contains(record.language)) {
       throw ArgumentError(
-          "Language of titles can not be repeated, got ${record.language}");
+        "Language of titles can not be repeated, got ${record.language}",
+      );
     }
     _titleLanguages.add(record.language);
   }
@@ -556,7 +567,8 @@ class SmartPosterRecord extends WellKnownRecord {
     if (!(decodedType.startsWith('image/') ||
         decodedType.startsWith('video'))) {
       throw ArgumentError(
-          "Type of Icon Records must be image or video, not $decodedType");
+        "Type of Icon Records must be image or video, not $decodedType",
+      );
     }
   }
 
@@ -566,8 +578,10 @@ class SmartPosterRecord extends WellKnownRecord {
   set icon(Map<String?, Uint8List?>? icon) {
     String? decodedType = icon!.keys.toList()[0];
     _checkValidIconType(decodedType!);
-    iconRecord =
-        MimeRecord(decodedType: decodedType, payload: icon.values.toList()[0]);
+    iconRecord = MimeRecord(
+      decodedType: decodedType,
+      payload: icon.values.toList()[0],
+    );
   }
 
   /// Adds an icon with the specified MIME type and data.
@@ -575,7 +589,8 @@ class SmartPosterRecord extends WellKnownRecord {
     String decodedType = icon.keys.toList()[0];
     _checkValidIconType(decodedType);
     _iconRecords.add(
-        MimeRecord(decodedType: decodedType, payload: icon.values.toList()[0]));
+      MimeRecord(decodedType: decodedType, payload: icon.values.toList()[0]),
+    );
   }
 
   /// Sets the icon record (replaces or adds the first icon record).
@@ -626,16 +641,20 @@ class SmartPosterRecord extends WellKnownRecord {
   @override
   Uint8List get payload {
     if (_uriRecords.length != 1) {
-      throw ArgumentError.value(_uriRecords.length,
-          "Number of URI Record in Smart Poster Record must be 1");
+      throw ArgumentError.value(
+        _uriRecords.length,
+        "Number of URI Record in Smart Poster Record must be 1",
+      );
     }
     return encodeNdefMessage(allRecords);
   }
 
   @override
   set payload(Uint8List? payload) {
-    decodeRawNdefMessage(payload!, typeFactory: SmartPosterRecord.typeFactory)
-        .forEach((e) {
+    decodeRawNdefMessage(
+      payload!,
+      typeFactory: SmartPosterRecord.typeFactory,
+    ).forEach((e) {
       if (e is TextRecord) {
         addTitleRecord(e);
       } else if (e is UriRecord) {
@@ -651,8 +670,10 @@ class SmartPosterRecord extends WellKnownRecord {
       }
     });
     if (uriRecords.length != 1) {
-      throw ArgumentError.value(uriRecords.length,
-          "Number of URI Record in Smart Poster Record must be 1");
+      throw ArgumentError.value(
+        uriRecords.length,
+        "Number of URI Record in Smart Poster Record must be 1",
+      );
     }
   }
 }
