@@ -350,7 +350,7 @@ class Version {
 
   /// Sets the major version number.
   set major(int major) {
-    value = major << 4 + minor;
+    value = (major << 4) + minor;
   }
 
   /// Gets the minor version number.
@@ -360,7 +360,7 @@ class Version {
 
   /// Sets the minor version number.
   set minor(int minor) {
-    value = major << 4 + minor;
+    value = (major << 4) + minor;
   }
 
   /// Gets the version as a formatted string (e.g., "1.2").
@@ -379,6 +379,6 @@ class Version {
 
   /// Sets the version from [major] and [minor] version numbers.
   void setDetail(int major, int minor) {
-    value = major << 4 + minor;
+    value = (major << 4) + minor;
   }
 }

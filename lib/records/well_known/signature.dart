@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:ndef/records/well_known/well_known.dart';
 import 'package:ndef/utilities.dart';
 
-/// Signature Record is used to protect the integrity and authenticity of NDEF Messages.
+/// A NDEF Signature Record used to protect the integrity and authenticity of NDEF Messages.
 class SignatureRecord extends WellKnownRecord {
   static const String classType = "Sig";
 
