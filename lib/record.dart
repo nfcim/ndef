@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:ndef/ndef.dart';
 import 'package:ndef/utilities.dart';
+import 'package:ndef/records/media/wifi.dart';
 
 /// Represent the flags in the header of a NDEF record.
 class NDEFRecordFlags {
@@ -274,6 +275,8 @@ class NDEFRecord {
         record = BluetoothEasyPairingRecord();
       } else if (classType == BluetoothLowEnergyRecord.classType) {
         record = BluetoothLowEnergyRecord();
+      } else if (classType == WifiRecord.classType) {
+        record = WifiRecord();
       } else {
         record = MimeRecord();
       }

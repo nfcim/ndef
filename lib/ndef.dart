@@ -20,6 +20,7 @@ export 'records/external/android_application.dart';
 export 'records/external/external.dart';
 export 'records/media/bluetooth.dart';
 export 'records/media/mime.dart';
+export 'records/media/wifi.dart';
 export 'records/well_known/device_info.dart';
 export 'records/well_known/handover.dart';
 export 'records/well_known/signature.dart';

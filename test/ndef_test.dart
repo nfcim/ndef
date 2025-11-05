@@ -251,6 +251,164 @@ void main() {
     testGenerate(hexStrings, messages);
   });
 
+  test('ndef message with wifi type - WPA2 Personal', () {
+    List<List<NDEFRecord>> messages = [
+      [
+        WifiRecord(
+            ssid: 'MyNetwork',
+            networkKey: 'mypassword123',
+            authenticationType: WifiAuthenticationType.wpa2Personal,
+            encryptionType: WifiEncryptionType.aes)
+      ],
+    ];
+
+    // Test encoding
+    var encoded = encodeNdefMessage(messages[0]);
+    assert(encoded.isNotEmpty);
+
+    // Test decoding
+    var decoded = decodeRawNdefMessage(encoded);
+    assert(decoded.length == 1);
+    assert(decoded[0] is WifiRecord);
+
+    var wifiRecord = decoded[0] as WifiRecord;
+    assert(wifiRecord.ssid == 'MyNetwork');
+    assert(wifiRecord.networkKey == 'mypassword123');
+    assert(
+        wifiRecord.authenticationType == WifiAuthenticationType.wpa2Personal);
+    assert(wifiRecord.encryptionType == WifiEncryptionType.aes);
+  });
+
+  test('ndef message with wifi type - Open network', () {
+    List<List<NDEFRecord>> messages = [
+      [
+        WifiRecord(
+            ssid: 'OpenNetwork',
+            authenticationType: WifiAuthenticationType.open,
+            encryptionType: WifiEncryptionType.none)
+      ],
+    ];
+
+    // Test encoding
+    var encoded = encodeNdefMessage(messages[0]);
+    assert(encoded.isNotEmpty);
+
+    // Test decoding
+    var decoded = decodeRawNdefMessage(encoded);
+    assert(decoded.length == 1);
+    assert(decoded[0] is WifiRecord);
+
+    var wifiRecord = decoded[0] as WifiRecord;
+    assert(wifiRecord.ssid == 'OpenNetwork');
+    assert(wifiRecord.networkKey == null || wifiRecord.networkKey == '');
+    assert(wifiRecord.authenticationType == WifiAuthenticationType.open);
+    assert(wifiRecord.encryptionType == WifiEncryptionType.none);
+  });
+
+  test('ndef message with wifi type - WPA3 Personal', () {
+    List<List<NDEFRecord>> messages = [
+      [
+        WifiRecord(
+            ssid: 'WPA3Network',
+            networkKey: 'securePassword456',
+            authenticationType: WifiAuthenticationType.wpa3Personal,
+            encryptionType: WifiEncryptionType.aes)
+      ],
+    ];
+
+    // Test encoding
+    var encoded = encodeNdefMessage(messages[0]);
+    assert(encoded.isNotEmpty);
+
+    // Test decoding
+    var decoded = decodeRawNdefMessage(encoded);
+    assert(decoded.length == 1);
+    assert(decoded[0] is WifiRecord);
+
+    var wifiRecord = decoded[0] as WifiRecord;
+    assert(wifiRecord.ssid == 'WPA3Network');
+    assert(wifiRecord.networkKey == 'securePassword456');
+    assert(
+        wifiRecord.authenticationType == WifiAuthenticationType.wpa3Personal);
+    assert(wifiRecord.encryptionType == WifiEncryptionType.aes);
+  });
+
+  test('ndef message with wifi type - with MAC address', () {
+    List<List<NDEFRecord>> messages = [
+      [
+        WifiRecord(
+            ssid: 'NetworkWithMAC',
+            networkKey: 'password',
+            authenticationType: WifiAuthenticationType.wpa2Personal,
+            encryptionType: WifiEncryptionType.aes,
+            macAddress: 'AA:BB:CC:DD:EE:FF')
+      ],
+    ];
+
+    // Test encoding
+    var encoded = encodeNdefMessage(messages[0]);
+    assert(encoded.isNotEmpty);
+
+    // Test decoding
+    var decoded = decodeRawNdefMessage(encoded);
+    assert(decoded.length == 1);
+    assert(decoded[0] is WifiRecord);
+
+    var wifiRecord = decoded[0] as WifiRecord;
+    assert(wifiRecord.ssid == 'NetworkWithMAC');
+    assert(wifiRecord.networkKey == 'password');
+    assert(wifiRecord.macAddress == 'AA:BB:CC:DD:EE:FF');
+  });
+
+  test('ndef message with wifi type - TKIP encryption', () {
+    List<List<NDEFRecord>> messages = [
+      [
+        WifiRecord(
+            ssid: 'TKIPNetwork',
+            networkKey: 'tkipPassword',
+            authenticationType: WifiAuthenticationType.wpaPersonal,
+            encryptionType: WifiEncryptionType.tkip)
+      ],
+    ];
+
+    // Test round-trip
+    var encoded = encodeNdefMessage(messages[0]);
+    var decoded = decodeRawNdefMessage(encoded);
+
+    assert(decoded.length == 1);
+    var wifiRecord = decoded[0] as WifiRecord;
+    assert(wifiRecord.ssid == 'TKIPNetwork');
+    assert(wifiRecord.encryptionType == WifiEncryptionType.tkip);
+    assert(wifiRecord.authenticationType == WifiAuthenticationType.wpaPersonal);
+  });
+
+  test('ndef message with wifi type - special characters in SSID', () {
+    List<List<NDEFRecord>> messages = [
+      [
+        WifiRecord(
+            ssid: 'Test_Network_2024',
+            networkKey: 'testPassword',
+            authenticationType: WifiAuthenticationType.wpa2Personal,
+            encryptionType: WifiEncryptionType.aes)
+      ],
+    ];
+
+    // Test round-trip encoding and decoding
+    var encoded = encodeNdefMessage(messages[0]);
+    var decoded = decodeRawNdefMessage(encoded);
+
+    assert(decoded.length == 1);
+    var wifiRecord = decoded[0] as WifiRecord;
+    assert(wifiRecord.ssid == 'Test_Network_2024');
+  });
+
+  test('wifi record - invalid MAC address format', () {
+    expect(() {
+      WifiRecord(
+          ssid: 'Test', networkKey: 'password', macAddress: 'invalid-mac');
+    }, throwsArgumentError);
+  });
+
   test('ndef message with absolute uri', () {
     List<String> hexStrings = [
       '931d0068747470733a2f2f6769746875622e636f6d2f6e6663696d2f6e64656653120068747470733a2f2f6769746875622e636f6d',
