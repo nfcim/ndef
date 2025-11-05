@@ -1,7 +1,7 @@
 # ndef
 
 [![pub version](https://img.shields.io/pub/v/ndef)](https://pub.dev/packages/ndef)
-![Test](https://github.com/nfcim/ndef/workflows/Test/badge.svg)
+[![Test](https://github.com/nfcim/ndef/actions/workflows/test.yml/badge.svg)](https://github.com/nfcim/ndef/actions/workflows/test.yml)
 
 `ndef` is a Dart library to decode & encode NDEF records, supporting multiple types including (grouped by Type Name Format):
 
