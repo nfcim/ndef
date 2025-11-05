@@ -78,7 +78,7 @@ void main() {
 
   test('payload length encoding - explicit big-endian verification', () {
     // Test 1: Payload exactly 255 bytes (should use short record, 1 byte length)
-    var text255 = 'A' * 252; // 252 chars + 3 bytes header = 255 bytes total
+    var text255 = 'A' * 252; // TextRecord payload: 1 status byte + 2 language bytes + 252 text chars = 255 bytes
     var record255 = TextRecord(language: 'en', text: text255);
     var encoded255 = encodeNdefMessage([record255]);
     
@@ -91,7 +91,7 @@ void main() {
     expect(payloadLength255, equals(255), reason: 'Payload length should be 255');
 
     // Test 2: Payload exactly 256 bytes (should use long record, 4 byte length)
-    var text256 = 'A' * 253; // 253 chars + 3 bytes header = 256 bytes total
+    var text256 = 'A' * 253; // TextRecord payload: 1 status byte + 2 language bytes + 253 text chars = 256 bytes
     var record256 = TextRecord(language: 'en', text: text256);
     var encoded256 = encodeNdefMessage([record256]);
     
@@ -114,7 +114,7 @@ void main() {
     expect(payloadLengthBE256, equals(256), reason: 'Big-endian interpretation should be 256');
 
     // Test 3: Payload 257 bytes
-    var text257 = 'A' * 254; // 254 chars + 3 bytes header = 257 bytes total
+    var text257 = 'A' * 254; // TextRecord payload: 1 status byte + 2 language bytes + 254 text chars = 257 bytes
     var record257 = TextRecord(language: 'en', text: text257);
     var encoded257 = encodeNdefMessage([record257]);
     
@@ -134,7 +134,7 @@ void main() {
     expect(payloadLengthBE257, equals(257), reason: 'Big-endian interpretation should be 257');
 
     // Test 4: Large payload (65536 = 0x00010000 in big-endian)
-    var text65536 = 'A' * 65533; // 65533 chars + 3 bytes header = 65536 bytes total
+    var text65536 = 'A' * 65533; // TextRecord payload: 1 status byte + 2 language bytes + 65533 text chars = 65536 bytes
     var record65536 = TextRecord(language: 'en', text: text65536);
     var encoded65536 = encodeNdefMessage([record65536]);
     
@@ -151,7 +151,7 @@ void main() {
     expect(payloadLengthBE65536, equals(65536), reason: 'Big-endian interpretation should be 65536');
 
     // Test 5: Another size (513 = 0x00000201 in big-endian)
-    var text513 = 'A' * 510; // 510 chars + 3 bytes header = 513 bytes total
+    var text513 = 'A' * 510; // TextRecord payload: 1 status byte + 2 language bytes + 510 text chars = 513 bytes
     var record513 = TextRecord(language: 'en', text: text513);
     var encoded513 = encodeNdefMessage([record513]);
     
