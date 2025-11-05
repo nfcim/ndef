@@ -464,9 +464,9 @@ class HandoverRequestRecord extends HandoverRecord {
     int? collisionResolutionNumber,
     List<AlternativeCarrierRecord>? alternativeCarrierRecordList,
   }) : super(
-         versionString: versionString,
-         alternativeCarrierRecordList: alternativeCarrierRecordList,
-       ) {
+          versionString: versionString,
+          alternativeCarrierRecordList: alternativeCarrierRecordList,
+        ) {
     collisionResolutionRecordList = <CollisionResolutionRecord>[];
     if (collisionResolutionNumber != null) {
       this.collisionResolutionNumber = collisionResolutionNumber;
@@ -591,9 +591,9 @@ class HandoverSelectRecord extends HandoverRecord {
     ErrorRecord? error,
     List<AlternativeCarrierRecord>? alternativeCarrierRecordList,
   }) : super(
-         versionString: versionString,
-         alternativeCarrierRecordList: alternativeCarrierRecordList,
-       ) {
+          versionString: versionString,
+          alternativeCarrierRecordList: alternativeCarrierRecordList,
+        ) {
     errorRecordList = <ErrorRecord>[];
     if (error != null) {
       this.error = error;
@@ -696,9 +696,9 @@ class HandoverMediationRecord extends HandoverRecord {
     String versionString = "1.3",
     List<AlternativeCarrierRecord>? alternativeCarrierRecordList,
   }) : super(
-         versionString: versionString,
-         alternativeCarrierRecordList: alternativeCarrierRecordList,
-       );
+          versionString: versionString,
+          alternativeCarrierRecordList: alternativeCarrierRecordList,
+        );
 }
 
 class HandoverInitiateRecord extends HandoverRecord {
@@ -723,9 +723,9 @@ class HandoverInitiateRecord extends HandoverRecord {
     String versionString = "1.3",
     List<AlternativeCarrierRecord>? alternativeCarrierRecordList,
   }) : super(
-         versionString: versionString,
-         alternativeCarrierRecordList: alternativeCarrierRecordList,
-       );
+          versionString: versionString,
+          alternativeCarrierRecordList: alternativeCarrierRecordList,
+        );
 }
 
 class HandoverCarrierRecord extends WellKnownRecord {
@@ -786,11 +786,10 @@ class HandoverCarrierRecord extends WellKnownRecord {
   @override
   Uint8List? get payload {
     var carrierTypeBytes = utf8.encode(carrierType!);
-    List<int>? payload =
-        ([_carrierTnf, carrierTypeBytes.length] +
-                carrierTypeBytes +
-                carrierData)
-            .cast();
+    List<int>? payload = ([_carrierTnf, carrierTypeBytes.length] +
+            carrierTypeBytes +
+            carrierData)
+        .cast();
     return Uint8List.fromList(payload);
   }
 

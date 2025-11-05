@@ -180,19 +180,16 @@ class SignatureRecord extends WellKnownRecord {
     int signatureURIPresent = (signatureURI == "") ? 0 : 1;
     int signatureFlag = (signatureURIPresent << 7) | signatureTypeIndex;
 
-    var signatureURIBytes = signatureURIPresent == 0
-        ? signature
-        : utf8.encode(signatureURI!);
+    var signatureURIBytes =
+        signatureURIPresent == 0 ? signature : utf8.encode(signatureURI!);
     var signatureLENGTHBytes = signatureURIBytes.length.toBytes(2);
-    var signatureBytes =
-        [signatureFlag, hashTypeIndex] +
+    var signatureBytes = [signatureFlag, hashTypeIndex] +
         signatureLENGTHBytes +
         signatureURIBytes;
 
     //Certificate Field
     int certificateURIPresent = (certificateURI == "") ? 0 : 1;
-    int certificateFlag =
-        (certificateURIPresent << 7) |
+    int certificateFlag = (certificateURIPresent << 7) |
         (certificateFormatIndex << 4) |
         certificateStore.length;
     var certificateStoreBytes = <int>[];

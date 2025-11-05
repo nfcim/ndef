@@ -17,7 +17,7 @@ class ExternalRecord extends NDEFRecord {
 
   /// Constructs an [ExternalRecord] with optional [decodedType], [payload], and [id].
   ExternalRecord({String? decodedType, Uint8List? payload, Uint8List? id})
-    : super(id: id, payload: payload) {
+      : super(id: id, payload: payload) {
     if (decodedType != null) {
       this.decodedType = decodedType;
     }

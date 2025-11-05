@@ -99,7 +99,7 @@ class LEAddress extends _Address {
   }
 
   LEAddress.fromTypeBytes(LEAddressType? type, Uint8List bytes)
-    : super.fromBytes(bytes) {
+      : super.fromBytes(bytes) {
     this.type = type!;
   }
 
@@ -903,9 +903,8 @@ class BluetoothEasyPairingRecord extends BluetoothRecord {
 
     attributes[remain] = Uint8List.fromList(
       (attributes.containsKey(remain) ? attributes[remain] : [])! +
-              (attributes.containsKey(remove) ? attributes[remove]! : []) +
-              bytes
-          as List<int>,
+          (attributes.containsKey(remove) ? attributes[remove]! : []) +
+          bytes as List<int>,
     );
     if (attributes.containsKey(remove)) {
       attributes.remove(remove);
@@ -952,8 +951,7 @@ class BluetoothEasyPairingRecord extends BluetoothRecord {
       data.add(EIR.typeNumMap[e.key]);
       data.addAll(e.value);
     }
-    List<int>? payload =
-        ByteUtils.intToBytes(
+    List<int>? payload = ByteUtils.intToBytes(
           data.length + address!.bytes.length + 2,
           2,
           endianness: Endianness.Little,
@@ -999,7 +997,7 @@ class BluetoothLowEnergyRecord extends BluetoothRecord {
 
   /// Constructs a [BluetoothLowEnergyRecord] with optional [attributes].
   BluetoothLowEnergyRecord({Map<EIRType, Uint8List>? attributes})
-    : super(attributes: attributes);
+      : super(attributes: attributes);
 
   /// Gets the Bluetooth LE device address.
   LEAddress? get address {
