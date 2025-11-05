@@ -76,6 +76,114 @@ void main() {
     testGenerate(hexStrings, messages);
   });
 
+  test('payload length encoding - explicit big-endian verification', () {
+    // Test 1: Payload exactly 255 bytes (should use short record, 1 byte length)
+    var text255 = 'A' * 252; // 252 chars + 3 bytes header = 255 bytes total
+    var record255 = TextRecord(language: 'en', text: text255);
+    var encoded255 = encodeNdefMessage([record255]);
+    
+    // Should have SR=1 (short record) flag
+    var flags255 = encoded255[0];
+    expect((flags255 >> 4) & 1, equals(1), reason: 'Should use short record for 255 bytes');
+    
+    // Payload length should be at position 2 (1 byte)
+    var payloadLength255 = encoded255[2];
+    expect(payloadLength255, equals(255), reason: 'Payload length should be 255');
+
+    // Test 2: Payload exactly 256 bytes (should use long record, 4 byte length)
+    var text256 = 'A' * 253; // 253 chars + 3 bytes header = 256 bytes total
+    var record256 = TextRecord(language: 'en', text: text256);
+    var encoded256 = encodeNdefMessage([record256]);
+    
+    // Should have SR=0 (long record) flag
+    var flags256 = encoded256[0];
+    expect((flags256 >> 4) & 1, equals(0), reason: 'Should use long record for 256 bytes');
+    
+    // Payload length should be 4 bytes starting at position 2 (big-endian)
+    var payloadLengthBytes256 = encoded256.sublist(2, 6);
+    expect(payloadLengthBytes256[0], equals(0x00), reason: 'MSB should be 0x00');
+    expect(payloadLengthBytes256[1], equals(0x00), reason: 'Byte 1 should be 0x00');
+    expect(payloadLengthBytes256[2], equals(0x01), reason: 'Byte 2 should be 0x01');
+    expect(payloadLengthBytes256[3], equals(0x00), reason: 'LSB should be 0x00');
+    
+    // Verify big-endian interpretation
+    var payloadLengthBE256 = (payloadLengthBytes256[0] << 24) |
+                              (payloadLengthBytes256[1] << 16) |
+                              (payloadLengthBytes256[2] << 8) |
+                              payloadLengthBytes256[3];
+    expect(payloadLengthBE256, equals(256), reason: 'Big-endian interpretation should be 256');
+
+    // Test 3: Payload 257 bytes
+    var text257 = 'A' * 254; // 254 chars + 3 bytes header = 257 bytes total
+    var record257 = TextRecord(language: 'en', text: text257);
+    var encoded257 = encodeNdefMessage([record257]);
+    
+    var flags257 = encoded257[0];
+    expect((flags257 >> 4) & 1, equals(0), reason: 'Should use long record for 257 bytes');
+    
+    var payloadLengthBytes257 = encoded257.sublist(2, 6);
+    expect(payloadLengthBytes257[0], equals(0x00), reason: 'MSB should be 0x00');
+    expect(payloadLengthBytes257[1], equals(0x00), reason: 'Byte 1 should be 0x00');
+    expect(payloadLengthBytes257[2], equals(0x01), reason: 'Byte 2 should be 0x01');
+    expect(payloadLengthBytes257[3], equals(0x01), reason: 'LSB should be 0x01');
+    
+    var payloadLengthBE257 = (payloadLengthBytes257[0] << 24) |
+                              (payloadLengthBytes257[1] << 16) |
+                              (payloadLengthBytes257[2] << 8) |
+                              payloadLengthBytes257[3];
+    expect(payloadLengthBE257, equals(257), reason: 'Big-endian interpretation should be 257');
+
+    // Test 4: Large payload (65536 = 0x00010000 in big-endian)
+    var text65536 = 'A' * 65533; // 65533 chars + 3 bytes header = 65536 bytes total
+    var record65536 = TextRecord(language: 'en', text: text65536);
+    var encoded65536 = encodeNdefMessage([record65536]);
+    
+    var payloadLengthBytes65536 = encoded65536.sublist(2, 6);
+    expect(payloadLengthBytes65536[0], equals(0x00), reason: 'MSB should be 0x00');
+    expect(payloadLengthBytes65536[1], equals(0x01), reason: 'Byte 1 should be 0x01');
+    expect(payloadLengthBytes65536[2], equals(0x00), reason: 'Byte 2 should be 0x00');
+    expect(payloadLengthBytes65536[3], equals(0x00), reason: 'LSB should be 0x00');
+    
+    var payloadLengthBE65536 = (payloadLengthBytes65536[0] << 24) |
+                                (payloadLengthBytes65536[1] << 16) |
+                                (payloadLengthBytes65536[2] << 8) |
+                                payloadLengthBytes65536[3];
+    expect(payloadLengthBE65536, equals(65536), reason: 'Big-endian interpretation should be 65536');
+
+    // Test 5: Another size (513 = 0x00000201 in big-endian)
+    var text513 = 'A' * 510; // 510 chars + 3 bytes header = 513 bytes total
+    var record513 = TextRecord(language: 'en', text: text513);
+    var encoded513 = encodeNdefMessage([record513]);
+    
+    var payloadLengthBytes513 = encoded513.sublist(2, 6);
+    expect(payloadLengthBytes513[0], equals(0x00), reason: 'MSB should be 0x00');
+    expect(payloadLengthBytes513[1], equals(0x00), reason: 'Byte 1 should be 0x00');
+    expect(payloadLengthBytes513[2], equals(0x02), reason: 'Byte 2 should be 0x02');
+    expect(payloadLengthBytes513[3], equals(0x01), reason: 'LSB should be 0x01');
+    
+    var payloadLengthBE513 = (payloadLengthBytes513[0] << 24) |
+                              (payloadLengthBytes513[1] << 16) |
+                              (payloadLengthBytes513[2] << 8) |
+                              payloadLengthBytes513[3];
+    expect(payloadLengthBE513, equals(513), reason: 'Big-endian interpretation should be 513');
+    
+    // Verify all records can be decoded correctly
+    var decoded255 = decodeRawNdefMessage(encoded255);
+    expect(decoded255[0].payload!.length, equals(255));
+    
+    var decoded256 = decodeRawNdefMessage(encoded256);
+    expect(decoded256[0].payload!.length, equals(256));
+    
+    var decoded257 = decodeRawNdefMessage(encoded257);
+    expect(decoded257[0].payload!.length, equals(257));
+    
+    var decoded65536 = decodeRawNdefMessage(encoded65536);
+    expect(decoded65536[0].payload!.length, equals(65536));
+    
+    var decoded513 = decodeRawNdefMessage(encoded513);
+    expect(decoded513[0].payload!.length, equals(513));
+  });
+
   test('ndef message with signature type', () {
     List<String> hexStrings = [
       "d10306536967200002000000",
