@@ -2,7 +2,12 @@ import 'dart:typed_data';
 
 import 'package:ndef/record.dart';
 
+/// A NDEF record with absolute URI type.
+///
+/// This record type contains a URI in the type field and has no payload.
+/// The URI is stored directly in the type field according to the NDEF specification.
 class AbsoluteUriRecord extends NDEFRecord {
+  /// The Type Name Format for absolute URI records.
   static const TypeNameFormat classTnf = TypeNameFormat.absoluteURI;
 
   @override
@@ -10,16 +15,19 @@ class AbsoluteUriRecord extends NDEFRecord {
     return classTnf;
   }
 
+  /// Constructs an [AbsoluteUriRecord] with optional [uri] and [id].
   AbsoluteUriRecord({String? uri, Uint8List? id}) : super(id: id) {
     if (uri != null) {
       this.uri = uri;
     }
   }
 
+  /// Gets the URI from the record type field.
   String? get uri {
     return decodedType;
   }
 
+  /// Sets the URI in the record type field.
   set uri(String? uri) {
     decodedType = uri;
   }

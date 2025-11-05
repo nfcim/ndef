@@ -30,10 +30,12 @@ class NDEFRecordFlags {
   // ignore: non_constant_identifier_names
   int TNF = 0;
 
+  /// Constructs [NDEFRecordFlags] with optional [data] to decode.
   NDEFRecordFlags({int? data}) {
     decode(data);
   }
 
+  /// Encodes the flags into a single byte.
   int encode() {
     assert(0 <= TNF && TNF <= 7);
     return (MB.toInt() << 7) |
@@ -44,6 +46,7 @@ class NDEFRecordFlags {
         (TNF & 7);
   }
 
+  /// Decodes the flags from a single byte [data].
   void decode(int? data) {
     if (data != null) {
       if (data < 0 || data >= 256) {
@@ -59,20 +62,30 @@ class NDEFRecordFlags {
     }
   }
 
+  /// Resets the Message Begin (MB) and Message End (ME) flags to false.
   void resetPositionFlag() {
     MB = false;
     ME = false;
   }
 }
 
-/// The TNF field of a NDEF record.
+/// The TNF (Type Name Format) field of a NDEF record.
+///
+/// Defines the structure and meaning of the type field.
 enum TypeNameFormat {
+  /// Empty record (no type, ID, or payload).
   empty,
+  /// NFC Forum well-known type.
   nfcWellKnown,
+  /// Media type (RFC 2046).
   media,
+  /// Absolute URI (RFC 3986).
   absoluteURI,
+  /// NFC Forum external type.
   nfcExternal,
+  /// Unknown type.
   unknown,
+  /// Unchanged (for chunked records).
   unchanged
 }
 
@@ -95,20 +108,25 @@ class NDEFRecord {
   /// Predefined TNF of a specific record type.
   static const TypeNameFormat? classTnf = null;
 
+  /// Gets the Type Name Format of this record.
   TypeNameFormat get tnf {
     return TypeNameFormat.values[flags.TNF];
   }
 
+  /// Sets the Type Name Format of this record.
   set tnf(TypeNameFormat tnf) {
     flags.TNF = TypeNameFormat.values.indexOf(tnf);
   }
 
+  /// The raw encoded type bytes.
   Uint8List? encodedType;
 
+  /// Sets the decoded type string, encoding it to UTF-8 bytes.
   set decodedType(String? decodedType) {
     encodedType = utf8.encode(decodedType!) as Uint8List?;
   }
 
+  /// Gets the type as a decoded UTF-8 string.
   String? get decodedType {
     if (encodedType == null) {
       return null;
@@ -116,10 +134,12 @@ class NDEFRecord {
     return utf8.decode(encodedType!);
   }
 
+  /// Sets the type as raw bytes.
   set type(Uint8List? type) {
     encodedType = type;
   }
 
+  /// Gets the type as raw bytes.
   Uint8List? get type {
     if (encodedType != null) {
       return encodedType;
@@ -133,6 +153,7 @@ class NDEFRecord {
     }
   }
 
+  /// Gets the full qualified type including TNF prefix.
   String? get fullType {
     if (decodedType == null) {
       return null;
@@ -145,21 +166,28 @@ class NDEFRecord {
     return id?.toHexString() ?? '(empty)';
   }
 
+  /// Sets the ID from a string value.
   set idString(String? value) {
     id = latin1.encode(value!);
   }
 
+  /// The minimum payload length for this record type.
   static const int classMinPayloadLength = 0;
+  
+  /// The maximum payload length for this record type, null means no limit.
   static const int? classMaxPayloadLength = null;
 
+  /// Gets the minimum payload length for this record instance.
   int get minPayloadLength {
     return classMinPayloadLength;
   }
 
+  /// Gets the maximum payload length for this record instance.
   int? get maxPayloadLength {
     return classMaxPayloadLength;
   }
 
+  /// Gets a basic information string containing ID, TNF, and type.
   String get basicInfoString {
     var str = "id=$idString ";
     str += "typeNameFormat=$tnf ";
@@ -175,10 +203,16 @@ class NDEFRecord {
     return str;
   }
 
+  /// The ID of the record (optional).
   Uint8List? id;
+  
+  /// The payload data of the record.
   Uint8List? payload;
+  
+  /// The flags header of the record.
   late NDEFRecordFlags flags;
 
+  /// Constructs an [NDEFRecord] with optional [tnf], [type], [id], and [payload].
   NDEFRecord(
       {TypeNameFormat? tnf, Uint8List? type, this.id, Uint8List? payload}) {
     flags = NDEFRecordFlags();
@@ -386,6 +420,7 @@ class NDEFRecord {
     return Uint8List.fromList(encoded);
   }
 
+  /// Checks if this record is equal to [other] by comparing TNF, type, ID, and payload.
   bool isEqual(NDEFRecord other) {
     return tnf == other.tnf &&
         ByteUtils.bytesEqual(type!, other.type) &&

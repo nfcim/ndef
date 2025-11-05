@@ -3,7 +3,12 @@ import 'dart:typed_data';
 
 import 'package:ndef/records/external/external.dart';
 
+/// Android Application Record (AAR) for launching Android apps via NFC.
+///
+/// This record type specifies an Android package name that should be used
+/// to launch an application when the NFC tag is scanned.
 class AARRecord extends ExternalRecord {
+  /// The type identifier for Android Application Records.
   static const String classType = "android.com:pkg";
 
   @override
@@ -11,8 +16,10 @@ class AARRecord extends ExternalRecord {
     return AARRecord.classType;
   }
 
+  /// The Android package name (e.g., "com.example.app").
   String? packageName;
 
+  /// Constructs an [AARRecord] with an optional [packageName].
   AARRecord({this.packageName});
 
   @override

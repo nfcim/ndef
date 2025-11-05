@@ -3,7 +3,11 @@ import 'dart:typed_data';
 
 import 'package:ndef/records/well_known/well_known.dart';
 
+/// A NDEF record containing a URI (Uniform Resource Identifier).
+///
+/// This record uses a prefix compression scheme to reduce the size of common URI prefixes.
 class UriRecord extends WellKnownRecord {
+  /// Map of URI prefixes for compression.
   static List<String> prefixMap = [
     "",
     "http://www.",
@@ -43,6 +47,7 @@ class UriRecord extends WellKnownRecord {
     "urn:nfc:",
   ];
 
+  /// The type identifier for URI records.
   static const String classType = "U";
 
   @override
@@ -50,6 +55,7 @@ class UriRecord extends WellKnownRecord {
     return UriRecord.classType;
   }
 
+  /// The minimum payload length for URI records.
   static const int classMinPayloadLength = 1;
 
   @override
@@ -66,24 +72,28 @@ class UriRecord extends WellKnownRecord {
   }
 
   int _prefixIndex = -1;
+  
+  /// The URI content after the prefix.
   String? content;
 
+  /// Constructs a [UriRecord] with optional [prefix] and [content].
   UriRecord({String? prefix, this.content}) {
     if (prefix != null) {
       this.prefix = prefix;
     }
   }
 
-  /// Construct with a [UriString] or an [IriString]
+  /// Constructs a [UriRecord] from a URI or IRI string.
   UriRecord.fromString(String? string) {
     iriString = string!;
   }
 
-  /// Construct with an instance of Uri
+  /// Constructs a [UriRecord] from a [Uri] instance.
   UriRecord.fromUri(Uri? uri) {
     uriString = uri.toString();
   }
 
+  /// Gets the URI prefix from the prefix map.
   String? get prefix {
     if (_prefixIndex == -1) {
       return null;
@@ -91,6 +101,7 @@ class UriRecord extends WellKnownRecord {
     return prefixMap[_prefixIndex];
   }
 
+  /// Sets the URI prefix (must be in the prefix map).
   set prefix(String? prefix) {
     int prefixIndex = prefixMap.indexOf(prefix!);
     if (prefixIndex == -1) {
@@ -101,6 +112,7 @@ class UriRecord extends WellKnownRecord {
     }
   }
 
+  /// Gets the full IRI (Internationalized Resource Identifier) string.
   String? get iriString {
     if (prefix == null || content == null) {
       return null;
@@ -108,6 +120,7 @@ class UriRecord extends WellKnownRecord {
     return prefix! + content!;
   }
 
+  /// Sets the IRI string, automatically detecting and extracting the prefix.
   set iriString(String? iriString) {
     for (int i = 1; i < prefixMap.length; i++) {
       if (iriString!.startsWith(prefixMap[i])) {
@@ -120,6 +133,7 @@ class UriRecord extends WellKnownRecord {
     content = iriString;
   }
 
+  /// Gets the full URI string.
   String? get uriString {
     if (prefix == null || content == null) {
       return null;
@@ -127,10 +141,12 @@ class UriRecord extends WellKnownRecord {
     return Uri.parse(prefix! + content!).toString();
   }
 
+  /// Sets the URI string.
   set uriString(String? uriString) {
     iriString = uriString;
   }
 
+  /// Gets the URI as a [Uri] instance.
   Uri? get uri {
     if (prefix == null || content == null) {
       return null;
@@ -138,6 +154,7 @@ class UriRecord extends WellKnownRecord {
     return Uri.parse(iriString!);
   }
 
+  /// Sets the URI from a [Uri] instance.
   set uri(Uri? uri) {
     iriString = uri.toString();
   }

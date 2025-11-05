@@ -1,3 +1,11 @@
+/// A Dart library to decode & encode NDEF records.
+///
+/// This library supports multiple types of NDEF (NFC Data Exchange Format) records
+/// including well-known, media, absolute URI, and external records.
+///
+/// Use [decodeRawNdefMessage] to decode raw NDEF messages from byte arrays,
+/// [decodePartialNdefMessage] to decode individual records with separate parts,
+/// and [encodeNdefMessage] to encode NDEF messages to byte arrays.
 library ndef;
 
 import 'dart:typed_data';
