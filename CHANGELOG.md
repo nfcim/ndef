@@ -63,3 +63,7 @@ Note: this tag is not pushed to GitHub, but published to pub.dev.
 
 * No functional changes
 * Fix more lint warnings
+
+## 0.3.5
+
+* Fix encoding of payload length (#21, #22)
