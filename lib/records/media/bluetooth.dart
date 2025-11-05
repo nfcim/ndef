@@ -47,10 +47,15 @@ class _Address {
   }
 }
 
+/// Bluetooth Easy Pairing address.
 class EPAddress extends _Address {
+  /// Constructs an [EPAddress] from an address string.
   EPAddress({String? address}) : super(address: address);
+
+  /// Constructs an [EPAddress] from raw bytes.
   EPAddress.fromBytes(Uint8List bytes) : super.fromBytes(bytes);
 
+  /// Gets the address as raw bytes.
   Uint8List get bytes {
     return addr;
   }
@@ -62,19 +67,33 @@ class EPAddress extends _Address {
     return str;
   }
 
+  /// Sets the address from raw bytes.
   set bytes(Uint8List bytes) {
     if (bytes.length != 6) {
       throw ArgumentError.value(
-          bytes.length, "Bytes length of Bluetooth LE Address must be 6");
+        bytes.length,
+        "Bytes length of Bluetooth LE Address must be 6",
+      );
     }
     addr = bytes;
   }
 }
 
-enum LEAddressType { public, random }
+/// Bluetooth Low Energy address type.
+enum LEAddressType {
+  /// Public device address.
+  public,
 
+  /// Random device address.
+  random,
+}
+
+/// Bluetooth Low Energy address with type.
 class LEAddress extends _Address {
+  /// The address type (public or random).
   late LEAddressType type;
+
+  /// Constructs an [LEAddress] with the specified [type] and [address].
   LEAddress({LEAddressType? type, String? address}) : super(address: address) {
     this.type = type!;
   }
@@ -104,7 +123,9 @@ class LEAddress extends _Address {
   set bytes(Uint8List bytes) {
     if (bytes.length != 7) {
       throw ArgumentError.value(
-          bytes.length, "Bytes length of Bluetooth LE Address must be 7");
+        bytes.length,
+        "Bytes length of Bluetooth LE Address must be 7",
+      );
     }
     addr = bytes.sublist(0, 6);
     type = LEAddressType.values[bytes[6]];
@@ -123,17 +144,15 @@ class DeviceClass {
     "Object Transfer",
     "Audio",
     "Telephony",
-    "Information"
+    "Information",
   ];
 
   static const deviceClassList = {
     0: [
       'Miscellaneous',
       [
-        {
-          '000000': 'Uncategorized',
-        },
-      ]
+        {'000000': 'Uncategorized'},
+      ],
     ],
     1: [
       'Computer',
@@ -148,7 +167,7 @@ class DeviceClass {
           '000110': 'Wearable computer (Watch sized)',
           '000111': 'Tablet',
         },
-      ]
+      ],
     ],
     2: [
       'Phone',
@@ -161,7 +180,7 @@ class DeviceClass {
           '000100': 'Wired modem or voice gateway',
           '000101': 'Common ISDN Access',
         },
-      ]
+      ],
     ],
     3: [
       'LAN / Network Access point',
@@ -176,7 +195,7 @@ class DeviceClass {
           '110': '83 - 99% utilized',
           '111': 'No service available',
         },
-      ]
+      ],
     ],
     4: [
       'Audio / Video',
@@ -202,7 +221,7 @@ class DeviceClass {
           '010001': '(Reserved)',
           '010010': 'Gaming/Toy',
         },
-      ]
+      ],
     ],
     5: [
       'Peripheral',
@@ -225,7 +244,7 @@ class DeviceClass {
           '1000': 'Handheld scanner for ID codes',
           '1001': 'Handheld gestural input device',
         },
-      ]
+      ],
     ],
     6: [
       'Imaging',
@@ -247,7 +266,7 @@ class DeviceClass {
           '1110': "Camera/Scanner/Printer",
           '1111': "Display/Camera/Scanner/Printer",
         },
-      ]
+      ],
     ],
     7: [
       'Wearable',
@@ -259,7 +278,7 @@ class DeviceClass {
           '000100': 'Helmet',
           '000101': 'Glasses',
         },
-      ]
+      ],
     ],
     8: [
       "Toy",
@@ -271,7 +290,7 @@ class DeviceClass {
           '000100': "Controller",
           '000101': "Game",
         },
-      ]
+      ],
     ],
     9: [
       "Health",
@@ -294,7 +313,7 @@ class DeviceClass {
           '001110': "Generic Health Manager",
           '001111': "Personal Mobility Device",
         },
-      ]
+      ],
     ],
     31: ['Uncategorized', []],
   };
@@ -318,8 +337,10 @@ class DeviceClass {
   }
 
   static String getServiceClassName(int index) {
-    assert(index >= 13 && index < 24,
-        "Index of Service Class Name must be in [13,24)");
+    assert(
+      index >= 13 && index < 24,
+      "Index of Service Class Name must be in [13,24)",
+    );
     return serviceClassNameList[index - 13];
   }
 
@@ -387,7 +408,9 @@ class DeviceClass {
   set bytes(Uint8List bytes) {
     if (bytes.length != 3) {
       throw ArgumentError.value(
-          bytes.length, "Bytes length of Class of Device must be 3");
+        bytes.length,
+        "Bytes length of Class of Device must be 3",
+      );
     }
     value = ByteUtils.bytesToInt(bytes, endianness: Endianness.Little);
   }
@@ -515,7 +538,9 @@ class ServiceClass {
       _uuidData = bytes;
     } else {
       throw ArgumentError.value(
-          bytes.length, "Bytes length of uuidData must be 2, 4, or 16");
+        bytes.length,
+        "Bytes length of uuidData must be 2, 4, or 16",
+      );
     }
   }
 
@@ -594,7 +619,7 @@ class EIR {
     0x23: EIRType.LESecureConnectionsRandomValue,
     0x24: EIRType.URI,
     0x28: EIRType.ChannelMapUpdateIndication,
-    0xFF: EIRType.ManufacturerSpecificData
+    0xFF: EIRType.ManufacturerSpecificData,
   };
 
   static const Map<EIRType, int> typeNumMap = {
@@ -622,7 +647,7 @@ class EIR {
     EIRType.LESecureConnectionsRandomValue: 0x23,
     EIRType.URI: 0x24,
     EIRType.ChannelMapUpdateIndication: 0x28,
-    EIRType.ManufacturerSpecificData: 0xFF
+    EIRType.ManufacturerSpecificData: 0xFF,
   };
 
   static const Map<EIRType, String> typeNameMap = {
@@ -652,7 +677,7 @@ class EIR {
         "LE Secure Connections Random Value",
     EIRType.URI: "URI",
     EIRType.ChannelMapUpdateIndication: "Channel Map Update Indication",
-    EIRType.ManufacturerSpecificData: "Manufacturer Specific Data"
+    EIRType.ManufacturerSpecificData: "Manufacturer Specific Data",
   };
 
   int? _typeNum;
@@ -712,30 +737,40 @@ class EIR {
     }
     if (typeNum == null) {
       throw ArgumentError(
-          "EIR type $type is not supported, please select one from ${EIRType.values}");
+        "EIR type $type is not supported, please select one from ${EIRType.values}",
+      );
     }
   }
 }
 
+/// Base class for Bluetooth NDEF records.
+///
+/// Contains Extended Inquiry Response (EIR) data attributes for Bluetooth pairing.
 class BluetoothRecord extends MimeRecord {
+  /// Map of EIR type to data attributes.
   late Map<EIRType?, Uint8List> attributes;
 
+  /// Constructs a [BluetoothRecord] with optional [attributes].
   BluetoothRecord({Map<EIRType, Uint8List>? attributes}) {
     this.attributes = attributes ?? <EIRType, Uint8List>{};
   }
 
+  /// Gets the attribute value for the specified EIR [type].
   Uint8List? getAttribute(EIRType type) {
     return attributes.containsKey(type) ? attributes[type] : null;
   }
 
+  /// Sets the attribute [value] for the specified EIR [type].
   void setAttribute(EIRType? type, Uint8List value) {
     if (!EIR.typeNumMap.containsKey(type)) {
       throw ArgumentError(
-          "EIR type $type is not supported, please select one from ${EIRType.values}");
+        "EIR type $type is not supported, please select one from ${EIRType.values}",
+      );
     }
     attributes[type!] = value;
   }
 
+  /// Gets the Bluetooth device name.
   String get deviceName {
     if (attributes.containsKey(EIRType.CompleteLocalName)) {
       return utf8.decode(attributes[EIRType.CompleteLocalName]!);
@@ -746,6 +781,7 @@ class BluetoothRecord extends MimeRecord {
     }
   }
 
+  /// Sets the Bluetooth device name.
   set deviceName(String deviceName) {
     attributes[EIRType.CompleteLocalName] = utf8.encode(deviceName);
     if (attributes.containsKey(EIRType.ShortenedLocalName)) {
@@ -753,18 +789,28 @@ class BluetoothRecord extends MimeRecord {
     }
   }
 
+  /// Gets an integer value for the specified EIR [type].
   BigInt getIntValue(EIRType type) {
-    return ByteUtils.bytesToBigInt(attributes[type]!,
-        endianness: Endianness.Little);
+    return ByteUtils.bytesToBigInt(
+      attributes[type]!,
+      endianness: Endianness.Little,
+    );
   }
 
+  /// Sets an integer [value] for the specified EIR [type].
   void setIntValue(EIRType type, BigInt value) {
-    setAttribute(type,
-        ByteUtils.bigIntToBytes(value, 16, endianness: Endianness.Little));
+    setAttribute(
+      type,
+      ByteUtils.bigIntToBytes(value, 16, endianness: Endianness.Little),
+    );
   }
 }
 
+/// A NDEF record for Bluetooth Easy Pairing (Secure Simple Pairing).
+///
+/// Contains Bluetooth device information for out-of-band pairing.
 class BluetoothEasyPairingRecord extends BluetoothRecord {
+  /// The MIME type for Bluetooth Easy Pairing records.
   static const String classType = "application/vnd.bluetooth.ep.oob";
 
   @override
@@ -781,22 +827,30 @@ class BluetoothEasyPairingRecord extends BluetoothRecord {
     return str;
   }
 
-  BluetoothEasyPairingRecord(
-      {this.address, Map<EIRType, Uint8List>? attributes})
-      : super(attributes: attributes);
+  /// Constructs a [BluetoothEasyPairingRecord] with optional [address] and [attributes].
+  BluetoothEasyPairingRecord({
+    this.address,
+    Map<EIRType, Uint8List>? attributes,
+  }) : super(attributes: attributes);
 
+  /// The Bluetooth device address.
   EPAddress? address;
 
+  /// Gets the Bluetooth device class.
   DeviceClass get deviceClass {
     return DeviceClass.fromBytes(attributes[EIRType.ClassOfDevice]!);
   }
 
+  /// Sets the Bluetooth device class.
   set deviceClass(DeviceClass dc) {
     attributes[EIRType.ClassOfDevice] = dc.bytes;
   }
 
   void _addServiceClassList(
-      EIRType eirType, int unitSize, List<ServiceClass> list) {
+    EIRType eirType,
+    int unitSize,
+    List<ServiceClass> list,
+  ) {
     if (attributes.containsKey(eirType)) {
       var bytes = attributes[eirType];
       for (var i = 0; i < bytes!.length; i += unitSize) {
@@ -805,6 +859,7 @@ class BluetoothEasyPairingRecord extends BluetoothRecord {
     }
   }
 
+  /// Gets the list of service class UUIDs.
   List<ServiceClass> get serviceClassList {
     var list = <ServiceClass>[];
     _addServiceClassList(EIRType.Inc16BitUUID, 2, list);
@@ -816,7 +871,7 @@ class BluetoothEasyPairingRecord extends BluetoothRecord {
     return list;
   }
 
-  /// Add a service class,  according to [complete]
+  /// Adds a service class UUID, with [complete] indicating if the list is complete.
   void addServiceClass(ServiceClass serviceClass, {bool complete = false}) {
     var bytes = serviceClass.bytes;
     late EIRType remain, remove;
@@ -847,9 +902,10 @@ class BluetoothEasyPairingRecord extends BluetoothRecord {
     }
 
     attributes[remain] = Uint8List.fromList(
-        (attributes.containsKey(remain) ? attributes[remain] : [])! +
-            (attributes.containsKey(remove) ? attributes[remove]! : []) +
-            bytes as List<int>);
+      (attributes.containsKey(remain) ? attributes[remain] : [])! +
+          (attributes.containsKey(remove) ? attributes[remove]! : []) +
+          bytes as List<int>,
+    );
     if (attributes.containsKey(remove)) {
       attributes.remove(remove);
     }
@@ -896,8 +952,10 @@ class BluetoothEasyPairingRecord extends BluetoothRecord {
       data.addAll(e.value);
     }
     List<int>? payload = ByteUtils.intToBytes(
-            data.length + address!.bytes.length + 2, 2,
-            endianness: Endianness.Little) +
+          data.length + address!.bytes.length + 2,
+          2,
+          endianness: Endianness.Little,
+        ) +
         address!.bytes +
         data.cast();
     return Uint8List.fromList(payload);
@@ -916,7 +974,11 @@ class BluetoothEasyPairingRecord extends BluetoothRecord {
   }
 }
 
+/// A NDEF record for Bluetooth Low Energy out-of-band pairing.
+///
+/// Contains Bluetooth LE device information for pairing.
 class BluetoothLowEnergyRecord extends BluetoothRecord {
+  /// The MIME type for Bluetooth Low Energy records.
   static const String classType = "application/vnd.bluetooth.le.oob";
 
   @override
@@ -933,9 +995,11 @@ class BluetoothLowEnergyRecord extends BluetoothRecord {
     return str;
   }
 
+  /// Constructs a [BluetoothLowEnergyRecord] with optional [attributes].
   BluetoothLowEnergyRecord({Map<EIRType, Uint8List>? attributes})
       : super(attributes: attributes);
 
+  /// Gets the Bluetooth LE device address.
   LEAddress? get address {
     if (attributes.containsKey(EIRType.LEBluetoothDeviceAddress)) {
       return LEAddress.fromBytes(attributes[EIRType.LEBluetoothDeviceAddress]);
@@ -957,8 +1021,10 @@ class BluetoothLowEnergyRecord extends BluetoothRecord {
 
   String? get roleCapabilities {
     if (attributes.containsKey(EIRType.LERole)) {
-      assert(attributes[EIRType.LERole]!.length == 1,
-          "Bytes length of LE Role must be 1");
+      assert(
+        attributes[EIRType.LERole]!.length == 1,
+        "Bytes length of LE Role must be 1",
+      );
       var index = attributes[EIRType.LERole]![0];
       if (index < leRoleList.length) {
         return leRoleList[index];
@@ -1035,10 +1101,14 @@ class BluetoothLowEnergyRecord extends BluetoothRecord {
 
   String? get appearance {
     if (attributes.containsKey(EIRType.Appearance)) {
-      assert(attributes[EIRType.Appearance]!.length == 4,
-          "Bytes length of appearance must be 4");
-      int? value = ByteUtils.bytesToInt(attributes[EIRType.Appearance],
-          endianness: Endianness.Little);
+      assert(
+        attributes[EIRType.Appearance]!.length == 4,
+        "Bytes length of appearance must be 4",
+      );
+      int? value = ByteUtils.bytesToInt(
+        attributes[EIRType.Appearance],
+        endianness: Endianness.Little,
+      );
       if (appearanceMap.containsKey(value)) {
         return appearanceMap[value];
       } else {
@@ -1060,8 +1130,11 @@ class BluetoothLowEnergyRecord extends BluetoothRecord {
     if (index == null) {
       throw ArgumentError.notNull("Appearance $appearance is not correct");
     }
-    attributes[EIRType.Appearance] =
-        ByteUtils.intToBytes(index, 4, endianness: Endianness.Little);
+    attributes[EIRType.Appearance] = ByteUtils.intToBytes(
+      index,
+      4,
+      endianness: Endianness.Little,
+    );
   }
 
   static const flagsList = [

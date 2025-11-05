@@ -4,7 +4,7 @@ version: 0.3.5
 homepage: https://github.com/nfcim/ndef
 
 environment:
-  sdk: ">=2.12.0 <4.0.0"
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
   uuid: ^4.1.0

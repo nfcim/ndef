@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:ndef/records/well_known/well_known.dart';
 import 'package:ndef/utilities.dart';
 
-/// Signature Record is used to protect the integrity and authenticity of NDEF Messages.
+/// A NDEF Signature Record used to protect the integrity and authenticity of NDEF Messages.
 class SignatureRecord extends WellKnownRecord {
   static const String classType = "Sig";
 
@@ -33,8 +33,10 @@ class SignatureRecord extends WellKnownRecord {
     return str;
   }
 
+  /// The signature record version.
   static const int classVersion = 0x20;
 
+  /// Map of supported signature types.
   static List<String?> signatureTypeMap = [
     null,
     "RSASSA-PSS-1024",
@@ -47,26 +49,44 @@ class SignatureRecord extends WellKnownRecord {
     "ECDSA-P224",
     "ECDSA-K233",
     "ECDSA-B233",
-    "ECDSA-P256"
+    "ECDSA-P256",
   ];
 
+  /// Map of supported hash types.
   static List<String> hashTypeMap = ["", "", "SHA-256"];
 
+  /// Map of supported certificate formats.
   static List<String> certificateFormatMap = ["X.509", "M2M"];
 
-  String? signatureURI, certificateURI;
-  late List<Uint8List> _certificateStore;
-  late Uint8List signature;
-  late int signatureTypeIndex, hashTypeIndex, certificateFormatIndex;
+  /// URI for the signature.
+  String? signatureURI;
 
-  SignatureRecord(
-      {String? signatureType,
-      String hashType = "SHA-256",
-      Uint8List? signature,
-      this.signatureURI = "",
-      String certificateFormat = "X.509",
-      List<Uint8List>? certificateStore,
-      this.certificateURI = ""}) {
+  /// URI for the certificate.
+  String? certificateURI;
+  late List<Uint8List> _certificateStore;
+
+  /// The signature bytes.
+  late Uint8List signature;
+
+  /// Internal index for signature type.
+  late int signatureTypeIndex;
+
+  /// Internal index for hash type.
+  late int hashTypeIndex;
+
+  /// Internal index for certificate format.
+  late int certificateFormatIndex;
+
+  /// Constructs a [SignatureRecord] with signature and certificate information.
+  SignatureRecord({
+    String? signatureType,
+    String hashType = "SHA-256",
+    Uint8List? signature,
+    this.signatureURI = "",
+    String certificateFormat = "X.509",
+    List<Uint8List>? certificateStore,
+    this.certificateURI = "",
+  }) {
     this.signatureType = signatureType;
     this.hashType = hashType;
     this.signature = signature ?? Uint8List(0);
@@ -79,10 +99,12 @@ class SignatureRecord extends WellKnownRecord {
     }
   }
 
+  /// Gets the signature type string.
   String? get signatureType {
     return signatureTypeMap[signatureTypeIndex];
   }
 
+  /// Sets the signature type (must be in the signature type map).
   set signatureType(String? signatureType) {
     for (int i = 0; i < signatureTypeMap.length; i++) {
       if (signatureType == signatureTypeMap[i]) {
@@ -91,13 +113,16 @@ class SignatureRecord extends WellKnownRecord {
       }
     }
     throw ArgumentError(
-        "Signature type $signatureType is not supported, please select one from $signatureTypeMap");
+      "Signature type $signatureType is not supported, please select one from $signatureTypeMap",
+    );
   }
 
+  /// Gets the hash type string.
   String get hashType {
     return hashTypeMap[hashTypeIndex];
   }
 
+  /// Sets the hash type (must be in the hash type map).
   set hashType(String hashType) {
     for (int i = 0; i < hashTypeMap.length; i++) {
       if (hashType != "" && hashType == hashTypeMap[i]) {
@@ -106,13 +131,16 @@ class SignatureRecord extends WellKnownRecord {
       }
     }
     throw ArgumentError(
-        "Hash type $hashType is not supported, please select one from [, SHA-256]");
+      "Hash type $hashType is not supported, please select one from [, SHA-256]",
+    );
   }
 
+  /// Gets the certificate format string.
   String get certificateFormat {
     return certificateFormatMap[certificateFormatIndex];
   }
 
+  /// Sets the certificate format (must be in the certificate format map).
   set certificateFormat(String certificateFormat) {
     for (int i = 0; i < certificateFormatMap.length; i++) {
       if (certificateFormat == certificateFormatMap[i]) {
@@ -121,13 +149,18 @@ class SignatureRecord extends WellKnownRecord {
       }
     }
     throw ArgumentError(
-        "Certificate format $certificateFormat is not supported, please select one from $certificateFormatMap");
+      "Certificate format $certificateFormat is not supported, please select one from $certificateFormatMap",
+    );
   }
 
+  /// Gets a copy of the certificate store.
   List<Uint8List> get certificateStore {
     return List<Uint8List>.from(_certificateStore, growable: false);
   }
 
+  /// Adds a certificate to the certificate store.
+  ///
+  /// Throws [RangeError] if the certificate is too large or the store is full.
   void addCertificateStore(Uint8List certificate) {
     if (certificate.length >= 1 << 16) {
       throw RangeError.range(certificate.length, 1 << 16, null);
@@ -170,7 +203,8 @@ class SignatureRecord extends WellKnownRecord {
       certificateURIBytes.addAll(utf8.encode(certificateURI!));
     }
     var certificateBytes = Uint8List.fromList(
-        [certificateFlag] + certificateStoreBytes + certificateURIBytes);
+      [certificateFlag] + certificateStoreBytes + certificateURIBytes,
+    );
 
     payload = [classVersion] + (signatureBytes) + certificateBytes;
     return Uint8List.fromList(payload);
@@ -188,7 +222,8 @@ class SignatureRecord extends WellKnownRecord {
     if (version != classVersion) {
       //TODO:find the document of smartposter 2.0
       throw ArgumentError(
-          "Signature Record is only implemented for smartposter 2.0, got ${Version.formattedString(version)}");
+        "Signature Record is only implemented for smartposter 2.0, got ${Version.formattedString(version)}",
+      );
     }
 
     //Signature Field

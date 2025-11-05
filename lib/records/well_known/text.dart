@@ -4,9 +4,21 @@ import 'dart:typed_data';
 import 'package:ndef/records/well_known/well_known.dart';
 import 'package:ndef/utilities.dart';
 
-enum TextEncoding { UTF8, UTF16 }
+/// Text encoding types supported by [TextRecord].
+enum TextEncoding {
+  /// UTF-8 encoding.
+  UTF8,
 
+  /// UTF-16 encoding.
+  UTF16,
+}
+
+/// A NDEF record containing text with language code.
+///
+/// This record stores text content along with its encoding (UTF-8 or UTF-16)
+/// and a language code (e.g., "en" for English).
 class TextRecord extends WellKnownRecord {
+  /// The type identifier for Text records.
   static const String classType = "T";
 
   @override
@@ -31,19 +43,26 @@ class TextRecord extends WellKnownRecord {
     return str;
   }
 
+  /// The text encoding type.
   late TextEncoding encoding;
-  String? _language, text;
+  String? _language;
 
+  /// The text content.
+  String? text;
+
+  /// Constructs a [TextRecord] with optional [encoding], [language], and [text].
   TextRecord({this.encoding = TextEncoding.UTF8, String? language, this.text}) {
     if (language != null) {
       this.language = language;
     }
   }
 
+  /// Gets the language code.
   String? get language {
     return _language;
   }
 
+  /// Sets the language code (must be between 1 and 63 characters).
   set language(String? language) {
     if (language != null && (language.length >= 64 || language.isEmpty)) {
       throw RangeError.range(language.length, 1, 64);
@@ -51,6 +70,7 @@ class TextRecord extends WellKnownRecord {
     _language = language;
   }
 
+  /// Gets the encoding as a readable string.
   String get encodingString {
     if (encoding == TextEncoding.UTF8) {
       return "UTF-8";
