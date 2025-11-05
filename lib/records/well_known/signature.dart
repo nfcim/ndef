@@ -33,8 +33,10 @@ class SignatureRecord extends WellKnownRecord {
     return str;
   }
 
+  /// The signature record version.
   static const int classVersion = 0x20;
 
+  /// Map of supported signature types.
   static List<String?> signatureTypeMap = [
     null,
     "RSASSA-PSS-1024",
@@ -50,15 +52,32 @@ class SignatureRecord extends WellKnownRecord {
     "ECDSA-P256"
   ];
 
+  /// Map of supported hash types.
   static List<String> hashTypeMap = ["", "", "SHA-256"];
 
+  /// Map of supported certificate formats.
   static List<String> certificateFormatMap = ["X.509", "M2M"];
 
-  String? signatureURI, certificateURI;
+  /// URI for the signature.
+  String? signatureURI;
+  
+  /// URI for the certificate.
+  String? certificateURI;
   late List<Uint8List> _certificateStore;
+  
+  /// The signature bytes.
   late Uint8List signature;
-  late int signatureTypeIndex, hashTypeIndex, certificateFormatIndex;
+  
+  /// Internal index for signature type.
+  late int signatureTypeIndex;
+  
+  /// Internal index for hash type.
+  late int hashTypeIndex;
+  
+  /// Internal index for certificate format.
+  late int certificateFormatIndex;
 
+  /// Constructs a [SignatureRecord] with signature and certificate information.
   SignatureRecord(
       {String? signatureType,
       String hashType = "SHA-256",
@@ -79,10 +98,12 @@ class SignatureRecord extends WellKnownRecord {
     }
   }
 
+  /// Gets the signature type string.
   String? get signatureType {
     return signatureTypeMap[signatureTypeIndex];
   }
 
+  /// Sets the signature type (must be in the signature type map).
   set signatureType(String? signatureType) {
     for (int i = 0; i < signatureTypeMap.length; i++) {
       if (signatureType == signatureTypeMap[i]) {
@@ -94,10 +115,12 @@ class SignatureRecord extends WellKnownRecord {
         "Signature type $signatureType is not supported, please select one from $signatureTypeMap");
   }
 
+  /// Gets the hash type string.
   String get hashType {
     return hashTypeMap[hashTypeIndex];
   }
 
+  /// Sets the hash type (must be in the hash type map).
   set hashType(String hashType) {
     for (int i = 0; i < hashTypeMap.length; i++) {
       if (hashType != "" && hashType == hashTypeMap[i]) {
@@ -109,10 +132,12 @@ class SignatureRecord extends WellKnownRecord {
         "Hash type $hashType is not supported, please select one from [, SHA-256]");
   }
 
+  /// Gets the certificate format string.
   String get certificateFormat {
     return certificateFormatMap[certificateFormatIndex];
   }
 
+  /// Sets the certificate format (must be in the certificate format map).
   set certificateFormat(String certificateFormat) {
     for (int i = 0; i < certificateFormatMap.length; i++) {
       if (certificateFormat == certificateFormatMap[i]) {
@@ -124,10 +149,14 @@ class SignatureRecord extends WellKnownRecord {
         "Certificate format $certificateFormat is not supported, please select one from $certificateFormatMap");
   }
 
+  /// Gets a copy of the certificate store.
   List<Uint8List> get certificateStore {
     return List<Uint8List>.from(_certificateStore, growable: false);
   }
 
+  /// Adds a certificate to the certificate store.
+  ///
+  /// Throws [RangeError] if the certificate is too large or the store is full.
   void addCertificateStore(Uint8List certificate) {
     if (certificate.length >= 1 << 16) {
       throw RangeError.range(certificate.length, 1 << 16, null);

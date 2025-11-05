@@ -5,9 +5,19 @@ import 'dart:typed_data';
 import 'package:ndef/ndef.dart';
 import 'package:ndef/utilities.dart';
 
-enum Action { exec, save, edit }
+/// Actions that can be performed on a Smart Poster.
+enum Action { 
+  /// Execute/open the resource.
+  exec, 
+  /// Save for later use.
+  save, 
+  /// Edit the resource.
+  edit 
+}
 
+/// A NDEF record indicating the suggested action for a Smart Poster.
 class ActionRecord extends WellKnownRecord {
+  /// The type identifier for Action records.
   static const String classType = "act";
 
   @override
@@ -15,7 +25,10 @@ class ActionRecord extends WellKnownRecord {
     return ActionRecord.classType;
   }
 
+  /// The minimum payload length for Action records.
   static const int classMinPayloadLength = 1;
+  
+  /// The maximum payload length for Action records.
   static const int classMaxPayloadLength = 1;
 
   @override
@@ -36,8 +49,10 @@ class ActionRecord extends WellKnownRecord {
     return str;
   }
 
+  /// The suggested action.
   Action? action;
 
+  /// Constructs an [ActionRecord] with an optional [action].
   ActionRecord({this.action});
 
   @override
@@ -57,7 +72,9 @@ class ActionRecord extends WellKnownRecord {
   }
 }
 
+/// A NDEF record indicating the size of the referenced object.
 class SizeRecord extends WellKnownRecord {
+  /// The type identifier for Size records.
   static const String classType = "s";
 
   @override
@@ -65,7 +82,10 @@ class SizeRecord extends WellKnownRecord {
     return SizeRecord.classType;
   }
 
+  /// The minimum payload length for Size records.
   static const int classMinPayloadLength = 4;
+  
+  /// The maximum payload length for Size records.
   static const int classMaxPayloadLength = 4;
 
   @override
@@ -88,10 +108,12 @@ class SizeRecord extends WellKnownRecord {
 
   late int _size;
 
+  /// Gets the size value in bytes.
   int get size {
     return _size;
   }
 
+  /// Sets the size value (must fit in 32 bits).
   set size(int size) {
     if (size < 0 || size >= 1 << 32) {
       throw RangeError.range(size, 0, 1 << 32);
@@ -99,6 +121,7 @@ class SizeRecord extends WellKnownRecord {
     _size = size;
   }
 
+  /// Constructs a [SizeRecord] with an optional [size].
   SizeRecord({int? size}) {
     if (size != null) {
       this.size = size;
@@ -116,7 +139,9 @@ class SizeRecord extends WellKnownRecord {
   }
 }
 
+/// A NDEF record indicating the MIME type of the referenced object.
 class TypeRecord extends WellKnownRecord {
+  /// The type identifier for Type records.
   static const String classType = "t";
 
   @override
@@ -132,8 +157,10 @@ class TypeRecord extends WellKnownRecord {
     return str;
   }
 
+  /// The MIME type information.
   String? typeInfo;
 
+  /// Constructs a [TypeRecord] with optional [typeInfo].
   TypeRecord({this.typeInfo});
 
   @override
@@ -147,7 +174,12 @@ class TypeRecord extends WellKnownRecord {
   }
 }
 
+/// A NDEF Smart Poster record containing rich metadata about a URI.
+///
+/// Smart Posters can contain title, URI, action, icon, size, and type records
+/// to provide a complete description of a resource.
 class SmartPosterRecord extends WellKnownRecord {
+  /// The type identifier for Smart Poster records.
   static const String classType = "Sp";
 
   @override
@@ -187,6 +219,7 @@ class SmartPosterRecord extends WellKnownRecord {
     _typeRecords = <TypeRecord>[];
   }
 
+  /// Constructs a [SmartPosterRecord] with optional metadata fields.
   SmartPosterRecord({
     var title,
     var uri,
@@ -216,6 +249,7 @@ class SmartPosterRecord extends WellKnownRecord {
     }
   }
 
+  /// Constructs a [SmartPosterRecord] from lists of constituent records.
   SmartPosterRecord.fromList({
     List<TextRecord>? titleRecords,
     List<UriRecord>? uriRecords,
@@ -257,6 +291,7 @@ class SmartPosterRecord extends WellKnownRecord {
     }
   }
 
+  /// Type factory for Smart Poster constituent records.
   static NDEFRecord typeFactory(TypeNameFormat tnf, String classType) {
     NDEFRecord record;
     if (tnf == TypeNameFormat.nfcWellKnown) {
@@ -283,6 +318,7 @@ class SmartPosterRecord extends WellKnownRecord {
     return record;
   }
 
+  /// Gets all constituent records as a single list.
   List<NDEFRecord> get allRecords {
     return uriRecords +
         titleRecords +
@@ -292,10 +328,12 @@ class SmartPosterRecord extends WellKnownRecord {
         typeRecords;
   }
 
+  /// Gets a copy of the URI records list.
   List<NDEFRecord> get uriRecords {
     return List<NDEFRecord>.from(_uriRecords, growable: false);
   }
 
+  /// Gets the single URI record if exactly one exists.
   UriRecord? get uriRecord {
     if (uriRecords.length == 1) {
       return _uriRecords[0];
@@ -304,6 +342,7 @@ class SmartPosterRecord extends WellKnownRecord {
     }
   }
 
+  /// Gets the URI if exactly one URI record exists.
   Uri? get uri {
     if (_uriRecords.length == 1) {
       return _uriRecords[0].uri;
@@ -312,6 +351,7 @@ class SmartPosterRecord extends WellKnownRecord {
     }
   }
 
+  /// Adds a URI record (Smart Poster must have exactly one).
   void addUriRecord(UriRecord record) {
     if (_uriRecords.length == 1) {
       throw ArgumentError.value(_uriRecords.length,
@@ -320,6 +360,7 @@ class SmartPosterRecord extends WellKnownRecord {
     _uriRecords.add(record);
   }
 
+  /// Sets the URI from a String or Uri.
   set uri(var uri) {
     if (uri is String) {
       if (_uriRecords.length == 1) {

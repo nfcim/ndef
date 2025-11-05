@@ -6,10 +6,20 @@ import 'package:uuid/uuid.dart';
 import 'package:ndef/records/well_known/well_known.dart';
 import 'package:ndef/utilities.dart';
 
+/// A data element in a Device Information record.
+///
+/// Consists of a type identifier and a value.
 class DataElement {
+  /// The type identifier of the data element.
   late int type;
+  
+  /// The value of the data element as bytes.
   late Uint8List value;
+  
+  /// Constructs a [DataElement] with [type] and [value].
   DataElement(this.type, this.value);
+  
+  /// Constructs a [DataElement] with [type] and [valueString] encoded as UTF-8.
   DataElement.fromString(this.type, String valueString) {
     value = utf8.encode(valueString);
   }
@@ -23,7 +33,12 @@ class DataElement {
   }
 }
 
+/// A NDEF record containing device information.
+///
+/// This record type stores information about a device such as vendor name,
+/// model name, unique name, UUID, and version information.
 class DeviceInformationRecord extends WellKnownRecord {
+  /// The type identifier for Device Information records.
   static const String classType = "Di";
 
   @override
@@ -31,6 +46,7 @@ class DeviceInformationRecord extends WellKnownRecord {
     return DeviceInformationRecord.classType;
   }
 
+  /// The minimum payload length for Device Information records.
   static const int classMinPayloadLength = 2;
 
   @override
@@ -50,10 +66,25 @@ class DeviceInformationRecord extends WellKnownRecord {
     return str;
   }
 
-  String? vendorName, modelName, uniqueName, versionString;
+  /// The vendor name of the device.
+  String? vendorName;
+  
+  /// The model name of the device.
+  String? modelName;
+  
+  /// The unique name of the device.
+  String? uniqueName;
+  
+  /// The version string of the device.
+  String? versionString;
+  
+  /// The UUID as raw bytes.
   late Uint8List uuidData;
+  
+  /// Additional undefined data elements.
   late List<DataElement> undefinedData;
 
+  /// Constructs a [DeviceInformationRecord] with optional device information fields.
   DeviceInformationRecord(
       {this.vendorName,
       this.modelName,
@@ -67,10 +98,12 @@ class DeviceInformationRecord extends WellKnownRecord {
     this.undefinedData = undefinedData ?? [];
   }
 
+  /// Gets the UUID as a formatted string.
   String get uuid {
     return Uuid.unparse(uuidData);
   }
 
+  /// Sets the UUID from a formatted string.
   set uuid(String uuid) {
     uuidData = Uint8List.fromList(Uuid.parse(uuid));
   }
