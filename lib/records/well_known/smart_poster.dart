@@ -377,11 +377,12 @@ class SmartPosterRecord extends WellKnownRecord {
     }
   }
 
+  /// Gets a copy of the title records list.
   List<NDEFRecord> get titleRecords {
     return List<NDEFRecord>.from(_titleRecords, growable: false);
   }
 
-  /// get the English title; if not existing, get the first title
+  /// Gets the English title; if not existing, gets the first title.
   String? get title {
     if (_titleLanguages.contains('en')) {
       return titles['en'];
@@ -392,6 +393,7 @@ class SmartPosterRecord extends WellKnownRecord {
     }
   }
 
+  /// Gets all titles as a map of language code to text.
   Map<String?, String?> get titles {
     var titles = <String?, String?>{};
     for (var r in _titleRecords) {
@@ -400,6 +402,7 @@ class SmartPosterRecord extends WellKnownRecord {
     return titles;
   }
 
+  /// Sets the title from a String (English) or Map<String, String> (language to text).
   set title(var title) {
     var language = 'en';
     String text;
@@ -420,6 +423,7 @@ class SmartPosterRecord extends WellKnownRecord {
     }
   }
 
+  /// Adds a title with the specified [text], [language], and [encoding].
   void addTitle(String text,
       {String language = 'en', TextEncoding encoding = TextEncoding.UTF8}) {
     _titleRecords
@@ -431,6 +435,7 @@ class SmartPosterRecord extends WellKnownRecord {
     _titleLanguages.add(language);
   }
 
+  /// Adds a title record (language must be unique).
   void addTitleRecord(TextRecord record) {
     _titleRecords.add(record);
     if (_titleLanguages.contains(record.language)) {
@@ -440,11 +445,12 @@ class SmartPosterRecord extends WellKnownRecord {
     _titleLanguages.add(record.language);
   }
 
+  /// Gets a copy of the action records list.
   List<NDEFRecord> get actionRecords {
     return List<NDEFRecord>.from(_actionRecords, growable: false);
   }
 
-  /// get the first action if it exists
+  /// Gets the first action if it exists.
   Action? get action {
     if (_actionRecords.isNotEmpty) {
       return _actionRecords[0].action;
@@ -453,6 +459,7 @@ class SmartPosterRecord extends WellKnownRecord {
     }
   }
 
+  /// Sets the action (replaces or adds the first action record).
   set action(Action? action) {
     if (_actionRecords.isNotEmpty) {
       _actionRecords[0] = ActionRecord(action: action);
@@ -461,14 +468,17 @@ class SmartPosterRecord extends WellKnownRecord {
     }
   }
 
+  /// Adds an action record.
   void addActionRecord(ActionRecord record) {
     _actionRecords.add(record);
   }
 
+  /// Gets a copy of the size records list.
   List<NDEFRecord> get sizeRecords {
     return List<NDEFRecord>.from(_sizeRecords, growable: false);
   }
 
+  /// Gets the first size if it exists.
   int? get size {
     if (_sizeRecords.isNotEmpty) {
       return _sizeRecords[0].size;
@@ -477,6 +487,7 @@ class SmartPosterRecord extends WellKnownRecord {
     }
   }
 
+  /// Sets the size (replaces or adds the first size record).
   set size(int? size) {
     if (_sizeRecords.isNotEmpty) {
       _sizeRecords[0] = SizeRecord(size: size);
@@ -485,14 +496,17 @@ class SmartPosterRecord extends WellKnownRecord {
     }
   }
 
+  /// Adds a size record.
   void addSizeRecord(SizeRecord record) {
     _sizeRecords.add(record);
   }
 
+  /// Gets a copy of the type records list.
   List<NDEFRecord> get typeRecords {
     return List<NDEFRecord>.from(_typeRecords, growable: false);
   }
 
+  /// Gets the first type info if it exists.
   String? get typeInfo {
     if (_typeRecords.isNotEmpty) {
       return _typeRecords[0].typeInfo;
@@ -501,6 +515,7 @@ class SmartPosterRecord extends WellKnownRecord {
     }
   }
 
+  /// Sets the type info (replaces or adds the first type record).
   set typeInfo(String? typeInfo) {
     if (_typeRecords.isNotEmpty) {
       _typeRecords[0] = TypeRecord(typeInfo: typeInfo);
@@ -509,14 +524,17 @@ class SmartPosterRecord extends WellKnownRecord {
     }
   }
 
+  /// Adds a type record.
   void addTypeRecord(TypeRecord record) {
     _typeRecords.add(record);
   }
 
+  /// Gets a copy of the icon records list.
   List<NDEFRecord> get iconRecords {
     return List<NDEFRecord>.from(_iconRecords, growable: false);
   }
 
+  /// Gets the first icon record if it exists.
   MimeRecord? get iconRecord {
     if (_iconRecords.isNotEmpty) {
       return _iconRecords[0];
@@ -525,6 +543,7 @@ class SmartPosterRecord extends WellKnownRecord {
     }
   }
 
+  /// Gets the first icon as a map of MIME type to payload.
   Map<String?, Uint8List?>? get icon {
     if (iconRecord != null) {
       return {iconRecord!.decodedType: iconRecord!.payload};
@@ -541,6 +560,9 @@ class SmartPosterRecord extends WellKnownRecord {
     }
   }
 
+  /// Sets the icon (replaces or adds the first icon record).
+  ///
+  /// The map should contain a MIME type as key and image/video data as value.
   set icon(Map<String?, Uint8List?>? icon) {
     String? decodedType = icon!.keys.toList()[0];
     _checkValidIconType(decodedType!);
@@ -548,6 +570,7 @@ class SmartPosterRecord extends WellKnownRecord {
         MimeRecord(decodedType: decodedType, payload: icon.values.toList()[0]);
   }
 
+  /// Adds an icon with the specified MIME type and data.
   void addIcon(Map<String, Uint8List> icon) {
     String decodedType = icon.keys.toList()[0];
     _checkValidIconType(decodedType);
@@ -555,6 +578,7 @@ class SmartPosterRecord extends WellKnownRecord {
         MimeRecord(decodedType: decodedType, payload: icon.values.toList()[0]));
   }
 
+  /// Sets the icon record (replaces or adds the first icon record).
   set iconRecord(MimeRecord? record) {
     _checkValidIconType(record!.decodedType!);
     if (_iconRecords.isNotEmpty) {
@@ -564,6 +588,7 @@ class SmartPosterRecord extends WellKnownRecord {
     }
   }
 
+  /// Adds an icon record.
   void addIconRecord(MimeRecord record) {
     _checkValidIconType(record.decodedType!);
     _iconRecords.add(record);
