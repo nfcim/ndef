@@ -6,7 +6,7 @@
 /// Use [decodeRawNdefMessage] to decode raw NDEF messages from byte arrays,
 /// [decodePartialNdefMessage] to decode individual records with separate parts,
 /// and [encodeNdefMessage] to encode NDEF messages to byte arrays.
-library ndef;
+library;
 
 import 'dart:typed_data';
 

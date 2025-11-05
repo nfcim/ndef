@@ -101,6 +101,7 @@ typedef TypeFactory = NDEFRecord Function(TypeNameFormat tnf, String classType);
 /// The base class of all types of records.
 /// Also represents an record of unknown type.
 class NDEFRecord {
+  /// String representations of the TNF values.
   static const List<String> tnfString = [
     "",
     "urn:nfc:wkt:",
