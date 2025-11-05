@@ -47,10 +47,15 @@ class _Address {
   }
 }
 
+/// Bluetooth Easy Pairing address.
 class EPAddress extends _Address {
+  /// Constructs an [EPAddress] from an address string.
   EPAddress({String? address}) : super(address: address);
+  
+  /// Constructs an [EPAddress] from raw bytes.
   EPAddress.fromBytes(Uint8List bytes) : super.fromBytes(bytes);
 
+  /// Gets the address as raw bytes.
   Uint8List get bytes {
     return addr;
   }
@@ -62,6 +67,7 @@ class EPAddress extends _Address {
     return str;
   }
 
+  /// Sets the address from raw bytes.
   set bytes(Uint8List bytes) {
     if (bytes.length != 6) {
       throw ArgumentError.value(
@@ -71,10 +77,20 @@ class EPAddress extends _Address {
   }
 }
 
-enum LEAddressType { public, random }
+/// Bluetooth Low Energy address type.
+enum LEAddressType { 
+  /// Public device address.
+  public, 
+  /// Random device address.
+  random 
+}
 
+/// Bluetooth Low Energy address with type.
 class LEAddress extends _Address {
+  /// The address type (public or random).
   late LEAddressType type;
+  
+  /// Constructs an [LEAddress] with the specified [type] and [address].
   LEAddress({LEAddressType? type, String? address}) : super(address: address) {
     this.type = type!;
   }
@@ -717,17 +733,24 @@ class EIR {
   }
 }
 
+/// Base class for Bluetooth NDEF records.
+///
+/// Contains Extended Inquiry Response (EIR) data attributes for Bluetooth pairing.
 class BluetoothRecord extends MimeRecord {
+  /// Map of EIR type to data attributes.
   late Map<EIRType?, Uint8List> attributes;
 
+  /// Constructs a [BluetoothRecord] with optional [attributes].
   BluetoothRecord({Map<EIRType, Uint8List>? attributes}) {
     this.attributes = attributes ?? <EIRType, Uint8List>{};
   }
 
+  /// Gets the attribute value for the specified EIR [type].
   Uint8List? getAttribute(EIRType type) {
     return attributes.containsKey(type) ? attributes[type] : null;
   }
 
+  /// Sets the attribute [value] for the specified EIR [type].
   void setAttribute(EIRType? type, Uint8List value) {
     if (!EIR.typeNumMap.containsKey(type)) {
       throw ArgumentError(
@@ -736,6 +759,7 @@ class BluetoothRecord extends MimeRecord {
     attributes[type!] = value;
   }
 
+  /// Gets the Bluetooth device name.
   String get deviceName {
     if (attributes.containsKey(EIRType.CompleteLocalName)) {
       return utf8.decode(attributes[EIRType.CompleteLocalName]!);
@@ -746,6 +770,7 @@ class BluetoothRecord extends MimeRecord {
     }
   }
 
+  /// Sets the Bluetooth device name.
   set deviceName(String deviceName) {
     attributes[EIRType.CompleteLocalName] = utf8.encode(deviceName);
     if (attributes.containsKey(EIRType.ShortenedLocalName)) {
@@ -753,18 +778,24 @@ class BluetoothRecord extends MimeRecord {
     }
   }
 
+  /// Gets an integer value for the specified EIR [type].
   BigInt getIntValue(EIRType type) {
     return ByteUtils.bytesToBigInt(attributes[type]!,
         endianness: Endianness.Little);
   }
 
+  /// Sets an integer [value] for the specified EIR [type].
   void setIntValue(EIRType type, BigInt value) {
     setAttribute(type,
         ByteUtils.bigIntToBytes(value, 16, endianness: Endianness.Little));
   }
 }
 
+/// A NDEF record for Bluetooth Easy Pairing (Secure Simple Pairing).
+///
+/// Contains Bluetooth device information for out-of-band pairing.
 class BluetoothEasyPairingRecord extends BluetoothRecord {
+  /// The MIME type for Bluetooth Easy Pairing records.
   static const String classType = "application/vnd.bluetooth.ep.oob";
 
   @override
@@ -781,16 +812,20 @@ class BluetoothEasyPairingRecord extends BluetoothRecord {
     return str;
   }
 
+  /// Constructs a [BluetoothEasyPairingRecord] with optional [address] and [attributes].
   BluetoothEasyPairingRecord(
       {this.address, Map<EIRType, Uint8List>? attributes})
       : super(attributes: attributes);
 
+  /// The Bluetooth device address.
   EPAddress? address;
 
+  /// Gets the Bluetooth device class.
   DeviceClass get deviceClass {
     return DeviceClass.fromBytes(attributes[EIRType.ClassOfDevice]!);
   }
 
+  /// Sets the Bluetooth device class.
   set deviceClass(DeviceClass dc) {
     attributes[EIRType.ClassOfDevice] = dc.bytes;
   }
@@ -805,6 +840,7 @@ class BluetoothEasyPairingRecord extends BluetoothRecord {
     }
   }
 
+  /// Gets the list of service class UUIDs.
   List<ServiceClass> get serviceClassList {
     var list = <ServiceClass>[];
     _addServiceClassList(EIRType.Inc16BitUUID, 2, list);
@@ -816,7 +852,7 @@ class BluetoothEasyPairingRecord extends BluetoothRecord {
     return list;
   }
 
-  /// Add a service class,  according to [complete]
+  /// Adds a service class UUID, with [complete] indicating if the list is complete.
   void addServiceClass(ServiceClass serviceClass, {bool complete = false}) {
     var bytes = serviceClass.bytes;
     late EIRType remain, remove;
@@ -916,7 +952,11 @@ class BluetoothEasyPairingRecord extends BluetoothRecord {
   }
 }
 
+/// A NDEF record for Bluetooth Low Energy out-of-band pairing.
+///
+/// Contains Bluetooth LE device information for pairing.
 class BluetoothLowEnergyRecord extends BluetoothRecord {
+  /// The MIME type for Bluetooth Low Energy records.
   static const String classType = "application/vnd.bluetooth.le.oob";
 
   @override
@@ -933,9 +973,11 @@ class BluetoothLowEnergyRecord extends BluetoothRecord {
     return str;
   }
 
+  /// Constructs a [BluetoothLowEnergyRecord] with optional [attributes].
   BluetoothLowEnergyRecord({Map<EIRType, Uint8List>? attributes})
       : super(attributes: attributes);
 
+  /// Gets the Bluetooth LE device address.
   LEAddress? get address {
     if (attributes.containsKey(EIRType.LEBluetoothDeviceAddress)) {
       return LEAddress.fromBytes(attributes[EIRType.LEBluetoothDeviceAddress]);
