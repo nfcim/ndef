@@ -165,14 +165,8 @@ class WifiRecord extends MimeRecord {
 
   /// Encodes a TLV (Type-Length-Value) attribute
   static Uint8List _encodeTLV(int type, Uint8List value) {
-    final typeBytes = Uint8List(2);
-    typeBytes[0] = (type >> 8) & 0xFF;
-    typeBytes[1] = type & 0xFF;
-
-    final lengthBytes = Uint8List(2);
-    lengthBytes[0] = (value.length >> 8) & 0xFF;
-    lengthBytes[1] = value.length & 0xFF;
-
+    final typeBytes = ByteUtils.intToBytes(type, 2);
+    final lengthBytes = ByteUtils.intToBytes(value.length, 2);
     return Uint8List.fromList([...typeBytes, ...lengthBytes, ...value]);
   }
 
