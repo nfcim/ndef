@@ -406,7 +406,7 @@ class SmartPosterRecord extends WellKnownRecord {
     return titles;
   }
 
-  /// Sets the title from a String (English) or Map<String, String> (language to text).
+  /// Sets the title from a String (English) or `Map<String, String>` (language to text).
   set title(var title) {
     var language = 'en';
     String text;

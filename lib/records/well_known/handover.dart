@@ -397,7 +397,7 @@ class HandoverRecord extends WellKnownRecord {
     return record;
   }
 
-  get _typeFactory {
+  NDEFRecord Function(TypeNameFormat tnf, String classType) get _typeFactory {
     return HandoverRecord.typeFactory;
   }
 
