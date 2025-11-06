@@ -77,7 +77,7 @@ void main() {
   });
 
   test('wifi record decode real NFC payload from js-nfc-wifi-parser', () {
-    // Real NFC WiFi payload from https://github.com/gfnork/js-nfc-wifi-parser
+    // Real NFC WiFi payload from https://github.com/gfnork/js-nfc-wifi-parser/blob/master/test/mocks/nfc-payload.json
     final payload = Uint8List.fromList([
       16, 14, 0, 62, // Credential container (0x100E), length 62
       16, 38, 0, 1, 1, // Network Index (0x1026) = 1
@@ -106,23 +106,15 @@ void main() {
   });
 
   test('wifi record decode open network payload', () {
-    // Helper function
-    Uint8List hexToBytes(String hex) {
-      hex = hex.replaceAll(' ', '');
-      final result = Uint8List(hex.length ~/ 2);
-      for (var i = 0; i < hex.length; i += 2) {
-        result[i ~/ 2] = int.parse(hex.substring(i, i + 2), radix: 16);
-      }
-      return result;
-    }
-
-    final payload = hexToBytes(
-      '100E0025' // Credential container (0x100E), length 37
-      '1026000101' // Network Index = 1
-      '10450007 6d792d73736964' // SSID = "my-ssid"
-      '100300020001' // Auth Type = Open (0x0001)
-      '100F00020001', // Encryption Type = None (0x0001)
-    );
+    // Real NFC WiFi payload from https://github.com/nfcpy/ndeflib/blob/master/tests/test_wifi.py
+    final payload = Uint8List.fromList([
+      0x10, 0x0E, 0x00, 0x25, // Credential container (0x100E), length 37
+      0x10, 0x26, 0x00, 0x01, 0x01, // Network Index = 1
+      0x10, 0x45, 0x00, 0x07, 0x6d, 0x79, 0x2d, 0x73, 0x73, 0x69,
+      0x64, // SSID = "my-ssid"
+      0x10, 0x03, 0x00, 0x02, 0x00, 0x01, // Auth Type = Open (0x0001)
+      0x10, 0x0F, 0x00, 0x02, 0x00, 0x01, // Encryption Type = None (0x0001)
+    ]);
 
     var record = WifiRecord();
     record.payload = payload;
@@ -134,24 +126,19 @@ void main() {
   });
 
   test('wifi record decode WPA2 payload with MAC address', () {
-    Uint8List hexToBytes(String hex) {
-      hex = hex.replaceAll(' ', '');
-      final result = Uint8List(hex.length ~/ 2);
-      for (var i = 0; i < hex.length; i += 2) {
-        result[i ~/ 2] = int.parse(hex.substring(i, i + 2), radix: 16);
-      }
-      return result;
-    }
-
-    final payload = hexToBytes(
-      '100E0045' // Credential container, length 69
-      '1026000101' // Network Index = 1
-      '1045000a6162636465666768696a' // SSID = "abcdefghij"
-      '100300020020' // Auth Type = WPA2-Personal (0x0020)
-      '100F00020008' // Encryption Type = AES (0x0008)
-      '1027000a31323334353637383930' // Network Key = "1234567890"
-      '10200006010203040506', // MAC Address = 01:02:03:04:05:06
-    );
+    // Real NFC WiFi payload from https://github.com/nfcpy/ndeflib/blob/master/tests/test_wifi.py
+    final payload = Uint8List.fromList([
+      0x10, 0x0E, 0x00, 0x45, // Credential container, length 69
+      0x10, 0x26, 0x00, 0x01, 0x01, // Network Index = 1
+      0x10, 0x45, 0x00, 0x0a, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68,
+      0x69, 0x6a, // SSID = "abcdefghij"
+      0x10, 0x03, 0x00, 0x02, 0x00, 0x20, // Auth Type = WPA2-Personal (0x0020)
+      0x10, 0x0F, 0x00, 0x02, 0x00, 0x08, // Encryption Type = AES (0x0008)
+      0x10, 0x27, 0x00, 0x0a, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+      0x39, 0x30, // Network Key = "1234567890"
+      0x10, 0x20, 0x00, 0x06, 0x01, 0x02, 0x03, 0x04, 0x05,
+      0x06, // MAC Address = 01:02:03:04:05:06
+    ]);
 
     var record = WifiRecord();
     record.payload = payload;
