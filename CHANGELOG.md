@@ -69,3 +69,8 @@ Note: this tag is not pushed to GitHub, but published to pub.dev.
 * Fix encoding of payload length (#21, #22)
 * Add more documentation to public APIs
 
+## 0.4.0
+
+* Add WiFi Simple Configuration NDEF Record and related tests (#27, thanks to @ljanecek)
+* Fix some linter issues
+
