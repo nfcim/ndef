@@ -274,6 +274,8 @@ class NDEFRecord {
         record = BluetoothEasyPairingRecord();
       } else if (classType == BluetoothLowEnergyRecord.classType) {
         record = BluetoothLowEnergyRecord();
+      } else if (classType == WifiRecord.classType) {
+        record = WifiRecord();
       } else {
         record = MimeRecord();
       }
