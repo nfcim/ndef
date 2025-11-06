@@ -17,8 +17,7 @@ class WellKnownRecord extends NDEFRecord {
   }
 
   /// Constructs a [WellKnownRecord] with optional [decodedType], [payload], and [id].
-  WellKnownRecord({String? decodedType, Uint8List? payload, Uint8List? id})
-      : super(id: id, payload: payload) {
+  WellKnownRecord({String? decodedType, super.payload, super.id}) {
     if (decodedType != null) {
       this.decodedType = decodedType;
     }

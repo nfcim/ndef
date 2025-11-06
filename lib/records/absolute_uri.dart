@@ -16,7 +16,7 @@ class AbsoluteUriRecord extends NDEFRecord {
   }
 
   /// Constructs an [AbsoluteUriRecord] with optional [uri] and [id].
-  AbsoluteUriRecord({String? uri, Uint8List? id}) : super(id: id) {
+  AbsoluteUriRecord({String? uri, super.id}) {
     if (uri != null) {
       this.uri = uri;
     }

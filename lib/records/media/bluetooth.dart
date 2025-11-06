@@ -50,10 +50,10 @@ class _Address {
 /// Bluetooth Easy Pairing address.
 class EPAddress extends _Address {
   /// Constructs an [EPAddress] from an address string.
-  EPAddress({String? address}) : super(address: address);
+  EPAddress({super.address});
 
   /// Constructs an [EPAddress] from raw bytes.
-  EPAddress.fromBytes(Uint8List bytes) : super.fromBytes(bytes);
+  EPAddress.fromBytes(Uint8List super.bytes) : super.fromBytes();
 
   /// Gets the address as raw bytes.
   Uint8List get bytes {
@@ -94,7 +94,7 @@ class LEAddress extends _Address {
   late LEAddressType type;
 
   /// Constructs an [LEAddress] with the specified [type] and [address].
-  LEAddress({LEAddressType? type, String? address}) : super(address: address) {
+  LEAddress({LEAddressType? type, super.address}) {
     this.type = type!;
   }
 
@@ -830,8 +830,8 @@ class BluetoothEasyPairingRecord extends BluetoothRecord {
   /// Constructs a [BluetoothEasyPairingRecord] with optional [address] and [attributes].
   BluetoothEasyPairingRecord({
     this.address,
-    Map<EIRType, Uint8List>? attributes,
-  }) : super(attributes: attributes);
+    super.attributes,
+  });
 
   /// The Bluetooth device address.
   EPAddress? address;
@@ -996,8 +996,7 @@ class BluetoothLowEnergyRecord extends BluetoothRecord {
   }
 
   /// Constructs a [BluetoothLowEnergyRecord] with optional [attributes].
-  BluetoothLowEnergyRecord({Map<EIRType, Uint8List>? attributes})
-      : super(attributes: attributes);
+  BluetoothLowEnergyRecord({super.attributes});
 
   /// Gets the Bluetooth LE device address.
   LEAddress? get address {

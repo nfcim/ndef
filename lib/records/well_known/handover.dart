@@ -460,13 +460,10 @@ class HandoverRequestRecord extends HandoverRecord {
 
   /// Constructs a [HandoverRequestRecord] with version, collision resolution, and carriers.
   HandoverRequestRecord({
-    String versionString = "1.3",
+    String super.versionString = "1.3",
     int? collisionResolutionNumber,
-    List<AlternativeCarrierRecord>? alternativeCarrierRecordList,
-  }) : super(
-          versionString: versionString,
-          alternativeCarrierRecordList: alternativeCarrierRecordList,
-        ) {
+    super.alternativeCarrierRecordList,
+  }) {
     collisionResolutionRecordList = <CollisionResolutionRecord>[];
     if (collisionResolutionNumber != null) {
       this.collisionResolutionNumber = collisionResolutionNumber;
@@ -587,13 +584,10 @@ class HandoverSelectRecord extends HandoverRecord {
   late List<ErrorRecord> errorRecordList;
 
   HandoverSelectRecord({
-    String versionString = "1.3",
+    String super.versionString = "1.3",
     ErrorRecord? error,
-    List<AlternativeCarrierRecord>? alternativeCarrierRecordList,
-  }) : super(
-          versionString: versionString,
-          alternativeCarrierRecordList: alternativeCarrierRecordList,
-        ) {
+    super.alternativeCarrierRecordList,
+  }) {
     errorRecordList = <ErrorRecord>[];
     if (error != null) {
       this.error = error;
@@ -693,12 +687,9 @@ class HandoverMediationRecord extends HandoverRecord {
   }
 
   HandoverMediationRecord({
-    String versionString = "1.3",
-    List<AlternativeCarrierRecord>? alternativeCarrierRecordList,
-  }) : super(
-          versionString: versionString,
-          alternativeCarrierRecordList: alternativeCarrierRecordList,
-        );
+    String super.versionString = "1.3",
+    super.alternativeCarrierRecordList,
+  });
 }
 
 class HandoverInitiateRecord extends HandoverRecord {
@@ -720,12 +711,9 @@ class HandoverInitiateRecord extends HandoverRecord {
   }
 
   HandoverInitiateRecord({
-    String versionString = "1.3",
-    List<AlternativeCarrierRecord>? alternativeCarrierRecordList,
-  }) : super(
-          versionString: versionString,
-          alternativeCarrierRecordList: alternativeCarrierRecordList,
-        );
+    String super.versionString = "1.3",
+    super.alternativeCarrierRecordList,
+  });
 }
 
 class HandoverCarrierRecord extends WellKnownRecord {
