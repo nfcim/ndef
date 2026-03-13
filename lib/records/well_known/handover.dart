@@ -81,10 +81,15 @@ class AlternativeCarrierRecord extends WellKnownRecord {
 
   /// Sets the carrier power state from an index.
   set carrierPowerStateIndex(int carrierPowerStateIndex) {
-    assert(
-      carrierPowerStateIndex >= 0 &&
-          carrierPowerStateIndex < CarrierPowerState.values.length,
-    );
+    if (carrierPowerStateIndex < 0 ||
+        carrierPowerStateIndex >= CarrierPowerState.values.length) {
+      throw RangeError.range(
+        carrierPowerStateIndex,
+        0,
+        CarrierPowerState.values.length - 1,
+        "carrierPowerStateIndex",
+      );
+    }
     carrierPowerState = CarrierPowerState.values[carrierPowerStateIndex];
   }
 
@@ -97,10 +102,14 @@ class AlternativeCarrierRecord extends WellKnownRecord {
     payload.add(carrierDataReference.length);
     payload.addAll(carrierDataReference);
 
-    assert(
-      auxDataReferenceList.length < 255,
-      "Number of auxDataReference must be in [0,256)",
-    );
+    if (auxDataReferenceList.length >= 255) {
+      throw RangeError.range(
+        auxDataReferenceList.length,
+        0,
+        254,
+        "auxDataReferenceList.length",
+      );
+    }
 
     payload.add(auxDataReferenceList.length);
     for (int i = 0; i < auxDataReferenceList.length; i++) {
@@ -125,10 +134,11 @@ class AlternativeCarrierRecord extends WellKnownRecord {
       auxDataReferenceList.add(stream.readBytes(auxDataReferenceLength));
     }
 
-    assert(
-      stream.isEnd() == true,
-      "payload has ${stream.unreadLength} bytes after decode",
-    );
+    if (!stream.isEnd()) {
+      throw FormatException(
+        "Payload has ${stream.unreadLength} unexpected trailing bytes",
+      );
+    }
   }
 }
 
@@ -195,7 +205,9 @@ class CollisionResolutionRecord extends WellKnownRecord {
         "RandomNumber expects int or Uint8List, got ${randomNumber.runtimeType}",
       );
     }
-    assert(value >= 0 && value <= 0xffff);
+    if (value < 0 || value > 0xffff) {
+      throw RangeError.range(value, 0, 0xffff, "randomNumber");
+    }
     _randomNumber = value;
   }
 
