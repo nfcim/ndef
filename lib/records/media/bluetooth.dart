@@ -315,7 +315,7 @@ class DeviceClass {
         },
       ],
     ],
-    31: ['Uncategorized', []],
+    31: ['Uncategorized', <Map<String, String>>[]],
   };
 
   late int value;
@@ -381,10 +381,10 @@ class DeviceClass {
     if (deviceClassList.containsKey(major)) {
       var text = <String>[];
       for (var mapping in deviceClassList[major]![1] as Iterable) {
-        // Strong cast, MAYBE have problems
-        var bits = minorString.substring(0, mapping.keys.first.length);
-        if (mapping.containsKey(bits)) {
-          text.add(mapping[bits]);
+        final m = mapping as Map<String, String>;
+        var bits = minorString.substring(0, m.keys.first.length);
+        if (m.containsKey(bits)) {
+          text.add(m[bits]!);
         } else {
           text.add('Reserved ${minorString0}b');
         }
@@ -902,9 +902,9 @@ class BluetoothEasyPairingRecord extends BluetoothRecord {
     }
 
     attributes[remain] = Uint8List.fromList(
-      (attributes.containsKey(remain) ? attributes[remain] : [])! +
-          (attributes.containsKey(remove) ? attributes[remove]! : []) +
-          bytes as List<int>,
+      (attributes.containsKey(remain) ? attributes[remain]! : <int>[]) +
+          (attributes.containsKey(remove) ? attributes[remove]! : <int>[]) +
+          bytes,
     );
     if (attributes.containsKey(remove)) {
       attributes.remove(remove);

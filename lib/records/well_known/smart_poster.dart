@@ -223,10 +223,8 @@ class SmartPosterRecord extends WellKnownRecord {
 
   /// Constructs a [SmartPosterRecord] with optional metadata fields.
   SmartPosterRecord({
-    // ignore: strict_top_level_inference
-    var title,
-    // ignore: strict_top_level_inference
-    var uri,
+    Object? title,
+    Object? uri,
     Action? action,
     Map<String, Uint8List>? icon,
     int? size,
@@ -367,8 +365,7 @@ class SmartPosterRecord extends WellKnownRecord {
   }
 
   /// Sets the URI from a String or Uri.
-  // ignore: strict_top_level_inference
-  set uri(var uri) {
+  set uri(Object? uri) {
     if (uri is String) {
       if (_uriRecords.length == 1) {
         _uriRecords[0] = UriRecord.fromString(uri);
@@ -410,8 +407,7 @@ class SmartPosterRecord extends WellKnownRecord {
   }
 
   /// Sets the title from a String (English) or `Map<String, String>` (language to text).
-  // ignore: strict_top_level_inference
-  set title(var title) {
+  set title(Object? title) {
     var language = 'en';
     String text;
     if (title is String) {

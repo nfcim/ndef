@@ -32,7 +32,7 @@ export 'records/well_known/well_known.dart';
 /// Decode raw NDEF messages (containing at least one [NDEFRecord]) from byte array
 List<NDEFRecord> decodeRawNdefMessage(
   Uint8List data, {
-  var typeFactory = NDEFRecord.defaultTypeFactory,
+  TypeFactory typeFactory = NDEFRecord.defaultTypeFactory,
 }) {
   var records = <NDEFRecord>[];
   var stream = ByteStream(data);

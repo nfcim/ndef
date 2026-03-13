@@ -184,17 +184,19 @@ class CollisionResolutionRecord extends WellKnownRecord {
   }
 
   /// Sets the random number from an [int] or [Uint8List].
-  // ignore: strict_top_level_inference
-  set randomNumber(var randomNumber) {
+  set randomNumber(Object? randomNumber) {
+    int value;
     if (randomNumber is Uint8List) {
-      randomNumber = (randomNumber).toInt();
-    } else if (randomNumber is! int) {
+      value = randomNumber.toInt();
+    } else if (randomNumber is int) {
+      value = randomNumber;
+    } else {
       throw ArgumentError(
         "RandomNumber expects int or Uint8List, got ${randomNumber.runtimeType}",
       );
     }
-    assert(randomNumber >= 0 && randomNumber <= 0xffff);
-    _randomNumber = randomNumber;
+    assert(value >= 0 && value <= 0xffff);
+    _randomNumber = value;
   }
 
   @override
