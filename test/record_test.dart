@@ -22,8 +22,8 @@ void main() {
       var record = UriRecord();
       expect(record.tnf, TypeNameFormat.nfcWellKnown);
       expect(record.decodedType, 'U');
-      expect(ByteUtils.bytesEqual(record.type, Uint8List.fromList([85])),
-          isTrue);
+      expect(
+          ByteUtils.bytesEqual(record.type, Uint8List.fromList([85])), isTrue);
       expect(record.fullType, "urn:nfc:wkt:U");
       expect(record.minPayloadLength, 1);
       expect(record.maxPayloadLength, isNull);
