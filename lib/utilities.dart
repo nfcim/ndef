@@ -187,7 +187,8 @@ extension IntConvert on int {
   String toHexStringAsBytes(
     int length, {
     Endianness endianness = Endianness.Big,
-  }) => ByteUtils.intToHexString(this, length, endianness: endianness);
+  }) =>
+      ByteUtils.intToHexString(this, length, endianness: endianness);
 
   /// Converts an integer to bytes with specified [length] and [endianness].
   Uint8List toBytes(int length, {Endianness endianness = Endianness.Big}) =>
