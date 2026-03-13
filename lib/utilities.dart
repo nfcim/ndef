@@ -34,7 +34,9 @@ class ByteUtils {
     int length, {
     Endianness endianness = Endianness.Big,
   }) {
-    assert(length <= 8);
+    if (length > 8) {
+      throw ArgumentError.value(length, "length", "Must be <= 8");
+    }
     var list = <int>[];
 
     var v = value;
@@ -43,7 +45,7 @@ class ByteUtils {
       v ~/= 256;
     }
     if (v != 0) {
-      throw "Value $value is overflow from range of $length bytes";
+      throw ArgumentError("Value $value overflows $length bytes");
     }
     if (endianness == Endianness.Big) {
       list = list.reversed.toList();
@@ -85,7 +87,7 @@ class ByteUtils {
     /// unrelated_type_equality_check checked!
     BigInt zero = 0 as BigInt;
     if (v != zero) {
-      throw "Value $value is overflow from range of $length bytes";
+      throw ArgumentError("Value $value overflows $length bytes");
     }
     if (endianness == Endianness.Big) {
       list = list.reversed as Uint8List?;
@@ -95,10 +97,9 @@ class ByteUtils {
 
   /// Converts a single byte [value] to a 2-character hex string.
   static String byteToHexString(int value) {
-    assert(
-      value >= 0 && value < 256,
-      "Value to decode into Hex String must be in the range of [0,256)",
-    );
+    if (value < 0 || value >= 256) {
+      throw RangeError.range(value, 0, 255, "value");
+    }
     var str = value.toRadixString(16);
     if (str.length == 1) {
       str = '0$str';
@@ -118,7 +119,7 @@ class ByteUtils {
       },
     );
     if (hex.length % 2 != 0) {
-      throw "Hex string length must be even integer, got ${hex.length}";
+      throw FormatException("Hex string length must be even, got ${hex.length}");
     }
     var result = <int>[];
     for (int i = 0; i < hex.length; i += 2) {
@@ -265,7 +266,7 @@ class ByteStream {
   /// Reads [number] bytes and converts them to an integer with the specified [endianness].
   int readInt(int number, {Endianness endianness = Endianness.Big}) {
     if (number > 8) {
-      throw "Number of bytes converted to a int must be in [0,8), got $number";
+      throw ArgumentError.value(number, "number", "Must be in [0,8)");
     }
     Uint8List d = readBytes(number);
     int value = 0;
@@ -317,7 +318,7 @@ class ByteStream {
   /// Throws an error if not enough bytes are available.
   void checkBytesAvailable(int number) {
     if (number > unreadLength) {
-      throw "There is not enough $number bytes in stream";
+      throw RangeError("Not enough bytes in stream: need $number, have $unreadLength");
     }
   }
 
@@ -326,7 +327,7 @@ class ByteStream {
   /// Throws an error if there are unread bytes.
   void checkEmpty() {
     if (unreadLength != 0) {
-      throw "Stream has $unreadLength bytes after decode";
+      throw FormatException("Stream has $unreadLength unexpected bytes after decode");
     }
   }
 }
@@ -393,7 +394,7 @@ class Version {
   set string(String string) {
     var versions = string.split('.');
     if (versions.length != 2) {
-      throw "Format of version string must be major.minor, got $string";
+      throw FormatException("Version string must be major.minor, got $string");
     }
     value = (int.parse(versions[0]) << 4) + int.parse(versions[1]);
   }
