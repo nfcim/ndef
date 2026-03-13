@@ -245,7 +245,7 @@ class SignatureRecord extends WellKnownRecord {
 
     for (int i = 0; i < certificateNumberOfCertificates; i++) {
       int len = stream.readInt(2);
-      certificateStore.add(stream.readBytes(len));
+      _certificateStore.add(stream.readBytes(len));
     }
 
     if (certificateURIPresent == 1) {

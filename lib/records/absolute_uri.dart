@@ -24,17 +24,12 @@ class AbsoluteUriRecord extends NDEFRecord {
 
   /// Gets the URI from the record type field.
   String? get uri {
-    return decodedType;
+    return super.decodedType;
   }
 
   /// Sets the URI in the record type field.
   set uri(String? uri) {
     decodedType = uri;
-  }
-
-  @override
-  String? get decodedType {
-    return uri;
   }
 
   @override

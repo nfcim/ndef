@@ -21,10 +21,10 @@ class ByteUtils {
 
   /// Converts [bytes] to an integer with the specified [endianness].
   static int bytesToInt(
-    Uint8List? bytes, {
+    Uint8List bytes, {
     Endianness endianness = Endianness.Big,
   }) {
-    var stream = ByteStream(bytes!);
+    var stream = ByteStream(bytes);
     return stream.readInt(stream.length, endianness: endianness);
   }
 
@@ -73,12 +73,12 @@ class ByteUtils {
 
   /// Converts a BigInt [value] to bytes with specified [length] and [endianness].
   static Uint8List bigIntToBytes(
-    BigInt? value,
+    BigInt value,
     int length, {
     Endianness endianness = Endianness.Big,
   }) {
     var list = <int>[];
-    BigInt v = value!;
+    BigInt v = value;
     for (int i = 0; i < length; i++) {
       list.add((v % BigInt.from(256)).toInt());
       v ~/= BigInt.from(256);
@@ -351,11 +351,7 @@ class Version {
 
   /// Constructs a [Version] with an optional raw [value].
   Version({int? value}) {
-    if (value != null) {
-      this.value = value;
-    } else {
-      value = 0;
-    }
+    this.value = value ?? 0;
   }
 
   /// Constructs a [Version] from [major] and [minor] version numbers.

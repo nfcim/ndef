@@ -15,17 +15,15 @@ class _Address {
     }
   }
 
-  _Address.fromBytes(Uint8List? bytes) {
-    if (bytes != null) {
-      if (bytes.length != 6) {
-        throw ArgumentError.value(
-          bytes.length,
-          "bytes.length",
-          "Bluetooth address must be 6 bytes",
-        );
-      }
-      addr = bytes;
+  _Address.fromBytes(Uint8List bytes) {
+    if (bytes.length != 6) {
+      throw ArgumentError.value(
+        bytes.length,
+        "bytes.length",
+        "Bluetooth address must be 6 bytes",
+      );
     }
+    addr = bytes;
   }
 
   String get address {
@@ -67,7 +65,7 @@ class EPAddress extends _Address {
   EPAddress({super.address});
 
   /// Constructs an [EPAddress] from raw bytes.
-  EPAddress.fromBytes(Uint8List super.bytes) : super.fromBytes();
+  EPAddress.fromBytes(super.bytes) : super.fromBytes();
 
   /// Gets the address as raw bytes.
   Uint8List get bytes {
@@ -108,19 +106,12 @@ class LEAddress extends _Address {
   late LEAddressType type;
 
   /// Constructs an [LEAddress] with the specified [type] and [address].
-  LEAddress({LEAddressType? type, super.address}) {
-    this.type = type!;
-  }
+  LEAddress({required this.type, super.address});
 
-  LEAddress.fromTypeBytes(LEAddressType? type, Uint8List bytes)
-      : super.fromBytes(bytes) {
-    this.type = type!;
-  }
+  LEAddress.fromTypeBytes(this.type, Uint8List bytes) : super.fromBytes(bytes);
 
-  LEAddress.fromBytes(Uint8List? bytes) {
-    if (bytes != null) {
-      this.bytes = bytes;
-    }
+  LEAddress.fromBytes(Uint8List bytes) {
+    this.bytes = bytes;
   }
 
   @override
@@ -714,7 +705,7 @@ class EIR {
   }
 
   Uint8List get bytes {
-    return ([typeNum] + data) as Uint8List; // Strong cast, MAYBE have problems.
+    return Uint8List.fromList([typeNum!, ...data]);
   }
 
   set bytes(Uint8List bytes) {
@@ -774,13 +765,13 @@ class BluetoothRecord extends MimeRecord {
   }
 
   /// Sets the attribute [value] for the specified EIR [type].
-  void setAttribute(EIRType? type, Uint8List value) {
+  void setAttribute(EIRType type, Uint8List value) {
     if (!EIR.typeNumMap.containsKey(type)) {
       throw ArgumentError(
         "EIR type $type is not supported, please select one from ${EIRType.values}",
       );
     }
-    attributes[type!] = value;
+    attributes[type] = value;
   }
 
   /// Gets the Bluetooth device name.
@@ -958,19 +949,19 @@ class BluetoothEasyPairingRecord extends BluetoothRecord {
 
   @override
   Uint8List get payload {
-    List<int?> data = <int?>[];
+    var data = <int>[];
     for (var e in attributes.entries) {
       data.add(e.value.length + 1);
-      data.add(EIR.typeNumMap[e.key]);
+      data.add(EIR.typeNumMap[e.key]!);
       data.addAll(e.value);
     }
-    List<int>? payload = ByteUtils.intToBytes(
+    var payload = ByteUtils.intToBytes(
           data.length + address!.bytes.length + 2,
           2,
           endianness: Endianness.Little,
         ) +
         address!.bytes +
-        data.cast();
+        data;
     return Uint8List.fromList(payload);
   }
 
@@ -1014,7 +1005,7 @@ class BluetoothLowEnergyRecord extends BluetoothRecord {
   /// Gets the Bluetooth LE device address.
   LEAddress? get address {
     if (attributes.containsKey(EIRType.LEBluetoothDeviceAddress)) {
-      return LEAddress.fromBytes(attributes[EIRType.LEBluetoothDeviceAddress]);
+      return LEAddress.fromBytes(attributes[EIRType.LEBluetoothDeviceAddress]!);
     } else {
       return null;
     }
@@ -1121,8 +1112,8 @@ class BluetoothLowEnergyRecord extends BluetoothRecord {
           "got ${attributes[EIRType.Appearance]!.length}",
         );
       }
-      int? value = ByteUtils.bytesToInt(
-        attributes[EIRType.Appearance],
+      int value = ByteUtils.bytesToInt(
+        attributes[EIRType.Appearance]!,
         endianness: Endianness.Little,
       );
       if (appearanceMap.containsKey(value)) {
@@ -1212,14 +1203,14 @@ class BluetoothLowEnergyRecord extends BluetoothRecord {
   }
 
   @override
-  Uint8List? get payload {
-    Uint8List? payload = <int?>[] as Uint8List;
+  Uint8List get payload {
+    var data = <int>[];
     for (var e in attributes.entries) {
-      payload.add(e.value.length + 1);
-      payload.add(EIR.typeNumMap[e.key!]!);
-      payload.addAll(e.value);
+      data.add(e.value.length + 1);
+      data.add(EIR.typeNumMap[e.key]!);
+      data.addAll(e.value);
     }
-    return Uint8List.fromList(payload);
+    return Uint8List.fromList(data);
   }
 
   @override

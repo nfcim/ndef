@@ -132,7 +132,7 @@ class NDEFRecord {
 
   /// Sets the decoded type string, encoding it to UTF-8 bytes.
   set decodedType(String? decodedType) {
-    encodedType = utf8.encode(decodedType!) as Uint8List?;
+    encodedType = utf8.encode(decodedType!);
   }
 
   /// Gets the type as a decoded UTF-8 string.
@@ -176,8 +176,8 @@ class NDEFRecord {
   }
 
   /// Sets the ID from a string value.
-  set idString(String? value) {
-    id = latin1.encode(value!);
+  set idString(String value) {
+    id = latin1.encode(value);
   }
 
   /// The minimum payload length for this record type.
