@@ -37,7 +37,9 @@ class NDEFRecordFlags {
 
   /// Encodes the flags into a single byte.
   int encode() {
-    assert(0 <= TNF && TNF <= 7);
+    if (TNF < 0 || TNF > 7) {
+      throw RangeError.range(TNF, 0, 7, "TNF");
+    }
     return (MB.toInt() << 7) |
         (ME.toInt() << 6) |
         (CF.toInt() << 5) |
@@ -336,15 +338,19 @@ class NDEFRecord {
       idLength = stream.readByte();
     }
 
-    if ([0, 5, 6].contains(flags.TNF)) {
-      assert(typeLength == 0, "TYPE_LENGTH must be 0 when TNF is 0,5,6");
+    if ([0, 5, 6].contains(flags.TNF) && typeLength != 0) {
+      throw FormatException("TYPE_LENGTH must be 0 when TNF is 0,5,6");
     }
     if (flags.TNF == 0) {
-      assert(idLength == 0, "ID_LENGTH must be 0 when TNF is 0");
-      assert(payloadLength == 0, "PAYLOAD_LENGTH must be 0 when TNF is 0");
+      if (idLength != 0) {
+        throw FormatException("ID_LENGTH must be 0 when TNF is 0");
+      }
+      if (payloadLength != 0) {
+        throw FormatException("PAYLOAD_LENGTH must be 0 when TNF is 0");
+      }
     }
-    if ([1, 2, 3, 4].contains(flags.TNF)) {
-      assert(typeLength > 0, "TYPE_LENGTH must be > 0 when TNF is 1,2,3,4");
+    if ([1, 2, 3, 4].contains(flags.TNF) && typeLength <= 0) {
+      throw FormatException("TYPE_LENGTH must be > 0 when TNF is 1,2,3,4");
     }
 
     var type = stream.readBytes(typeLength);
