@@ -75,24 +75,21 @@ class ByteUtils {
   static Uint8List bigIntToBytes(
     BigInt? value,
     int length, {
-    endianness = Endianness.Big,
+    Endianness endianness = Endianness.Big,
   }) {
-    Uint8List? list = List<int?>.filled(0, null, growable: false) as Uint8List;
-    BigInt? v = value;
+    var list = <int>[];
+    BigInt v = value!;
     for (int i = 0; i < length; i++) {
-      list.add((v! % (BigInt.from(256))).toInt());
-      v ~/= (BigInt.from(256));
+      list.add((v % BigInt.from(256)).toInt());
+      v ~/= BigInt.from(256);
     }
-
-    /// unrelated_type_equality_check checked!
-    BigInt zero = 0 as BigInt;
-    if (v != zero) {
+    if (v != BigInt.zero) {
       throw ArgumentError("Value $value overflows $length bytes");
     }
     if (endianness == Endianness.Big) {
-      list = list.reversed as Uint8List?;
+      list = list.reversed.toList();
     }
-    return Uint8List.fromList(list!);
+    return Uint8List.fromList(list);
   }
 
   /// Converts a single byte [value] to a 2-character hex string.
@@ -119,7 +116,9 @@ class ByteUtils {
       },
     );
     if (hex.length % 2 != 0) {
-      throw FormatException("Hex string length must be even, got ${hex.length}");
+      throw FormatException(
+        "Hex string length must be even, got ${hex.length}",
+      );
     }
     var result = <int>[];
     for (int i = 0; i < hex.length; i += 2) {
@@ -188,8 +187,7 @@ extension IntConvert on int {
   String toHexStringAsBytes(
     int length, {
     Endianness endianness = Endianness.Big,
-  }) =>
-      ByteUtils.intToHexString(this, length, endianness: endianness);
+  }) => ByteUtils.intToHexString(this, length, endianness: endianness);
 
   /// Converts an integer to bytes with specified [length] and [endianness].
   Uint8List toBytes(int length, {Endianness endianness = Endianness.Big}) =>
@@ -318,7 +316,9 @@ class ByteStream {
   /// Throws an error if not enough bytes are available.
   void checkBytesAvailable(int number) {
     if (number > unreadLength) {
-      throw RangeError("Not enough bytes in stream: need $number, have $unreadLength");
+      throw RangeError(
+        "Not enough bytes in stream: need $number, have $unreadLength",
+      );
     }
   }
 
@@ -327,7 +327,9 @@ class ByteStream {
   /// Throws an error if there are unread bytes.
   void checkEmpty() {
     if (unreadLength != 0) {
-      throw FormatException("Stream has $unreadLength unexpected bytes after decode");
+      throw FormatException(
+        "Stream has $unreadLength unexpected bytes after decode",
+      );
     }
   }
 }
