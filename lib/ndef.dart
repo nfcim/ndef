@@ -39,14 +39,22 @@ List<NDEFRecord> decodeRawNdefMessage(
   while (!stream.isEnd()) {
     var record = NDEFRecord.decodeStream(stream, typeFactory);
     if (records.isEmpty) {
-      assert(record.flags.MB == true, "MB flag is not set in first record");
+      if (record.flags.MB != true) {
+        throw FormatException("MB flag is not set in first record");
+      }
     } else {
-      assert(record.flags.MB == false, "MB flag is set in middle record");
+      if (record.flags.MB != false) {
+        throw FormatException("MB flag is set in middle record");
+      }
     }
     records.add(record);
   }
-  assert(records.last.flags.ME == true, "ME flag is not set in last record");
-  assert(records.last.flags.CF == false, "CF flag is set in last record");
+  if (records.last.flags.ME != true) {
+    throw FormatException("ME flag is not set in last record");
+  }
+  if (records.last.flags.CF != false) {
+    throw FormatException("CF flag is set in last record");
+  }
   return records;
 }
 
