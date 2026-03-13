@@ -576,11 +576,11 @@ class SmartPosterRecord extends WellKnownRecord {
   ///
   /// The map should contain a MIME type as key and image/video data as value.
   set icon(Map<String?, Uint8List?>? icon) {
-    String? decodedType = icon!.keys.toList()[0];
+    String? decodedType = icon!.keys.first;
     _checkValidIconType(decodedType!);
     iconRecord = MimeRecord(
       decodedType: decodedType,
-      payload: icon.values.toList()[0],
+      payload: icon.values.first,
     );
   }
 

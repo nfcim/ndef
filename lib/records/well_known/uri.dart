@@ -84,12 +84,12 @@ class UriRecord extends WellKnownRecord {
   }
 
   /// Constructs a [UriRecord] from a URI or IRI string.
-  UriRecord.fromString(String? string) {
-    iriString = string!;
+  UriRecord.fromString(String string) {
+    iriString = string;
   }
 
   /// Constructs a [UriRecord] from a [Uri] instance.
-  UriRecord.fromUri(Uri? uri) {
+  UriRecord.fromUri(Uri uri) {
     uriString = uri.toString();
   }
 

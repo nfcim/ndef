@@ -109,7 +109,7 @@ class DeviceInformationRecord extends WellKnownRecord {
     uuidData = Uint8List.fromList(Uuid.parse(uuid));
   }
 
-  void _addEncodedData(String? value, int type, List<int?> payload) {
+  void _addEncodedData(String? value, int type, List<int> payload) {
     if (value != null) {
       payload.add(type);
       Uint8List valueBytes = utf8.encode(value);
@@ -125,7 +125,7 @@ class DeviceInformationRecord extends WellKnownRecord {
         "Decoding requires the manufacturer and model name TLVs",
       );
     }
-    List<int>? payload = [];
+    var payload = <int>[];
 
     // known data
     _addEncodedData(vendorName, 0, payload);

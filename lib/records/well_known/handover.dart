@@ -425,11 +425,9 @@ class HandoverRecord extends WellKnownRecord {
   }
 
   @override
-  Uint8List? get payload {
+  Uint8List get payload {
     var data = encodeNdefMessage(allRecordList);
-    // cast() 's use
-    List<int>? payload = ([version.value] + data).cast();
-    return Uint8List.fromList(payload);
+    return Uint8List.fromList([version.value] + data);
   }
 
   @override
@@ -553,7 +551,7 @@ class HandoverRequestRecord extends HandoverRecord {
   }
 
   @override
-  Uint8List? get payload {
+  Uint8List get payload {
     if (version.value > 0x11) {
       if (collisionResolutionNumber == null) {
         throw ArgumentError(
@@ -673,7 +671,7 @@ class HandoverSelectRecord extends HandoverRecord {
   }
 
   @override
-  Uint8List? get payload {
+  Uint8List get payload {
     if (version.value < 0x12 && errorRecordList.isNotEmpty) {
       throw ArgumentError(
         "Encoding error record version ${version.value} is not supported",
@@ -770,12 +768,12 @@ class HandoverCarrierRecord extends WellKnownRecord {
     this.id = id;
   }
 
-  int? _carrierTnf;
+  late int _carrierTnf;
   String? carrierType;
   late Uint8List carrierData;
 
   TypeNameFormat get carrierTnf {
-    return TypeNameFormat.values[_carrierTnf!];
+    return TypeNameFormat.values[_carrierTnf];
   }
 
   set carrierTnf(TypeNameFormat carrierTnf) {
@@ -783,17 +781,15 @@ class HandoverCarrierRecord extends WellKnownRecord {
   }
 
   String get carrierFullType {
-    return NDEFRecord.tnfString[_carrierTnf!] + carrierType!;
+    return NDEFRecord.tnfString[_carrierTnf] + carrierType!;
   }
 
   @override
-  Uint8List? get payload {
+  Uint8List get payload {
     var carrierTypeBytes = utf8.encode(carrierType!);
-    List<int>? payload = ([_carrierTnf, carrierTypeBytes.length] +
-            carrierTypeBytes +
-            carrierData)
-        .cast();
-    return Uint8List.fromList(payload);
+    return Uint8List.fromList(
+      [_carrierTnf, carrierTypeBytes.length] + carrierTypeBytes + carrierData,
+    );
   }
 
   @override
