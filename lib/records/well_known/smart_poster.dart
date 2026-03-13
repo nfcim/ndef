@@ -67,7 +67,7 @@ class ActionRecord extends WellKnownRecord {
   @override
   set payload(Uint8List? payload) {
     int actionIndex = payload![0];
-    if (actionIndex >= Action.values.length && actionIndex < 0) {
+    if (actionIndex < 0 || actionIndex >= Action.values.length) {
       throw RangeError.range(actionIndex, 0, Action.values.length);
     }
     action = Action.values[actionIndex];
