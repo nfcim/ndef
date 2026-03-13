@@ -17,7 +17,13 @@ class _Address {
 
   _Address.fromBytes(Uint8List? bytes) {
     if (bytes != null) {
-      assert(bytes.length == 6, "Bytes length of address data must be 6 bytes");
+      if (bytes.length != 6) {
+        throw ArgumentError.value(
+          bytes.length,
+          "bytes.length",
+          "Bluetooth address must be 6 bytes",
+        );
+      }
       addr = bytes;
     }
   }
@@ -36,13 +42,21 @@ class _Address {
     if (exp.hasMatch(address)) {
       var nums = address.split(RegExp("[-:]"));
       var bts = <int>[];
-      assert(nums.length == 6);
+      if (nums.length != 6) {
+        throw FormatException(
+          "Bluetooth address must have 6 octets, got ${nums.length}",
+          address,
+        );
+      }
       for (var n in nums) {
         bts.add(int.parse(n, radix: 16));
       }
       addr = Uint8List.fromList(bts);
     } else {
-      throw ArgumentError("Pattern of adress string is wrong, got $address");
+      throw FormatException(
+        "Invalid Bluetooth address format",
+        address,
+      );
     }
   }
 }
@@ -337,10 +351,9 @@ class DeviceClass {
   }
 
   static String getServiceClassName(int index) {
-    assert(
-      index >= 13 && index < 24,
-      "Index of Service Class Name must be in [13,24)",
-    );
+    if (index < 13 || index >= 24) {
+      throw RangeError.range(index, 13, 23, "index");
+    }
     return serviceClassNameList[index - 13];
   }
 
@@ -1020,10 +1033,12 @@ class BluetoothLowEnergyRecord extends BluetoothRecord {
 
   String? get roleCapabilities {
     if (attributes.containsKey(EIRType.LERole)) {
-      assert(
-        attributes[EIRType.LERole]!.length == 1,
-        "Bytes length of LE Role must be 1",
-      );
+      if (attributes[EIRType.LERole]!.length != 1) {
+        throw FormatException(
+          "LE Role attribute must be 1 byte, "
+          "got ${attributes[EIRType.LERole]!.length}",
+        );
+      }
       var index = attributes[EIRType.LERole]![0];
       if (index < leRoleList.length) {
         return leRoleList[index];
@@ -1100,10 +1115,12 @@ class BluetoothLowEnergyRecord extends BluetoothRecord {
 
   String? get appearance {
     if (attributes.containsKey(EIRType.Appearance)) {
-      assert(
-        attributes[EIRType.Appearance]!.length == 4,
-        "Bytes length of appearance must be 4",
-      );
+      if (attributes[EIRType.Appearance]!.length != 4) {
+        throw FormatException(
+          "Appearance attribute must be 4 bytes, "
+          "got ${attributes[EIRType.Appearance]!.length}",
+        );
+      }
       int? value = ByteUtils.bytesToInt(
         attributes[EIRType.Appearance],
         endianness: Endianness.Little,
@@ -1127,7 +1144,7 @@ class BluetoothLowEnergyRecord extends BluetoothRecord {
       }
     }
     if (index == null) {
-      throw ArgumentError.notNull("Appearance $appearance is not correct");
+      throw ArgumentError.value(appearance, "appearance", "Unknown appearance");
     }
     attributes[EIRType.Appearance] = ByteUtils.intToBytes(
       index,

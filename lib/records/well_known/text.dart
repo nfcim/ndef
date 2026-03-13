@@ -106,7 +106,9 @@ class TextRecord extends WellKnownRecord {
     int flag = stream.readByte();
     int languagePayloadLength = flag & 0x3F;
 
-    assert(languagePayloadLength != 0, "language code length can not be zero");
+    if (languagePayloadLength == 0) {
+      throw FormatException("Language code length must not be zero");
+    }
 
     if (flag >> 7 == 1) {
       encoding = TextEncoding.UTF16;
