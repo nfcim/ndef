@@ -278,6 +278,8 @@ class NDEFRecord {
         record = BluetoothLowEnergyRecord();
       } else if (classType == WifiRecord.classType) {
         record = WifiRecord();
+      } else if (classType == VCardRecord.classType) {
+        record = VCardRecord();
       } else {
         record = MimeRecord();
       }
